@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Diagnóstico — PhotoLive Magic</title>
+  <meta name="description" content="Conheça o Diagnóstico gratuito e avançado do PhotoLive Magic.">
+  <style>
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      padding:0;
+      min-height:100%;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:#172033;
+      background:linear-gradient(135deg,#eef8ff 0%,#f7fbff 45%,#eefcff 100%);
+    }
+
+    body{overflow-x:hidden}
+
+    a{text-decoration:none}
+
+    .page{
+      min-height:100vh;
+      padding:18px;
+    }
+
+    .topbar{
+      width:100%;
+      max-width:1180px;
+      min-height:70px;
+      margin:0 auto 28px;
+      padding:12px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      background:rgba(255,255,255,.94);
+      border:1px solid rgba(15,23,42,.08);
+      border-radius:20px;
+      box-shadow:0 12px 35px rgba(15,23,42,.08);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#172033;
+    }
+
+    .brand-icon{
+      font-size:25px;
+    }
+
+    .brand strong{
+      display:block;
+      font-size:18px;
+    }
+
+    .brand small{
+      display:block;
+      margin-top:2px;
+      color:#64748b;
+      font-size:11px;
+    }
+
+    .back{
+      padding:10px 16px;
+      border-radius:11px;
+      background:#f1f5f9;
+      color:#172033;
+      font-weight:800;
+      font-size:13px;
+    }
+
+    .container{
+      width:100%;
+      max-width:1180px;
+      margin:0 auto;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.35fr .65fr;
+      gap:24px;
+      align-items:stretch;
+      margin-bottom:25px;
+    }
+
+    .hero-main{
+      padding:42px;
+      border-radius:30px;
+      background:linear-gradient(135deg,#082b61,#087ca5);
+      color:#fff;
+      box-shadow:0 20px 45px rgba(8,43,97,.20);
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.5px;
+    }
+
+    h1{
+      margin:16px 0 13px;
+      font-size:clamp(31px,4vw,48px);
+      line-height:1.05;
+    }
+
+    .lead{
+      max-width:720px;
+      margin:0;
+      font-size:16px;
+      line-height:1.65;
+      color:rgba(255,255,255,.88);
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:11px;
+      margin-top:25px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:45px;
+      padding:11px 18px;
+      border-radius:12px;
+      background:#fff;
+      color:#075985;
+      font-weight:900;
+      font-size:13px;
+    }
+
+    .btn.secondary{
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.22);
+    }
+
+    .hero-side{
+      padding:30px;
+      border-radius:30px;
+      background:#fff;
+      border:1px solid rgba(15,23,42,.08);
+      box-shadow:0 15px 35px rgba(15,23,42,.08);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .hero-icon{
+      font-size:45px;
+      margin-bottom:12px;
+    }
+
+    .hero-side h2{
+      margin:0 0 9px;
+      font-size:21px;
+    }
+
+    .hero-side p{
+      margin:0;
+      color:#64748b;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .section{
+      margin-bottom:25px;
+    }
+
+    .section-title{
+      margin-bottom:15px;
+    }
+
+    .section-title span{
+      color:#087ca5;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:1px;
+    }
+
+    .section-title h2{
+      margin:5px 0 0;
+      font-size:28px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
+    }
+
+    .card{
+      padding:23px;
+      border-radius:20px;
+      background:#fff;
+      border:1px solid rgba(15,23,42,.08);
+      box-shadow:0 10px 25px rgba(15,23,42,.06);
+    }
+
+    .card-icon{
+      font-size:27px;
+      margin-bottom:12px;
+    }
+
+    .card h3{
+      margin:0 0 7px;
+      font-size:17px;
+    }
+
+    .card p{
+      margin:0;
+      color:#64748b;
+      line-height:1.55;
+      font-size:13px;
+    }
+
+    .comparison{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .free-card,
+    .advanced-card{
+      padding:28px;
+      border-radius:24px;
+      background:#fff;
+      border:1px solid rgba(15,23,42,.08);
+      box-shadow:0 12px 30px rgba(15,23,42,.07);
+    }
+
+    .advanced-card{
+      border:2px solid #0b86b1;
+      box-shadow:0 15px 35px rgba(8,124,165,.13);
+    }
+
+    .tag{
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#e8f8ee;
+      color:#18733b;
+      font-size:10px;
+      font-weight:900;
+    }
+
+    .tag.advanced{
+      background:#e7f7ff;
+      color:#076b91;
+    }
+
+    .comparison h3{
+      margin:13px 0 7px;
+      font-size:22px;
+    }
+
+    .comparison p{
+      margin:0 0 15px;
+      color:#64748b;
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .list{
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+
+    .list li{
+      padding:8px 0;
+      border-top:1px solid #eef2f7;
+      font-size:13px;
+    }
+
+    .list li:first-child{
+      border-top:0;
+    }
+
+    .plans{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
+    }
+
+    .plan{
+      position:relative;
+      padding:27px;
+      border-radius:23px;
+      background:#fff;
+      border:1px solid rgba(15,23,42,.08);
+      box-shadow:0 10px 25px rgba(15,23,42,.06);
+    }
+
+    .plan.featured{
+      border:2px solid #0b86b1;
+      transform:translateY(-5px);
+    }
+
+    .plan-label{
+      font-size:11px;
+      font-weight:900;
+      color:#087ca5;
+      letter-spacing:.7px;
+      text-transform:uppercase;
+    }
+
+    .price{
+      margin-top:9px;
+      font-size:32px;
+      font-weight:950;
+    }
+
+    .period{
+      margin-top:3px;
+      color:#64748b;
+      font-size:12px;
+    }
+
+    .plan ul{
+      margin:17px 0;
+      padding:0;
+      list-style:none;
+    }
+
+    .plan li{
+      padding:7px 0;
+      font-size:13px;
+      border-top:1px solid #eef2f7;
+    }
+
+    .plan li:first-child{
+      border-top:0;
+    }
+
+    .plan .btn{
+      width:100%;
+      background:#087ca5;
+      color:#fff;
+    }
+
+    .plan.featured .btn{
+      background:linear-gradient(135deg,#087ca5,#075985);
+    }
+
+    .privacy{
+      padding:22px 25px;
+      border-radius:20px;
+      background:#eef9ff;
+      border:1px solid #d5eef8;
+      color:#31546a;
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .footer{
+      max-width:1180px;
+      margin:25px auto 0;
+      padding:20px 0;
+      text-align:center;
+      color:#64748b;
+      font-size:12px;
+    }
+
+    @media(max-width:850px){
+      .hero,
+      .comparison{
+        grid-template-columns:1fr;
+      }
+
+      .grid,
+      .plans{
+        grid-template-columns:1fr;
+      }
+
+      .plan.featured{
+        transform:none;
+      }
+
+      .hero-main{
+        padding:30px 24px;
+      }
+    }
+
+    @media(max-width:600px){
+      .page{
+        padding:8px;
+      }
+
+      .topbar{
+        margin-bottom:12px;
+        padding:10px 12px;
+        border-radius:15px;
+      }
+
+      .brand strong{
+        font-size:15px;
+      }
+
+      .brand small{
+        font-size:9px;
+      }
+
+      .brand-icon{
+        font-size:20px;
+      }
+
+      .back{
+        padding:8px 10px;
+        font-size:11px;
+      }
+
+      .hero-main{
+        padding:27px 20px;
+        border-radius:22px;
+      }
+
+      .hero-side,
+      .free-card,
+      .advanced-card,
+      .card,
+      .plan{
+        border-radius:18px;
+        padding:21px;
+      }
+
+      .hero-actions{
+        flex-direction:column;
+      }
+
+      .hero-actions .btn{
+        width:100%;
+      }
+
+      h1{
+        font-size:31px;
+      }
+
+      .section-title h2{
+        font-size:24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <header class="topbar">
+    <a class="brand" href="../../index.html">
+      <span class="brand-icon">✨</span>
+      <span>
+        <strong>PhotoLive Magic</strong>
+        <small>Diagnóstico de arquivos</small>
+      </span>
+    </a>
+
+    <a class="back" href="../../servicos.html">← Ver serviços</a>
+  </header>
+
+  <main class="container">
+
+    <section class="hero">
+
+      <div class="hero-main">
+        <span class="eyebrow">🔎 DIAGNÓSTICO PHOTOLIVE</span>
+
+        <h1>Entenda seus arquivos antes de decidir o que fazer.</h1>
+
+        <p class="lead">
+          Comece gratuitamente e descubra informações importantes sobre
+          suas fotos e arquivos. Se quiser uma análise mais completa,
+          conheça o Diagnóstico Avançado.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn" href="../../index.html#diagnostico-gratuito">
+            🔎 Começar diagnóstico gratuito
+          </a>
+
+          <a class="btn secondary" href="#avancado">
+            ⭐ Conhecer o avançado
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-side">
+        <div class="hero-icon">🛡️</div>
+        <h2>Seus arquivos continuam seus</h2>
+        <p>
+          O diagnóstico inicial foi pensado para trabalhar diretamente
+          no navegador, evitando armazenamento desnecessário dos seus arquivos.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section class="section">
+
+      <div class="section-title">
+        <span>COMECE SEM PAGAR</span>
+        <h2>O que o diagnóstico gratuito mostra</h2>
+      </div>
+
+      <div class="grid">
+
+        <article class="card">
+          <div class="card-icon">📁</div>
+          <h3>Seus arquivos</h3>
+          <p>
+            Veja informações gerais sobre a quantidade e os tipos de arquivos analisados.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">📊</div>
+          <h3>Tamanho e formatos</h3>
+          <p>
+            Entenda melhor o espaço ocupado e os formatos encontrados.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🔎</div>
+          <h3>Primeira análise</h3>
+          <p>
+            Tenha uma visão inicial para decidir se precisa organizar,
+            recuperar ou editar seus arquivos.
+          </p>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="section" id="avancado">
+
+      <div class="section-title">
+        <span>ALÉM DO GRATUITO</span>
+        <h2>Conheça o Diagnóstico Avançado</h2>
+      </div>
+
+      <div class="comparison">
+
+        <article class="free-card">
+          <span class="tag">GRATUITO</span>
+
+          <h3>Diagnóstico inicial</h3>
+
+          <p>
+            Ideal para conhecer rapidamente a situação dos seus arquivos.
+          </p>
+
+          <ul class="list">
+            <li>✓ Análise inicial</li>
+            <li>✓ Quantidade de arquivos</li>
+            <li>✓ Formatos encontrados</li>
+            <li>✓ Informações de tamanho</li>
+            <li>✓ Primeiras recomendações</li>
+            <li>✓ Sem pagamento</li>
+          </ul>
+        </article>
+
+
+        <article class="advanced-card">
+
+          <span class="tag advanced">⭐ AVANÇADO</span>
+
+          <h3>Uma análise mais completa</h3>
+
+          <p>
+            Para quem quer entender melhor sua biblioteca e receber
+            mais informações antes de organizar seus arquivos.
+          </p>
+
+          <ul class="list">
+            <li>✓ Análise mais detalhada</li>
+            <li>✓ Identificação de arquivos semelhantes</li>
+            <li>✓ Análise de qualidade</li>
+            <li>✓ Arquivos grandes e pontos de atenção</li>
+            <li>✓ Recomendações de organização</li>
+            <li>✓ Relatório mais completo</li>
+          </ul>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="section">
+
+      <div class="section-title">
+        <span>ESCOLHA COMO USAR</span>
+        <h2>Conheça e compre o Diagnóstico Avançado</h2>
+      </div>
+
+      <div class="plans">
+
+        <article class="plan">
+
+          <span class="plan-label">Avulso</span>
+
+          <div class="price">R$ 5,90</div>
+
+          <div class="period">Pagamento único</div>
+
+          <ul>
+            <li>✓ Análise avançada</li>
+            <li>✓ Uso pontual</li>
+            <li>✓ Ideal para uma necessidade específica</li>
+          </ul>
+
+          <a class="btn"
+             href="../../pagamentos/pagamento.html?produto=diagnostico&plan=AVULSO">
+            Conhecer e comprar
+          </a>
+
+        </article>
+
+
+        <article class="plan featured">
+
+          <span class="plan-label">⭐ Mensal</span>
+
+          <div class="price">R$ 7,90</div>
+
+          <div class="period">Contratação mensal</div>
+
+          <ul>
+            <li>✓ Análise avançada</li>
+            <li>✓ Acesso recorrente</li>
+            <li>✓ Melhor para uso contínuo</li>
+          </ul>
+
+          <a class="btn"
+             href="../../pagamentos/pagamento.html?produto=diagnostico&plan=MONTHLY">
+            Conhecer e comprar
+          </a>
+
+        </article>
+
+
+        <article class="plan">
+
+          <span class="plan-label">Anual</span>
+
+          <div class="price">R$ 79,00</div>
+
+          <div class="period">Contratação anual</div>
+
+          <ul>
+            <li>✓ Análise avançada</li>
+            <li>✓ Acesso anual</li>
+            <li>✓ Para uso prolongado</li>
+          </ul>
+
+          <a class="btn"
+             href="../../pagamentos/pagamento.html?produto=diagnostico&plan=YEARLY">
+            Conhecer e comprar
+          </a>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="privacy">
+      🔐 <strong>Privacidade em primeiro lugar.</strong>
+      O PhotoLive Magic foi pensado para evitar armazenamento desnecessário.
+      Você mantém o controle dos arquivos que deseja editar, baixar e guardar.
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    PhotoLive Magic · Diagnóstico
+  </footer>
+
+</div>
+
+</body>
+</html>

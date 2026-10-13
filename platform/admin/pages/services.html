@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serviços — Resgata+</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .services-page {
+      padding: 24px;
+    }
+
+    .services-toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .services-toolbar input,
+    .services-toolbar select {
+      min-height: 42px;
+      padding: 0 12px;
+      border: 1px solid #d9dee8;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .services-toolbar input {
+      min-width: 260px;
+      flex: 1;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .service-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .service-card small {
+      display: block;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .service-card strong {
+      font-size: 25px;
+    }
+
+    .services-table-wrap {
+      overflow-x: auto;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+    }
+
+    .services-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 850px;
+    }
+
+    .services-table th,
+    .services-table td {
+      padding: 14px;
+      border-bottom: 1px solid #edf0f4;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .services-table th {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-on {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-off {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-visible {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-hidden {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .service-actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .service-actions button {
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      background: #eef2ff;
+    }
+
+    .service-actions button:hover {
+      opacity: .85;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .service-modal {
+      width: min(620px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    }
+
+    .service-modal h2 {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px;
+      border: 1px solid #d9dee8;
+      border-radius: 9px;
+      font: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .check-row {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+
+    .check-row label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .empty-state {
+      padding: 35px;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    @media (max-width: 900px) {
+      .services-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .services-page {
+        padding: 15px;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="services-page">
+    <div style="display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;">
+      <div>
+        <h1>Serviços</h1>
+        <p>Controle os serviços disponibilizados pelo Resgata+.</p>
+      </div>
+
+      <button id="newServiceBtn">+ Novo serviço</button>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <small>Total</small>
+        <strong id="metricTotal">0</strong>
+      </div>
+
+      <div class="service-card">
+        <small>Ativos</small>
+        <strong id="metricEnabled">0</strong>
+      </div>
+
+      <div class="service-card">
+        <small>Inativos</small>
+        <strong id="metricDisabled">0</strong>
+      </div>
+
+      <div class="service-card">
+        <small>Visíveis ao cliente</small>
+        <strong id="metricVisible">0</strong>
+      </div>
+    </div>
+
+    <div class="services-toolbar">
+      <input id="searchInput" type="search" placeholder="Buscar por nome, categoria ou ID">
+
+      <select id="statusFilter">
+        <option value="">Todos os status</option>
+        <option value="enabled">Ativos</option>
+        <option value="disabled">Inativos</option>
+      </select>
+
+      <select id="visibilityFilter">
+        <option value="">Toda visibilidade</option>
+        <option value="visible">Visíveis</option>
+        <option value="hidden">Ocultos</option>
+      </select>
+
+      <button id="refreshBtn">Atualizar</button>
+    </div>
+
+    <div class="services-table-wrap">
+      <table class="services-table">
+        <thead>
+          <tr>
+            <th>Serviço</th>
+            <th>Categoria</th>
+            <th>Status</th>
+            <th>Cliente</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody id="servicesBody">
+          <tr>
+            <td colspan="5" class="empty-state">Carregando...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="serviceModalBackdrop" class="modal-backdrop">
+    <div class="service-modal">
+      <h2 id="modalTitle">Novo serviço</h2>
+
+      <form id="serviceForm">
+        <input type="hidden" id="serviceId">
+
+        <div class="form-group">
+          <label for="serviceName">Nome</label>
+          <input id="serviceName" required maxlength="120">
+        </div>
+
+        <div class="form-group">
+          <label for="serviceDescription">Descrição</label>
+          <textarea id="serviceDescription" maxlength="500"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="serviceCategory">Categoria</label>
+          <input id="serviceCategory" required maxlength="80">
+        </div>
+
+        <div class="check-row">
+          <label>
+            <input type="checkbox" id="serviceEnabled" checked>
+            Serviço ativo
+          </label>
+
+          <label>
+            <input type="checkbox" id="serviceVisible" checked>
+            Visível para clientes
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="cancelModalBtn">Cancelar</button>
+          <button type="submit">Salvar serviço</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+const state = {
+  services: [],
+  summary: null,
+  editingId: null
+};
+
+function getToken() {
+  return localStorage.getItem("resgata_admin_token") ||
+         sessionStorage.getItem("resgata_admin_token") ||
+         "";
+}
+
+async function api(path, options = {}) {
+  const token = getToken();
+
+  const response = await fetch("/api/admin/services" + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+      ...(options.headers || {})
+    }
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (response.status === 401) {
+    alert("Sua sessão administrativa expirou. Faça login novamente.");
+    return null;
+  }
+
+  if (!response.ok || data.ok === false) {
+    throw new Error(data.error || "Erro na operação.");
+  }
+
+  return data;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function renderMetrics() {
+  const summary = state.summary || {};
+
+  document.getElementById("metricTotal").textContent =
+    summary.total ?? state.services.length;
+
+  document.getElementById("metricEnabled").textContent =
+    summary.enabled ?? state.services.filter(s => Number(s.enabled) === 1).length;
+
+  document.getElementById("metricDisabled").textContent =
+    summary.disabled ?? state.services.filter(s => Number(s.enabled) === 0).length;
+
+  document.getElementById("metricVisible").textContent =
+    summary.clientVisible ?? state.services.filter(s => Number(s.clientVisible) === 1).length;
+}
+
+function filteredServices() {
+  const search = document.getElementById("searchInput").value.trim().toLowerCase();
+  const status = document.getElementById("statusFilter").value;
+  const visibility = document.getElementById("visibilityFilter").value;
+
+  return state.services.filter(service => {
+    const haystack = [
+      service.id,
+      service.name,
+      service.description,
+      service.category
+    ].join(" ").toLowerCase();
+
+    if (search && !haystack.includes(search)) return false;
+
+    if (status === "enabled" && Number(service.enabled) !== 1) return false;
+    if (status === "disabled" && Number(service.enabled) !== 0) return false;
+
+    if (visibility === "visible" && Number(service.clientVisible) !== 1) return false;
+    if (visibility === "hidden" && Number(service.clientVisible) !== 0) return false;
+
+    return true;
+  });
+}
+
+function renderServices() {
+  const body = document.getElementById("servicesBody");
+  const services = filteredServices();
+
+  if (!services.length) {
+    body.innerHTML = `
+      <tr>
+        <td colspan="5" class="empty-state">
+          Nenhum serviço encontrado.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  body.innerHTML = services.map(service => `
+    <tr>
+      <td>
+        <strong>${escapeHtml(service.name)}</strong>
+        <div style="font-size:12px;color:#6b7280;margin-top:4px;">
+          ${escapeHtml(service.id)}
+        </div>
+        <div style="font-size:13px;color:#6b7280;margin-top:5px;">
+          ${escapeHtml(service.description || "")}
+        </div>
+      </td>
+
+      <td>${escapeHtml(service.category || "-")}</td>
+
+      <td>
+        <span class="badge ${Number(service.enabled) === 1 ? "badge-on" : "badge-off"}">
+          ${Number(service.enabled) === 1 ? "Ativo" : "Inativo"}
+        </span>
+      </td>
+
+      <td>
+        <span class="badge ${Number(service.clientVisible) === 1 ? "badge-visible" : "badge-hidden"}">
+          ${Number(service.clientVisible) === 1 ? "Visível" : "Oculto"}
+        </span>
+      </td>
+
+      <td>
+        <div class="service-actions">
+          <button onclick="editService('${escapeHtml(service.id)}')">Editar</button>
+
+          <button onclick="toggleStatus('${escapeHtml(service.id)}', ${Number(service.enabled) === 1})">
+            ${Number(service.enabled) === 1 ? "Desativar" : "Ativar"}
+          </button>
+
+          <button onclick="toggleVisibility('${escapeHtml(service.id)}', ${Number(service.clientVisible) === 1})">
+            ${Number(service.clientVisible) === 1 ? "Ocultar" : "Mostrar"}
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+async function loadServices() {
+  try {
+    const [summary, list] = await Promise.all([
+      api("/summary"),
+      api("")
+    ]);
+
+    if (!summary || !list) return;
+
+    state.summary = summary.summary || {};
+    state.services = list.services || [];
+
+    renderMetrics();
+    renderServices();
+  } catch (error) {
+    console.error(error);
+
+    document.getElementById("servicesBody").innerHTML = `
+      <tr>
+        <td colspan="5" class="empty-state">
+          Erro ao carregar serviços: ${escapeHtml(error.message)}
+        </td>
+      </tr>
+    `;
+  }
+}
+
+function openModal(service = null) {
+  state.editingId = service?.id || null;
+
+  document.getElementById("modalTitle").textContent =
+    service ? "Editar serviço" : "Novo serviço";
+
+  document.getElementById("serviceId").value =
+    service?.id || "";
+
+  document.getElementById("serviceName").value =
+    service?.name || "";
+
+  document.getElementById("serviceDescription").value =
+    service?.description || "";
+
+  document.getElementById("serviceCategory").value =
+    service?.category || "";
+
+  document.getElementById("serviceEnabled").checked =
+    service ? Number(service.enabled) === 1 : true;
+
+  document.getElementById("serviceVisible").checked =
+    service ? Number(service.clientVisible) === 1 : true;
+
+  document.getElementById("serviceModalBackdrop").classList.add("open");
+}
+
+function closeModal() {
+  state.editingId = null;
+  document.getElementById("serviceModalBackdrop").classList.remove("open");
+}
+
+window.editService = function(id) {
+  const service = state.services.find(item => item.id === id);
+
+  if (!service) {
+    alert("Serviço não encontrado.");
+    return;
+  }
+
+  openModal(service);
+};
+
+window.toggleStatus = async function(id, enabled) {
+  try {
+    await api("/" + encodeURIComponent(id) + "/status", {
+      method: "PATCH",
+      body: JSON.stringify({
+        enabled: !enabled
+      })
+    });
+
+    await loadServices();
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+window.toggleVisibility = async function(id, visible) {
+  try {
+    await api("/" + encodeURIComponent(id) + "/visibility", {
+      method: "PATCH",
+      body: JSON.stringify({
+        clientVisible: !visible
+      })
+    });
+
+    await loadServices();
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+document.getElementById("serviceForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const payload = {
+    name: document.getElementById("serviceName").value.trim(),
+    description: document.getElementById("serviceDescription").value.trim(),
+    category: document.getElementById("serviceCategory").value.trim(),
+    enabled: document.getElementById("serviceEnabled").checked,
+    clientVisible: document.getElementById("serviceVisible").checked
+  };
+
+  try {
+    if (state.editingId) {
+      await api("/" + encodeURIComponent(state.editingId), {
+        method: "PATCH",
+        body: JSON.stringify(payload)
+      });
+    } else {
+      await api("", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+    }
+
+    closeModal();
+    await loadServices();
+  } catch (error) {
+    alert(error.message);
+  }
+});
+
+document.getElementById("newServiceBtn").addEventListener("click", () => {
+  openModal();
+});
+
+document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
+
+document.getElementById("refreshBtn").addEventListener("click", loadServices);
+document.getElementById("searchInput").addEventListener("input", renderServices);
+document.getElementById("statusFilter").addEventListener("change", renderServices);
+document.getElementById("visibilityFilter").addEventListener("change", renderServices);
+
+document.getElementById("serviceModalBackdrop").addEventListener("click", event => {
+  if (event.target.id === "serviceModalBackdrop") {
+    closeModal();
+  }
+});
+
+loadServices();
+</script>
+
+</body>
+</html>

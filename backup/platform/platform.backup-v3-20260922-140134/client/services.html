@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serviços | Resgata+</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/dashboard.html">RESGATA+</a>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <span class="tag">SERVIÇOS</span>
+    <h1>O que você precisa resolver?</h1>
+    <p>Escolha um serviço disponível na sua conta.</p>
+  </section>
+
+  <section id="services" class="grid"></section>
+</main>
+
+<script>
+async function loadServices() {
+  const response = await fetch("/api/services");
+  const data = await response.json();
+
+  document.getElementById("services").innerHTML =
+    data.services.map(service => `
+      <article class="card">
+        <span class="category">${service.category}</span>
+        <h2>${service.name}</h2>
+        <p>${service.description}</p>
+        <button onclick="selectService('${service.id}')">
+          Acessar serviço
+        </button>
+      </article>
+    `).join("");
+}
+
+function selectService(id) {
+  alert("Serviço selecionado: " + id);
+}
+
+loadServices();
+</script>
+</body>
+</html>

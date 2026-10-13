@@ -1,0 +1,501 @@
+/* =========================================================
+   PhotoLive Magic — Editor de Vídeos
+   Visual profissional
+   Mantém a lógica existente do editor
+   ========================================================= */
+
+.video-editor-main {
+  padding-bottom: 80px;
+}
+
+/* HERO */
+
+.video-editor-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 46px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(20, 40, 70, .10);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(37, 99, 235, .13), transparent 30%),
+    linear-gradient(135deg, #ffffff, #f4f8ff);
+  box-shadow: 0 18px 55px rgba(15, 35, 65, .09);
+}
+
+.video-editor-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 780px;
+}
+
+.video-editor-hero h1 {
+  margin: 8px 0 14px;
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+}
+
+.video-editor-lead {
+  max-width: 720px;
+  margin: 0;
+  color: #667085;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.video-editor-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.video-editor-highlights span {
+  padding: 9px 13px;
+  border: 1px solid rgba(37, 99, 235, .12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .78);
+  color: #344054;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.video-editor-hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.video-editor-main-cta {
+  cursor: pointer;
+}
+
+.video-editor-secondary-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(20, 40, 70, .12);
+  border-radius: 12px;
+  background: #fff;
+  color: #344054;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.video-editor-supported {
+  display: block;
+  margin-top: 12px;
+  color: #8993a4;
+}
+
+.video-editor-hero-icon {
+  flex: 0 0 150px;
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  border-radius: 36px;
+  background: rgba(37, 99, 235, .09);
+  border: 1px solid rgba(37, 99, 235, .12);
+  font-size: 70px;
+  box-shadow: inset 0 0 0 12px rgba(255,255,255,.45);
+}
+
+/* BENEFÍCIOS */
+
+.video-editor-benefits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.video-editor-benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  min-height: 100px;
+  padding: 20px;
+  border: 1px solid rgba(20, 40, 70, .09);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(15, 35, 65, .06);
+}
+
+.video-editor-benefit > span {
+  font-size: 25px;
+}
+
+.video-editor-benefit strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #172033;
+}
+
+.video-editor-benefit p {
+  margin: 0;
+  color: #667085;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* ÁREA DO EDITOR */
+
+.video-editor-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+  gap: 20px;
+  margin-bottom: 70px;
+}
+
+.video-editor-player-card,
+.video-editor-controls-card {
+  min-width: 0;
+}
+
+.video-editor-section-heading {
+  margin-bottom: 22px;
+}
+
+.video-editor-section-heading h2 {
+  margin: 6px 0 7px;
+  color: #172033;
+  font-size: 25px;
+}
+
+.video-editor-section-heading p {
+  margin: 0;
+  color: #667085;
+  line-height: 1.6;
+}
+
+.video-editor-label {
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.video-editor-preview {
+  min-height: 350px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #101828;
+}
+
+.video-editor-preview video {
+  display: block;
+  width: 100%;
+  max-height: 540px;
+  background: #101828;
+}
+
+.video-editor-empty {
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 30px;
+  text-align: center;
+}
+
+.video-editor-empty-icon {
+  margin-bottom: 8px;
+  font-size: 48px;
+}
+
+.video-editor-empty strong {
+  color: #fff;
+  font-size: 18px;
+}
+
+.video-editor-empty span {
+  color: rgba(255,255,255,.68);
+  font-size: 14px;
+}
+
+.video-editor-actions {
+  margin-top: 16px;
+}
+
+.video-editor-control {
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(20, 40, 70, .08);
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.video-editor-control label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.video-editor-control label span {
+  font-weight: 800;
+  color: #2563eb;
+}
+
+.video-editor-control input[type="range"] {
+  width: 100%;
+}
+
+.video-editor-control-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* COMO FUNCIONA */
+
+.video-editor-how {
+  margin-bottom: 28px;
+}
+
+.video-editor-section-heading.centered {
+  max-width: 720px;
+  margin: 0 auto 34px;
+  text-align: center;
+}
+
+.video-editor-section-heading.centered p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.video-editor-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.video-editor-steps article {
+  padding: 24px;
+  border: 1px solid rgba(20, 40, 70, .09);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(15, 35, 65, .05);
+}
+
+.video-editor-steps article > span {
+  display: inline-flex;
+  margin-bottom: 22px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.video-editor-steps strong {
+  display: block;
+  margin-bottom: 7px;
+  color: #172033;
+}
+
+.video-editor-steps p {
+  margin: 0;
+  color: #667085;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* CTA FINAL */
+
+.video-editor-final-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 32px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #172033, #243b64);
+  color: #fff;
+}
+
+.video-editor-final-cta h2 {
+  margin: 7px 0;
+  font-size: 28px;
+}
+
+.video-editor-final-cta p {
+  margin: 0;
+  color: rgba(255,255,255,.72);
+}
+
+.video-editor-final-cta .video-editor-label {
+  color: #9fc0ff;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 900px) {
+  .video-editor-benefits,
+  .video-editor-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .video-editor-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .video-editor-hero-icon {
+    flex-basis: 120px;
+    width: 120px;
+    height: 120px;
+    font-size: 55px;
+  }
+}
+
+@media (max-width: 640px) {
+  .video-editor-hero {
+    display: block;
+    padding: 28px 22px;
+  }
+
+  .video-editor-hero-icon {
+    display: none;
+  }
+
+  .video-editor-lead {
+    font-size: 16px;
+  }
+
+  .video-editor-highlights,
+  .video-editor-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .video-editor-highlights span,
+  .video-editor-secondary-cta {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .video-editor-benefits,
+  .video-editor-steps,
+  .video-editor-control-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .video-editor-preview,
+  .video-editor-empty {
+    min-height: 260px;
+  }
+
+  .video-editor-final-cta {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+/* CTA DE CONTRATAÇÃO */
+.video-editor-payment-cta {
+  border-color: rgba(37, 99, 235, .45);
+}
+
+.video-editor-payment-cta:hover {
+  border-color: rgba(37, 99, 235, .75);
+}
+
+.video-editor-final-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin: 34px auto 0;
+  padding: 28px 30px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  background: rgba(255,255,255,.035);
+  box-shadow: 0 18px 45px rgba(0,0,0,.14);
+}
+
+.video-editor-final-cta h2 {
+  margin: 8px 0 8px;
+}
+
+.video-editor-final-cta p {
+  margin: 0;
+  color: var(--text-muted, #94a3b8);
+}
+
+.video-editor-final-cta .plm-btn {
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .video-editor-final-cta {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .video-editor-final-cta .plm-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
+/* CTA DE CONTRATAÇÃO */
+.video-editor-payment-cta {
+  border-color: rgba(37, 99, 235, .45);
+}
+
+.video-editor-payment-cta:hover {
+  border-color: rgba(37, 99, 235, .75);
+}
+
+.video-editor-final-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin: 34px auto 0;
+  padding: 28px 30px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  background: rgba(255,255,255,.035);
+  box-shadow: 0 18px 45px rgba(0,0,0,.14);
+}
+
+.video-editor-final-cta h2 {
+  margin: 8px 0 8px;
+}
+
+.video-editor-final-cta p {
+  margin: 0;
+  color: var(--text-muted, #94a3b8);
+}
+
+.video-editor-final-cta .plm-btn {
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .video-editor-final-cta {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .video-editor-final-cta .plm-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar conta | Resgata+</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/">RESGATA+</a>
+</header>
+
+<main class="auth-container">
+  <section class="auth-card">
+    <span class="tag">CENTRAL RESGATA+</span>
+    <h1>Criar conta</h1>
+    <p>Comece sua conta Resgata+.</p>
+
+    <form id="registerForm">
+      <label>Nome</label>
+      <input id="name" required placeholder="Seu nome">
+
+      <label>E-mail</label>
+      <input id="email" type="email" required placeholder="seu@email.com">
+
+      <label>Senha</label>
+      <input id="password" type="password" minlength="8" required placeholder="Mínimo de 8 caracteres">
+
+      <button type="submit">Criar conta</button>
+    </form>
+
+    <div id="message" class="message"></div>
+  </section>
+</main>
+
+<script>
+document.getElementById("registerForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const response = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value
+    })
+  });
+
+  const data = await response.json();
+
+  document.getElementById("message").textContent =
+    data.message || data.error || "Não foi possível criar a conta.";
+
+  if (data.ok) {
+    setTimeout(() => {
+      window.location.href = "/login.html";
+    }, 700);
+  }
+});
+</script>
+</body>
+</html>

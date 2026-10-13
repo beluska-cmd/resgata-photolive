@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Resgata+ Admin</title>
+
+  <link rel="stylesheet" href="/admin/style.css">
+</head>
+
+<body>
+
+<div class="admin-app">
+
+  <!-- ======================================================
+       SIDEBAR
+       ====================================================== -->
+
+  <aside class="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-symbol">+</div>
+
+      <div>
+        <strong>RESGATA+</strong>
+        <span>ADMIN</span>
+      </div>
+    </div>
+
+    <nav class="admin-nav">
+
+      <button class="nav-item active" data-page="dashboard">
+        <span>🏠</span>
+        Dashboard
+      </button>
+
+      <button class="nav-item" data-page="users">
+        <span>👤</span>
+        Usuários
+      </button>
+
+      <button class="nav-item" data-page="devices">
+        <span>📱</span>
+        Dispositivos
+      </button>
+
+      <button class="nav-item" data-page="services">
+        <span>🧩</span>
+        Serviços
+      </button>
+
+      <button class="nav-item" data-page="requests">
+        <span>📋</span>
+        Solicitações
+      </button>
+
+      <button class="nav-item" data-page="tickets">
+        <span>🎧</span>
+        Atendimento
+      </button>
+
+      <button class="nav-item" data-page="specialists">
+        <span>👨‍🔧</span>
+        Especialistas
+      </button>
+
+      <button class="nav-item" data-page="updates">
+        <span>🔄</span>
+        Atualizações
+      </button>
+
+      <button class="nav-item" data-page="plans">
+        <span>💳</span>
+        Planos
+      </button>
+
+      <button class="nav-item" data-page="security">
+        <span>🛡️</span>
+        Segurança
+      </button>
+
+      <button class="nav-item" data-page="protection">
+        <span>🚨</span>
+        Limpeza e Proteção
+      </button>
+
+      <button class="nav-item" data-page="reports">
+        <span>📊</span>
+        Relatórios
+      </button>
+
+      <button class="nav-item" data-page="logs">
+        <span>📝</span>
+        Logs
+      </button>
+
+      <button class="nav-item" data-page="settings">
+        <span>⚙️</span>
+        Configurações
+      </button>
+
+      <button class="nav-item" data-page="admins">
+        <span>👨‍💼</span>
+        Administradores
+      </button>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <div class="admin-mini">
+
+        <div class="admin-avatar">
+          A
+        </div>
+
+        <div>
+          <strong id="sidebarAdminName">
+            Administrador
+          </strong>
+
+          <span id="sidebarAdminRole">
+            superadmin
+          </span>
+        </div>
+
+      </div>
+
+      <button id="logoutButton" class="logout-button">
+        🚪 Sair
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ======================================================
+       MAIN
+       ====================================================== -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div>
+
+        <button id="mobileMenu" class="mobile-menu">
+          ☰
+        </button>
+
+        <div class="topbar-title">
+
+          <span id="pageEyebrow">
+            RESGATA+
+          </span>
+
+          <h1 id="pageTitle">
+            Dashboard
+          </h1>
+
+        </div>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <div class="system-status">
+          <span class="status-dot"></span>
+          Sistema operacional
+        </div>
+
+        <button
+          id="refreshButton"
+          class="icon-button"
+          title="Atualizar"
+        >
+          ↻
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <section class="content">
+
+      <!-- ==================================================
+           DASHBOARD
+           ================================================== -->
+
+      <div id="page-dashboard" class="page active">
+
+        <div class="page-header">
+
+          <div>
+
+            <span class="eyebrow">
+              VISÃO GERAL
+            </span>
+
+            <h2>
+              Central de operação
+            </h2>
+
+            <p>
+              Acompanhe o estado da plataforma Resgata+.
+            </p>
+
+          </div>
+
+          <div id="lastUpdate" class="last-update">
+            Atualizando...
+          </div>
+
+        </div>
+
+
+        <!-- MÉTRICAS -->
+
+        <div class="metrics-grid">
+
+          <article class="metric-card blue">
+
+            <div class="metric-icon">
+              👤
+            </div>
+
+            <div>
+              <span>Usuários</span>
+              <strong id="metricUsers">0</strong>
+              <small id="metricUsersActive">
+                0 ativos
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card purple">
+
+            <div class="metric-icon">
+              📱
+            </div>
+
+            <div>
+              <span>Dispositivos</span>
+              <strong id="metricDevices">0</strong>
+              <small>
+                conectados
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card orange">
+
+            <div class="metric-icon">
+              📋
+            </div>
+
+            <div>
+              <span>Solicitações</span>
+              <strong id="metricRequests">0</strong>
+              <small>
+                registradas
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card green">
+
+            <div class="metric-icon">
+              🎧
+            </div>
+
+            <div>
+              <span>Atendimentos</span>
+              <strong id="metricTickets">0</strong>
+              <small>
+                tickets
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card red">
+
+            <div class="metric-icon">
+              🛡️
+            </div>
+
+            <div>
+              <span>Alertas</span>
+              <strong id="metricSecurity">0</strong>
+              <small>
+                pendentes
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card teal">
+
+            <div class="metric-icon">
+              🚨
+            </div>
+
+            <div>
+              <span>Proteção</span>
+              <strong id="metricProtection">0</strong>
+              <small>
+                análises
+              </small>
+            </div>
+
+          </article>
+
+        </div>
+
+
+        <!-- SEGUNDA LINHA -->
+
+        <div class="dashboard-grid">
+
+
+          <!-- ATIVIDADE -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  MONITORAMENTO
+                </span>
+
+                <h3>
+                  Atividade recente
+                </h3>
+              </div>
+
+              <button
+                class="small-button"
+                data-page-link="logs"
+              >
+                Ver logs
+              </button>
+
+            </div>
+
+            <div id="recentActivity" class="activity-list">
+
+              <div class="loading">
+                Carregando atividade...
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- ALERTAS -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  ATENÇÃO
+                </span>
+
+                <h3>
+                  Alertas
+                </h3>
+              </div>
+
+            </div>
+
+            <div id="alertsList" class="alerts-list">
+
+              <div class="loading">
+                Carregando alertas...
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- TERCEIRA LINHA -->
+
+        <div class="dashboard-grid">
+
+
+          <!-- SERVIÇOS -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  PLATAFORMA
+                </span>
+
+                <h3>
+                  Serviços
+                </h3>
+              </div>
+
+              <button
+                class="small-button"
+                data-page-link="services"
+              >
+                Gerenciar
+              </button>
+
+            </div>
+
+            <div
+              id="servicesOverview"
+              class="service-overview"
+            >
+
+              <div class="loading">
+                Carregando serviços...
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- ESPECIALISTAS -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  ATENDIMENTO
+                </span>
+
+                <h3>
+                  Especialistas
+                </h3>
+              </div>
+
+              <button
+                class="small-button"
+                data-page-link="specialists"
+              >
+                Gerenciar
+              </button>
+
+            </div>
+
+            <div
+              id="specialistsOverview"
+              class="specialist-overview"
+            >
+
+              <div class="loading">
+                Carregando especialistas...
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- PROTEÇÃO -->
+
+        <section class="panel protection-dashboard">
+
+          <div class="panel-header">
+
+            <div>
+
+              <span class="panel-eyebrow">
+                PROTEÇÃO
+              </span>
+
+              <h3>
+                Limpeza, Spam e Proteção
+              </h3>
+
+              <p>
+                Monitoramento administrativo do módulo de proteção.
+              </p>
+
+            </div>
+
+            <button
+              class="small-button"
+              data-page-link="protection"
+            >
+              Abrir módulo
+            </button>
+
+          </div>
+
+
+          <div class="protection-stats">
+
+            <div>
+              <span>
+                Relatórios
+              </span>
+
+              <strong id="protectionReports">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Pedidos de remoção
+              </span>
+
+              <strong id="removalRequests">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Remoções pendentes
+              </span>
+
+              <strong id="pendingRemovalRequests">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Alertas segurança
+              </span>
+
+              <strong id="unresolvedSecurity">
+                0
+              </strong>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+
+      <!-- ==================================================
+           PÁGINAS DOS MÓDULOS
+           ================================================== -->
+
+      <div id="page-users" class="page">
+
+        <div class="page-header">
+
+          <div>
+
+            <span class="eyebrow">
+              ADMINISTRAÇÃO
+            </span>
+
+            <h2>
+              Usuários
+            </h2>
+
+            <p>
+              Gerencie contas, planos, status e histórico.
+            </p>
+
+          </div>
+
+          <div id="usersTotal" class="last-update">
+            0 usuários
+          </div>
+
+        </div>
+
+
+        <section class="panel">
+
+          <div class="users-toolbar">
+
+            <div class="search-box">
+
+              <span>🔎</span>
+
+              <input
+                id="usersSearch"
+                type="search"
+                placeholder="Pesquisar por nome, e-mail ou ID..."
+              >
+
+            </div>
+
+
+            <select id="usersStatus">
+
+              <option value="">
+                Todos os status
+              </option>
+
+              <option value="active">
+                Ativos
+              </option>
+
+              <option value="inactive">
+                Inativos
+              </option>
+
+              <option value="blocked">
+                Bloqueados
+              </option>
+
+              <option value="suspended">
+                Suspensos
+              </option>
+
+            </select>
+
+
+            <select id="usersPlan">
+
+              <option value="">
+                Todos os planos
+              </option>
+
+              <option value="free">
+                Gratuito
+              </option>
+
+              <option value="premium">
+                Premium
+              </option>
+
+            </select>
+
+
+            <button
+              id="usersRefresh"
+              class="small-button"
+            >
+              Atualizar
+            </button>
+
+          </div>
+
+
+          <div class="table-wrapper">
+
+            <table class="data-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>Usuário</th>
+                  <th>E-mail</th>
+                  <th>Plano</th>
+                  <th>Status</th>
+                  <th>Cadastro</th>
+                  <th></th>
+
+                </tr>
+
+              </thead>
+
+              <tbody id="usersTableBody">
+
+                <tr>
+                  <td
+                    colspan="6"
+                    class="table-loading"
+                  >
+                    Carregando usuários...
+                  </td>
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+      </div>
+
+
+      <div
+        id="userDrawer"
+        class="drawer-backdrop"
+      >
+
+        <aside class="user-drawer">
+
+          <div class="drawer-header">
+
+            <div>
+
+              <span class="eyebrow">
+                PERFIL
+              </span>
+
+              <h2 id="drawerUserName">
+                Usuário
+              </h2>
+
+            </div>
+
+            <button
+              id="closeUserDrawer"
+              class="drawer-close"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          <div id="drawerContent">
+
+            <div class="loading">
+              Carregando...
+            </div>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+
+      <div id="page-devices" class="page">
+        <div class="module-placeholder">
+          <span>📱</span>
+          <h2>Dispositivos</h2>
+          <p>
+            O módulo de dispositivos será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-services" class="page">
+        <div class="module-placeholder">
+          <span>🧩</span>
+          <h2>Serviços</h2>
+          <p>
+            O módulo de serviços será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-requests" class="page">
+        <div class="module-placeholder">
+          <span>📋</span>
+          <h2>Solicitações</h2>
+          <p>
+            O módulo de solicitações será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-tickets" class="page">
+        <div class="module-placeholder">
+          <span>🎧</span>
+          <h2>Atendimento</h2>
+          <p>
+            O módulo de atendimento será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-specialists" class="page">
+        <div class="module-placeholder">
+          <span>👨‍🔧</span>
+          <h2>Especialistas</h2>
+          <p>
+            O gerenciamento de especialistas será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-updates" class="page">
+        <div class="module-placeholder">
+          <span>🔄</span>
+          <h2>Atualizações</h2>
+          <p>
+            O gerenciamento de versões será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-plans" class="page">
+        <div class="module-placeholder">
+          <span>💳</span>
+          <h2>Planos</h2>
+          <p>
+            O gerenciamento de planos será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-security" class="page">
+        <div class="module-placeholder">
+          <span>🛡️</span>
+          <h2>Segurança</h2>
+          <p>
+            Eventos e controles de segurança serão carregados nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-protection" class="page">
+        <div class="module-placeholder">
+          <span>🚨</span>
+          <h2>Limpeza e Proteção</h2>
+          <p>
+            O módulo de Spam, golpes, bloqueios e remoções será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-reports" class="page">
+        <div class="module-placeholder">
+          <span>📊</span>
+          <h2>Relatórios</h2>
+          <p>
+            Relatórios administrativos serão carregados nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-logs" class="page">
+        <div class="module-placeholder">
+          <span>📝</span>
+          <h2>Logs</h2>
+          <p>
+            Auditoria será carregada nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-settings" class="page">
+        <div class="module-placeholder">
+          <span>⚙️</span>
+          <h2>Configurações</h2>
+          <p>
+            Configurações serão carregadas nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-admins" class="page">
+        <div class="module-placeholder">
+          <span>👨‍💼</span>
+          <h2>Administradores</h2>
+          <p>
+            Administração de contas e permissões será carregada nesta área.
+          </p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="/admin/app.js"></script>
+
+</body>
+</html>

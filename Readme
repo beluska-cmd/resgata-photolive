@@ -1,0 +1,172 @@
+Vamos fazer exatamente nessa ordem: **terminar o Admin completo primeiro**, incorporar agora as funcionalidades novas que já decidimos, e **congelar expansão de escopo**. Depois passamos para Site e, por último, Android.
+
+A ordem que eu sugiro agora é:
+
+### 🖥️ Fase 1 — ADMIN COMPLETO
+
+**1. Inventário real do Admin**
+
+* todas as páginas
+* todas as rotas
+* APIs usadas
+* APIs faltantes
+* tabelas do banco
+* botões sem ação
+* telas incompletas
+* links quebrados
+
+**2. Finalizar módulos existentes**
+
+* Dashboard
+* Usuários
+* Dispositivos
+* Serviços
+* Solicitações
+* Atendimento/Tickets
+* Especialistas
+* Atualizações
+* Planos
+* Segurança
+* Proteção
+* Relatórios
+* Logs
+* Configurações
+* Administradores
+
+**3. Fechar Proteção**
+
+* regras
+* categorias
+* denúncias
+* remoções
+* bloqueios
+* radar
+* proteção contra apostas
+* reincidência
+* dispositivos protegidos
+* configurações
+* SOS
+
+**4. Colocar as funcionalidades novas no Admin**
+Sem criar um monte de módulos novos. Elas entram nas estruturas existentes:
+
+* 📸 **Captura Inteligente / Resgata+ Entende**
+
+  * capturas
+  * OCR
+  * classificação
+  * confiança da IA
+  * confirmação do usuário
+  * correções
+  * duplicidades
+  * origem do registro
+* 🧾 Contas
+* 💳 Dívidas
+* 💰 Empréstimos
+* 🎰 Registros de apostas
+* 💵 Dinheiro protegido
+* 📅 Datas/vencimentos
+* 🔎 pesquisa dos registros
+* 🗂️ histórico das capturas
+* 🧹 solicitações para parar de receber
+* 🚨 emergência/SOS
+* 🧠 IA e suas configurações
+* 📊 relatórios operacionais
+
+**5. Garantir que cada tela seja realmente funcional**
+
+Não vamos considerar uma página pronta só porque ela aparece.
+
+Cada módulo precisa chegar a:
+
+> **Tela → navegação → API → banco → validação → loading → vazio → erro → ação → histórico/log quando necessário**
+
+---
+
+### 🔐 Fase 2 — LOGIN E SEGURANÇA DO ADMIN
+
+Só depois que todas as telas estiverem funcionando:
+
+* login real
+* sessão
+* expiração
+* logout
+* permissões
+* administradores
+* proteção das rotas
+* auditoria
+* recuperação/configuração de acesso
+* testes de segurança
+
+---
+
+### 🌐 Fase 3 — SITE
+
+Depois do Admin fechado:
+
+* página inicial
+* explicação do Resgata+
+* verificação
+* orientação
+* proteção
+* serviços
+* especialista
+* suporte
+* links oficiais
+* downloads
+* atualizações
+* área do cliente
+* integração com API
+
+A ideia é o site carregar a parte mais pesada de **informação, orientação e serviços**, enquanto o Android continua enxuto.
+
+---
+
+### 📱 Fase 4 — ANDROID
+
+Por último:
+
+* conectar API
+* Captura Inteligente
+* registros financeiros
+* proteção
+* apostas
+* dinheiro protegido
+* SOS
+* histórico
+* backup
+* permissões
+* notificações
+* sincronização
+* testes em celular/tablet
+* APK final
+
+E o Android fica com aquilo que realmente precisa estar **no aparelho**.
+
+---
+
+## E uma regra importante daqui para frente
+
+**Não vamos inventar mais 20 módulos.**
+
+O Resgata+ já está grande o suficiente. Agora é:
+
+> **terminar → integrar → testar → corrigir → fechar.**
+
+A nova Captura Inteligente, por exemplo, não precisa virar um “módulo gigante” separado. Ela pode alimentar **Capturas + Financeiro + Apostas + Agenda + Histórico + IA**.
+
+### Vamos começar pelo Admin real
+
+Como você quer terminar o Admin antes do login, o próximo passo é fazer um **inventário do código que está realmente no Codespace**, em vez de confiar apenas no resumo.
+
+No Codespace, rode:
+
+```bash
+cd /workspaces/Resgata-
+
+find platform/admin -maxdepth 3 -type f | sort
+```
+
+**Me mande o resultado.**
+
+A partir dele eu vou montar o mapa **arquivo por arquivo** e começamos a fechar o Admin de verdade, sem mexer no que já está funcionando e sem apagar os backups.

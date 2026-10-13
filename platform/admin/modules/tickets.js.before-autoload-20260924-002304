@@ -1,0 +1,344 @@
+window.ResgataTickets = {
+
+async load(){
+
+const page=document.getElementById("page-tickets");
+if(!page)return;
+
+
+page.innerHTML=`
+
+<div class="module-header">
+
+<h2>🎧 Atendimento</h2>
+
+<button onclick="ResgataTickets.load()">
+↻ Atualizar
+</button>
+
+</div>
+
+
+<div class="admin-card">
+
+<h3>Resumo</h3>
+
+<div id="tickets-summary">
+Carregando...
+</div>
+
+</div>
+
+
+<div class="admin-card">
+
+<h3>Filtros</h3>
+
+
+<input 
+id="ticket-search"
+placeholder="Buscar usuário, assunto ou mensagem"
+>
+
+
+<select id="ticket-status">
+
+<option value="">
+Todos status
+</option>
+
+<option value="open">
+Aberto
+</option>
+
+<option value="in_progress">
+Em atendimento
+</option>
+
+<option value="waiting_user">
+Aguardando usuário
+</option>
+
+<option value="resolved">
+Resolvido
+</option>
+
+<option value="closed">
+Fechado
+</option>
+
+</select>
+
+
+<button onclick="ResgataTickets.list()">
+Pesquisar
+</button>
+
+
+</div>
+
+
+<div class="admin-card">
+
+<h3>Tickets</h3>
+
+<div id="tickets-list">
+Carregando...
+</div>
+
+
+</div>
+
+`;
+
+
+await this.summary();
+await this.list();
+
+
+},
+
+
+
+async summary(){
+
+try{
+
+const r=await fetch(
+"/api/admin/tickets/summary",
+{
+headers:{
+Authorization:
+"Bearer "+
+(localStorage.getItem("resgata_admin_token")||"")
+}
+}
+);
+
+
+const data=await r.json();
+
+
+const s=data.summary||{};
+
+
+document.getElementById(
+"tickets-summary"
+).innerHTML=`
+
+<p>
+Total:
+<b>${s.total||0}</b>
+</p>
+
+<p>
+Status:
+${JSON.stringify(s.byStatus||[])}
+</p>
+
+<p>
+Prioridades:
+${JSON.stringify(s.byPriority||[])}
+</p>
+
+`;
+
+}catch(e){
+
+console.error(e);
+
+}
+
+},
+
+
+
+async list(){
+
+const search=
+document.getElementById("ticket-search")?.value||"";
+
+
+const status=
+document.getElementById("ticket-status")?.value||"";
+
+
+const response=
+await fetch(
+"/api/admin/tickets?search="+
+encodeURIComponent(search)+
+"&status="+
+encodeURIComponent(status),
+{
+headers:{
+Authorization:
+"Bearer "+
+(localStorage.getItem("resgata_admin_token")||"")
+}
+}
+);
+
+
+const data=
+await response.json();
+
+
+const tickets=data.tickets||[];
+
+
+const box=
+document.getElementById("tickets-list");
+
+
+if(!tickets.length){
+
+box.innerHTML=
+"<p>Nenhum atendimento encontrado.</p>";
+
+return;
+
+}
+
+
+
+box.innerHTML=
+tickets.map(t=>`
+
+<div class="admin-card">
+
+
+<h3>
+#${t.id}
+${t.subject||"Sem assunto"}
+</h3>
+
+
+<p>
+Usuário:
+<b>
+${t.user_name||"Não identificado"}
+</b>
+</p>
+
+
+<p>
+Email:
+${t.user_email||"-"}
+</p>
+
+
+<p>
+Status:
+<strong>
+${t.status}
+</strong>
+</p>
+
+
+<p>
+Prioridade:
+${t.priority||"normal"}
+</p>
+
+
+<p>
+${t.created_at||""}
+</p>
+
+
+<button onclick="
+ResgataTickets.detail(${t.id})
+">
+Ver detalhes
+</button>
+
+
+</div>
+
+
+`).join("");
+
+},
+
+
+
+
+async detail(id){
+
+const r=
+await fetch(
+"/api/admin/tickets/"+id,
+{
+headers:{
+Authorization:
+"Bearer "+
+(localStorage.getItem("resgata_admin_token")||"")
+}
+}
+);
+
+
+const data=
+await r.json();
+
+
+const t=data.ticket;
+
+
+alert(
+`
+Ticket #${t.id}
+
+Assunto:
+${t.subject}
+
+Mensagem:
+${t.message}
+
+Usuário:
+${t.user_name||"-"}
+
+Status:
+${t.status}
+`
+);
+
+
+},
+
+
+
+async status(id,status){
+
+await fetch(
+"/api/admin/tickets/"+id+"/status",
+{
+method:"PATCH",
+headers:{
+"Content-Type":"application/json",
+Authorization:
+"Bearer "+
+(localStorage.getItem("resgata_admin_token")||"")
+},
+
+body:
+JSON.stringify({
+status
+})
+
+}
+);
+
+
+this.load();
+
+}
+
+
+};
+
+
+
+window.loadTickets=
+()=>ResgataTickets.load();
+

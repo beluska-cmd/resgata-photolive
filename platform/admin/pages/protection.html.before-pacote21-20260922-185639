@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Resgata+ — Proteção</title>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #18212f;
+      --muted: #697586;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --green: #15803d;
+      --yellow: #a16207;
+      --orange: #c2410c;
+      --red: #b91c1c;
+      --shadow: 0 8px 24px rgba(15, 23, 42, .06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 22px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 24px auto;
+      padding: 0 18px 50px;
+    }
+
+    .notice {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 22px;
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .metric {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    button.secondary {
+      background: #eef2f7;
+      color: var(--text);
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .item-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .item-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .green {
+      background: #dcfce7;
+      color: var(--green);
+    }
+
+    .yellow {
+      background: #fef9c3;
+      color: var(--yellow);
+    }
+
+    .orange {
+      background: #ffedd5;
+      color: var(--orange);
+    }
+
+    .red {
+      background: #fee2e2;
+      color: var(--red);
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .category {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+    }
+
+    .category-name {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .category-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--red);
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    @media (max-width: 1000px) {
+      .metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .category-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>🛡️ Proteção</h1>
+    <p class="subtitle">
+      Spam, golpes, phishing, mensagens suspeitas e solicitações de remoção.
+    </p>
+  </div>
+</header>
+
+<main>
+
+  <div class="notice">
+    <strong>Princípio do Resgata+</strong>
+    O sistema analisa e apresenta informações para apoiar a decisão do usuário.
+    Ações de bloqueio, exclusão ou remoção dependem das permissões e da confirmação
+    necessária.
+  </div>
+
+  <section class="metrics">
+
+    <div class="metric">
+      <div class="metric-label">Categorias</div>
+      <div class="metric-value" id="metricCategories">—</div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Regras ativas</div>
+      <div class="metric-value" id="metricRules">—</div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Denúncias</div>
+      <div class="metric-value" id="metricReports">—</div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Remoções pendentes</div>
+      <div class="metric-value" id="metricRemoval">—</div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Eventos de segurança</div>
+      <div class="metric-value" id="metricSecurity">—</div>
+    </div>
+
+  </section>
+
+  <section class="grid">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Categorias de proteção</h2>
+        <button class="secondary" onclick="loadProtection()">
+          Atualizar
+        </button>
+      </div>
+
+      <div class="card-body">
+        <div id="categories" class="category-grid">
+          <div class="empty">Carregando...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Regras de análise</h2>
+      </div>
+
+      <div class="card-body">
+        <div id="rules" class="list">
+          <div class="empty">Carregando...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Denúncias recentes</h2>
+      </div>
+
+      <div class="card-body">
+        <div id="reports" class="list">
+          <div class="empty">Carregando...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Solicitações de remoção</h2>
+      </div>
+
+      <div class="card-body">
+        <div id="removals" class="list">
+          <div class="empty">Carregando...</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <div id="errorBox" class="error"></div>
+
+</main>
+
+<script>
+  const API = window.location.origin;
+
+  function getToken() {
+    return (
+      localStorage.getItem("adminToken") ||
+      sessionStorage.getItem("adminToken") ||
+      localStorage.getItem("resgata_admin_token") ||
+      sessionStorage.getItem("resgata_admin_token") ||
+      ""
+    );
+  }
+
+  async function api(path) {
+    const token = getToken();
+
+    const response = await fetch(API + path, {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const data = await response.json().catch(() => ({
+      ok: false,
+      error: "INVALID_JSON"
+    }));
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail ||
+        data.error ||
+        `HTTP ${response.status}`
+      );
+    }
+
+    return data;
+  }
+
+  function showError(error) {
+    const box = document.getElementById("errorBox");
+    box.textContent = error.message || String(error);
+    box.style.display = "block";
+  }
+
+  function riskClass(value) {
+    const v = String(value || "").toLowerCase();
+
+    if (
+      v.includes("alto") ||
+      v.includes("high") ||
+      v.includes("critical")
+    ) return "red";
+
+    if (
+      v.includes("suspeit") ||
+      v.includes("orange") ||
+      v.includes("fraud")
+    ) return "orange";
+
+    if (
+      v.includes("aten") ||
+      v.includes("attention") ||
+      v.includes("medium")
+    ) return "yellow";
+
+    return "green";
+  }
+
+  async function loadProtection() {
+    const errorBox = document.getElementById("errorBox");
+    errorBox.style.display = "none";
+
+    try {
+      const [
+        categories,
+        rules,
+        reports,
+        removals,
+        security
+      ] = await Promise.all([
+        api("/api/admin/protection/categories"),
+        api("/api/admin/protection/rules"),
+        api("/api/admin/protection/reports"),
+        api("/api/admin/protection/removal-requests"),
+        api("/api/admin/security/events")
+      ]);
+
+      const categoryRows = categories.categories || [];
+      const ruleRows = rules.rules || [];
+      const reportRows = reports.reports || [];
+      const removalRows = removals.requests || removals.removalRequests || [];
+      const securityRows = security.events || [];
+
+      document.getElementById("metricCategories").textContent =
+        categoryRows.length;
+
+      document.getElementById("metricRules").textContent =
+        ruleRows.filter(r => Number(r.enabled) === 1 || r.enabled === true).length;
+
+      document.getElementById("metricReports").textContent =
+        reportRows.length;
+
+      document.getElementById("metricRemoval").textContent =
+        removalRows.filter(r => String(r.status).toLowerCase() === "pending").length;
+
+      document.getElementById("metricSecurity").textContent =
+        securityRows.length;
+
+      renderCategories(categoryRows);
+      renderRules(ruleRows);
+      renderReports(reportRows);
+      renderRemovals(removalRows);
+
+    } catch (error) {
+      showError(error);
+      console.error(error);
+    }
+  }
+
+  function renderCategories(rows) {
+    const el = document.getElementById("categories");
+
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty">Nenhuma categoria cadastrada.</div>';
+      return;
+    }
+
+    el.innerHTML = rows.map(row => `
+      <div class="category">
+        <div class="category-name">
+          ${escapeHtml(row.name || row.id)}
+        </div>
+
+        <div class="category-meta">
+          ${escapeHtml(row.description || "Sem descrição")}
+        </div>
+
+        <span class="badge ${riskClass(row.severity_default)}">
+          ${escapeHtml(row.severity_default || "atenção")}
+        </span>
+      </div>
+    `).join("");
+  }
+
+  function renderRules(rows) {
+    const el = document.getElementById("rules");
+
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty">Nenhuma regra cadastrada.</div>';
+      return;
+    }
+
+    el.innerHTML = rows.map(row => `
+      <div class="item">
+        <div class="item-title">
+          ${escapeHtml(row.name || row.id)}
+        </div>
+
+        <div class="item-meta">
+          Categoria: ${escapeHtml(row.category || row.category_id || "—")}
+        </div>
+
+        <div class="item-meta">
+          Padrão: ${escapeHtml(row.pattern || "—")}
+        </div>
+
+        <span class="badge ${row.enabled ? "green" : "yellow"}">
+          ${row.enabled ? "Ativa" : "Desativada"}
+        </span>
+      </div>
+    `).join("");
+  }
+
+  function renderReports(rows) {
+    const el = document.getElementById("reports");
+
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty">Nenhuma denúncia registrada.</div>';
+      return;
+    }
+
+    el.innerHTML = rows.slice(0, 20).map(row => `
+      <div class="item">
+        <div class="item-title">
+          ${escapeHtml(row.category || "Proteção")}
+        </div>
+
+        <div class="item-meta">
+          Canal: ${escapeHtml(row.channel || "—")}
+        </div>
+
+        <div class="item-meta">
+          ${escapeHtml(row.reason || "Sem descrição")}
+        </div>
+
+        <span class="badge ${riskClass(row.risk_level)}">
+          ${escapeHtml(row.risk_level || "atenção")}
+        </span>
+      </div>
+    `).join("");
+  }
+
+  function renderRemovals(rows) {
+    const el = document.getElementById("removals");
+
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty">Nenhuma solicitação registrada.</div>';
+      return;
+    }
+
+    el.innerHTML = rows.slice(0, 20).map(row => `
+      <div class="item">
+        <div class="item-title">
+          ${escapeHtml(row.target || "Destino não informado")}
+        </div>
+
+        <div class="item-meta">
+          Canal: ${escapeHtml(row.channel || "—")}
+        </div>
+
+        <div class="item-meta">
+          Tipo: ${escapeHtml(row.request_type || "—")}
+        </div>
+
+        <span class="badge ${riskClass(row.status)}">
+          ${escapeHtml(row.status || "pending")}
+        </span>
+      </div>
+    `).join("");
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  loadProtection();
+</script>
+
+</body>
+</html>

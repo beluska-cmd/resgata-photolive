@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Admin — Resgata+</title>
+  <link rel="stylesheet" href="/admin/style.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #eef3f9;
+    }
+
+    .login-box {
+      width: min(430px, calc(100% - 30px));
+      background: white;
+      border: 1px solid #e5e9f0;
+      border-radius: 18px;
+      padding: 34px;
+      box-shadow: 0 20px 50px rgba(18,38,63,.12);
+    }
+
+    .login-brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .login-brand .brand-icon {
+      margin: 0 auto 12px;
+    }
+
+    .login-brand h1 {
+      margin: 0;
+    }
+
+    .login-brand p {
+      color: #687386;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #dce2eb;
+      border-radius: 9px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #1769e0;
+    }
+
+    .login-button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      border: 0;
+      border-radius: 9px;
+      background: #1769e0;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .error {
+      margin-top: 15px;
+      padding: 11px;
+      background: #ffebe8;
+      color: #c0392b;
+      border-radius: 8px;
+      display: none;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-box">
+  <div class="login-brand">
+    <div class="brand-icon">+</div>
+    <h1>RESGATA+</h1>
+    <p>Central Administrativa</p>
+  </div>
+
+  <form id="loginForm">
+    <label for="email">E-mail</label>
+    <input id="email" type="email" autocomplete="username" required>
+
+    <label for="password">Senha</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+
+    <button class="login-button" type="submit">Entrar no Admin</button>
+
+    <div id="error" class="error"></div>
+  </form>
+</div>
+
+<script>
+const form = document.getElementById("loginForm");
+const error = document.getElementById("error");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  error.style.display = "none";
+
+  try {
+    const response = await fetch("/api/admin/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "Não foi possível entrar.");
+    }
+
+    localStorage.setItem("resgata_admin_token", data.token);
+
+    window.location.href = "/admin/";
+  } catch (err) {
+    error.textContent = err.message;
+    error.style.display = "block";
+  }
+});
+</script>
+
+</body>
+</html>

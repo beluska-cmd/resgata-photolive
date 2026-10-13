@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atendimento — Resgata+</title>
+  <link rel="stylesheet" href="/admin/style.css">
+</head>
+
+<body class="resgata-admin-page">
+
+  <main class="atendimento-central">
+
+    <header class="atendimento-central-header">
+      <div>
+        <span class="atendimento-central-kicker">RESGATA+</span>
+        <h1>🎧 Atendimento</h1>
+        <p>
+          Central de atendimento, suporte e acompanhamento dos clientes.
+        </p>
+      </div>
+
+      <a href="/admin/" class="btn btn-secondary">
+        ← Voltar ao Admin
+      </a>
+    </header>
+
+    <section class="atendimento-central-grid">
+
+      <a
+        class="atendimento-central-card"
+        href="/admin/atendimento/solicitacoes"
+      >
+        <span class="atendimento-central-icon">📨</span>
+        <strong>Solicitações</strong>
+        <span>
+          Consulte e acompanhe os pedidos de atendimento recebidos.
+        </span>
+        <b>Acessar →</b>
+      </a>
+
+      <a
+        class="atendimento-central-card"
+        href="/admin/atendimento/chat"
+      >
+        <span class="atendimento-central-icon">💬</span>
+        <strong>Chat</strong>
+        <span>
+          Converse diretamente com clientes em atendimentos ativos.
+        </span>
+        <b>Acessar →</b>
+      </a>
+
+      <a
+        class="atendimento-central-card"
+        href="/admin/atendimento/tickets"
+      >
+        <span class="atendimento-central-icon">🎫</span>
+        <strong>Tickets</strong>
+        <span>
+          Gerencie tickets, status, prioridades e atendimentos.
+        </span>
+        <b>Acessar →</b>
+      </a>
+
+      <a
+        class="atendimento-central-card"
+        href="/admin/atendimento/especialistas"
+      >
+        <span class="atendimento-central-icon">👥</span>
+        <strong>Especialistas</strong>
+        <span>
+          Gerencie a equipe responsável pelos atendimentos.
+        </span>
+        <b>Acessar →</b>
+      </a>
+
+      <a
+        class="atendimento-central-card"
+        href="/admin/atendimento/fila"
+      >
+        <span class="atendimento-central-icon">📋</span>
+        <strong>Fila de atendimento</strong>
+        <span>
+          Veja quem está aguardando, em atendimento ou pendente.
+        </span>
+        <b>Acessar →</b>
+      </a>
+
+      <a
+        class="atendimento-central-card"
+        href="/admin/atendimento/historico"
+      >
+        <span class="atendimento-central-icon">🕘</span>
+        <strong>Histórico</strong>
+        <span>
+          Consulte atendimentos, mensagens e ações realizadas.
+        </span>
+        <b>Acessar →</b>
+      </a>
+
+      <a
+        class="atendimento-central-card"
+        href="/admin/atendimento/anexos"
+      >
+        <span class="atendimento-central-icon">📎</span>
+        <strong>Anexos</strong>
+        <span>
+          Área preparada para arquivos relacionados aos atendimentos.
+        </span>
+        <b>Acessar →</b>
+      </a>
+
+      <a
+        class="atendimento-central-card"
+        href="/admin/atendimento/relatorios"
+      >
+        <span class="atendimento-central-icon">📊</span>
+        <strong>Relatórios</strong>
+        <span>
+          Indicadores e acompanhamento dos atendimentos.
+        </span>
+        <b>Acessar →</b>
+      </a>
+
+    </section>
+
+  </main>
+
+</body>
+</html>

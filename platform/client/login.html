@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar | Resgata+</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">RESGATA+</a>
+</header>
+
+<main class="auth-container">
+  <section class="auth-card">
+    <span class="tag">CENTRAL RESGATA+</span>
+    <h1>Entrar</h1>
+    <p>Acesse sua conta e seus serviços.</p>
+
+    <form id="loginForm">
+      <label>E-mail</label>
+      <input id="email" type="email" required placeholder="seu@email.com">
+
+      <label>Senha</label>
+      <input id="password" type="password" required placeholder="Sua senha">
+
+      <button type="submit">Entrar</button>
+    </form>
+
+    <div id="message" class="message"></div>
+
+    <p class="auth-link">
+      Ainda não possui conta?
+      <a href="/cadastro.html">Criar conta</a>
+    </p>
+  </section>
+</main>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const response = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value
+    })
+  });
+
+  const data = await response.json();
+
+  document.getElementById("message").textContent =
+    data.message || data.error || "Não foi possível entrar.";
+
+  if (data.ok) {
+    localStorage.setItem("resgata_token", data.token);
+    window.location.href = "/dashboard.html";
+  }
+});
+</script>
+</body>
+</html>

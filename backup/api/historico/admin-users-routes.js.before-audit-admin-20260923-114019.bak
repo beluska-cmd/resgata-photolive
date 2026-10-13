@@ -1,0 +1,524 @@
+export function registerAdminUsersRoutes(app, requireAdmin, db) {
+
+  /*
+   * LISTA DE USUÁRIOS
+   */
+  app.get(
+    "/api/admin/users",
+    requireAdmin,
+    (req, res) => {
+
+      try {
+
+        const search =
+          String(req.query.search || "").trim();
+
+        const status =
+          String(req.query.status || "").trim();
+
+        const plan =
+          String(req.query.plan || "").trim();
+
+        const limit = Math.min(
+          Math.max(
+            Number(req.query.limit || 100),
+            1
+          ),
+          500
+        );
+
+        const conditions = [];
+        const params = [];
+
+        if (search) {
+
+          conditions.push(`
+            (
+              LOWER(name) LIKE LOWER(?)
+              OR LOWER(email) LIKE LOWER(?)
+              OR id LIKE ?
+            )
+          `);
+
+          const value = `%${search}%`;
+
+          params.push(
+            value,
+            value,
+            value
+          );
+        }
+
+        if (status) {
+
+          conditions.push(
+            "status = ?"
+          );
+
+          params.push(status);
+        }
+
+        if (plan) {
+
+          conditions.push(
+            "plan = ?"
+          );
+
+          params.push(plan);
+        }
+
+        const where =
+          conditions.length
+            ? `WHERE ${conditions.join(" AND ")}`
+            : "";
+
+        const users = db.prepare(`
+          SELECT
+            id,
+            name,
+            email,
+            plan,
+            status,
+            created_at
+          FROM users
+          ${where}
+          ORDER BY created_at DESC
+          LIMIT ?
+        `).all(
+          ...params,
+          limit
+        );
+
+        const total =
+          db.prepare(`
+            SELECT COUNT(*) AS total
+            FROM users
+            ${where}
+          `).get(...params).total;
+
+        return res.json({
+          ok: true,
+          users,
+          total
+        });
+
+      } catch (error) {
+
+        console.error(
+          "ADMIN USERS LIST ERROR:",
+          error
+        );
+
+        return res.status(500).json({
+          ok: false,
+          error: "ADMIN_USERS_LIST_ERROR"
+        });
+      }
+    }
+  );
+
+
+  /*
+   * PERFIL COMPLETO DO USUÁRIO
+   */
+  app.get(
+    "/api/admin/users/:id",
+    requireAdmin,
+    (req, res) => {
+
+      try {
+
+        const user =
+          db.prepare(`
+            SELECT
+              id,
+              name,
+              email,
+              plan,
+              status,
+              created_at
+            FROM users
+            WHERE id = ?
+          `).get(req.params.id);
+
+        if (!user) {
+
+          return res.status(404).json({
+            ok: false,
+            error: "USER_NOT_FOUND"
+          });
+        }
+
+        const devices =
+          db.prepare(`
+            SELECT
+              id,
+              name,
+              model,
+              android_version,
+              app_version,
+              last_seen,
+              status,
+              created_at
+            FROM devices
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+          `).all(user.id);
+
+        const requests =
+          db.prepare(`
+            SELECT *
+            FROM service_requests
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 100
+          `).all(user.id);
+
+        const tickets =
+          db.prepare(`
+            SELECT *
+            FROM tickets
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 100
+          `).all(user.id);
+
+        const notifications =
+          db.prepare(`
+            SELECT *
+            FROM notifications
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 100
+          `).all(user.id);
+
+        const diagnostics =
+          db.prepare(`
+            SELECT *
+            FROM diagnostics
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 100
+          `).all(user.id);
+
+        const history =
+          db.prepare(`
+            SELECT
+              id,
+              action,
+              entity,
+              entity_id,
+              details,
+              created_at
+            FROM audit_logs
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 100
+          `).all(user.id);
+
+        return res.json({
+          ok: true,
+          user,
+          devices,
+          requests,
+          tickets,
+          notifications,
+          diagnostics,
+          history
+        });
+
+      } catch (error) {
+
+        console.error(
+          "ADMIN USER PROFILE ERROR:",
+          error
+        );
+
+        return res.status(500).json({
+          ok: false,
+          error: "ADMIN_USER_PROFILE_ERROR"
+        });
+      }
+    }
+  );
+
+
+  /*
+   * ALTERAR STATUS
+   */
+  app.patch(
+    "/api/admin/users/:id/status",
+    requireAdmin,
+    (req, res) => {
+
+      try {
+
+        const user =
+          db.prepare(`
+            SELECT id, status
+            FROM users
+            WHERE id = ?
+          `).get(req.params.id);
+
+        if (!user) {
+
+          return res.status(404).json({
+            ok: false,
+            error: "USER_NOT_FOUND"
+          });
+        }
+
+        const status =
+          String(
+            req.body?.status || ""
+          ).trim();
+
+        const allowed = [
+          "active",
+          "inactive",
+          "blocked",
+          "suspended"
+        ];
+
+        if (!allowed.includes(status)) {
+
+          return res.status(400).json({
+            ok: false,
+            error: "INVALID_USER_STATUS"
+          });
+        }
+
+        db.prepare(`
+          UPDATE users
+          SET status = ?
+          WHERE id = ?
+        `).run(
+          status,
+          user.id
+        );
+
+        db.prepare(`
+          INSERT INTO audit_logs (
+            action,
+            entity,
+            entity_id,
+            details,
+            created_at
+          )
+          VALUES (?, ?, ?, ?, ?)
+        `).run(
+          "admin.user.status.update",
+          "user",
+          user.id,
+          JSON.stringify({
+            oldStatus: user.status,
+            newStatus: status
+          }),
+          Date.now().toString()
+        );
+
+        return res.json({
+          ok: true,
+          userId: user.id,
+          status
+        });
+
+      } catch (error) {
+
+        console.error(
+          "ADMIN USER STATUS ERROR:",
+          error
+        );
+
+        return res.status(500).json({
+          ok: false,
+          error: "ADMIN_USER_STATUS_ERROR"
+        });
+      }
+    }
+  );
+
+
+  /*
+   * ALTERAR PLANO
+   */
+  app.patch(
+    "/api/admin/users/:id/plan",
+    requireAdmin,
+    (req, res) => {
+
+      try {
+
+        const user =
+          db.prepare(`
+            SELECT id, plan
+            FROM users
+            WHERE id = ?
+          `).get(req.params.id);
+
+        if (!user) {
+
+          return res.status(404).json({
+            ok: false,
+            error: "USER_NOT_FOUND"
+          });
+        }
+
+        const plan =
+          String(
+            req.body?.plan || ""
+          ).trim();
+
+        if (!plan) {
+
+          return res.status(400).json({
+            ok: false,
+            error: "INVALID_USER_PLAN"
+          });
+        }
+
+        db.prepare(`
+          UPDATE users
+          SET plan = ?
+          WHERE id = ?
+        `).run(
+          plan,
+          user.id
+        );
+
+        db.prepare(`
+          INSERT INTO audit_logs (
+            action,
+            entity,
+            entity_id,
+            details,
+            created_at
+          )
+          VALUES (?, ?, ?, ?, ?)
+        `).run(
+          "admin.user.plan.update",
+          "user",
+          user.id,
+          JSON.stringify({
+            oldPlan: user.plan,
+            newPlan: plan
+          }),
+          Date.now().toString()
+        );
+
+        return res.json({
+          ok: true,
+          userId: user.id,
+          plan
+        });
+
+      } catch (error) {
+
+        console.error(
+          "ADMIN USER PLAN ERROR:",
+          error
+        );
+
+        return res.status(500).json({
+          ok: false,
+          error: "ADMIN_USER_PLAN_ERROR"
+        });
+      }
+    }
+  );
+
+
+  /*
+   * RESUMO DO USUÁRIO
+   */
+  app.get(
+    "/api/admin/users/:id/summary",
+    requireAdmin,
+    (req, res) => {
+
+      try {
+
+        const user =
+          db.prepare(`
+            SELECT
+              id,
+              name,
+              email,
+              plan,
+              status,
+              created_at
+            FROM users
+            WHERE id = ?
+          `).get(req.params.id);
+
+        if (!user) {
+
+          return res.status(404).json({
+            ok: false,
+            error: "USER_NOT_FOUND"
+          });
+        }
+
+        const devices =
+          db.prepare(`
+            SELECT COUNT(*) AS total
+            FROM devices
+            WHERE user_id = ?
+          `).get(user.id).total;
+
+        const requests =
+          db.prepare(`
+            SELECT COUNT(*) AS total
+            FROM service_requests
+            WHERE user_id = ?
+          `).get(user.id).total;
+
+        const tickets =
+          db.prepare(`
+            SELECT COUNT(*) AS total
+            FROM tickets
+            WHERE user_id = ?
+          `).get(user.id).total;
+
+        const diagnostics =
+          db.prepare(`
+            SELECT COUNT(*) AS total
+            FROM diagnostics
+            WHERE user_id = ?
+          `).get(user.id).total;
+
+        const notifications =
+          db.prepare(`
+            SELECT COUNT(*) AS total
+            FROM notifications
+            WHERE user_id = ?
+          `).get(user.id).total;
+
+        return res.json({
+          ok: true,
+          summary: {
+            user,
+            devices,
+            requests,
+            tickets,
+            diagnostics,
+            notifications
+          }
+        });
+
+      } catch (error) {
+
+        console.error(
+          "ADMIN USER SUMMARY ERROR:",
+          error
+        );
+
+        return res.status(500).json({
+          ok: false,
+          error: "ADMIN_USER_SUMMARY_ERROR"
+        });
+      }
+    }
+  );
+
+}

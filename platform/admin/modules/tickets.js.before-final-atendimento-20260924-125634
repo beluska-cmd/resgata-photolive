@@ -1,0 +1,907 @@
+window.ResgataTickets = {
+
+async api(url, options = {}) {
+
+return fetch(url, {
+  ...options,
+  headers: {
+    "Content-Type": "application/json",
+    Authorization:
+      "Bearer " +
+      (localStorage.getItem("resgata_admin_token") || "")
+  }
+});
+
+},
+
+
+async load() {
+
+const page =
+document.getElementById("page-tickets");
+
+if (!page) return;
+
+
+page.innerHTML = `
+
+<div class="module-header">
+
+<div>
+
+<span class="module-eyebrow">
+RESGATA+ / ATENDIMENTO
+</span>
+
+<h2>🎧 Atendimento</h2>
+
+<p>
+Central de atendimento e suporte aos usuários.
+</p>
+
+</div>
+
+<button
+type="button"
+onclick="ResgataTickets.load()"
+>
+↻ Atualizar
+</button>
+
+</div>
+
+
+<div class="admin-card">
+
+<h3>📊 Resumo dos atendimentos</h3>
+
+<div id="tickets-summary">
+Carregando indicadores...
+</div>
+
+</div>
+
+
+<div class="admin-card">
+
+<h3>🔎 Pesquisar atendimentos</h3>
+
+<div>
+
+<input
+id="ticket-search"
+type="search"
+placeholder="Usuário, e-mail, assunto ou mensagem"
+>
+
+<select id="ticket-status">
+
+<option value="">
+Todos os status
+</option>
+
+<option value="open">
+Aberto
+</option>
+
+<option value="in_progress">
+Em atendimento
+</option>
+
+<option value="waiting_user">
+Aguardando usuário
+</option>
+
+<option value="waiting_specialist">
+Aguardando especialista
+</option>
+
+<option value="resolved">
+Resolvido
+</option>
+
+<option value="closed">
+Fechado
+</option>
+
+<option value="cancelled">
+Cancelado
+</option>
+
+</select>
+
+
+<select id="ticket-priority">
+
+<option value="">
+Todas as prioridades
+</option>
+
+<option value="urgent">
+Urgente
+</option>
+
+<option value="high">
+Alta
+</option>
+
+<option value="normal">
+Normal
+</option>
+
+<option value="low">
+Baixa
+</option>
+
+</select>
+
+
+<button
+type="button"
+onclick="ResgataTickets.list()"
+>
+Pesquisar
+</button>
+
+</div>
+
+</div>
+
+
+<div class="admin-card">
+
+<h3>🎧 Atendimentos</h3>
+
+<div id="tickets-list">
+Carregando atendimentos...
+</div>
+
+</div>
+
+
+<div id="ticket-detail"></div>
+
+`;
+
+
+await this.summary();
+await this.list();
+
+},
+
+
+
+async summary() {
+
+try {
+
+const response =
+await this.api(
+"/api/admin/tickets/summary"
+);
+
+const data =
+await response.json();
+
+if (!data.ok) {
+throw new Error(
+data.error || "Erro no resumo"
+);
+}
+
+const summary =
+data.summary || {};
+
+const byStatus =
+summary.byStatus || [];
+
+const byPriority =
+summary.byPriority || [];
+
+
+document.getElementById(
+"tickets-summary"
+).innerHTML = `
+
+<div class="dashboard-grid">
+
+<div class="admin-card">
+
+<div>🎧 Total</div>
+
+<strong>
+${Number(summary.total || 0)}
+</strong>
+
+</div>
+
+
+<div class="admin-card">
+
+<div>📋 Status</div>
+
+<strong>
+${byStatus.length}
+</strong>
+
+</div>
+
+
+<div class="admin-card">
+
+<div>⚠️ Prioridades</div>
+
+<strong>
+${byPriority.length}
+</strong>
+
+</div>
+
+</div>
+
+`;
+
+} catch (error) {
+
+console.error(
+"ERRO RESUMO TICKETS:",
+error
+);
+
+const box =
+document.getElementById(
+"tickets-summary"
+);
+
+if (box) {
+
+box.innerHTML =
+"<p>Não foi possível carregar o resumo.</p>";
+
+}
+
+}
+
+},
+
+
+
+async list() {
+
+const search =
+document.getElementById(
+"ticket-search"
+)?.value || "";
+
+
+const status =
+document.getElementById(
+"ticket-status"
+)?.value || "";
+
+
+const priority =
+document.getElementById(
+"ticket-priority"
+)?.value || "";
+
+
+const params =
+new URLSearchParams();
+
+if (search)
+params.set("search", search);
+
+if (status)
+params.set("status", status);
+
+if (priority)
+params.set("priority", priority);
+
+
+try {
+
+const response =
+await this.api(
+"/api/admin/tickets?" +
+params.toString()
+);
+
+const data =
+await response.json();
+
+if (!data.ok) {
+throw new Error(
+data.error || "Erro ao carregar tickets"
+);
+}
+
+
+const tickets =
+data.tickets || [];
+
+
+const box =
+document.getElementById(
+"tickets-list"
+);
+
+
+if (!box) return;
+
+
+if (!tickets.length) {
+
+box.innerHTML = `
+
+<div class="empty-state">
+
+<strong>
+Nenhum atendimento encontrado.
+</strong>
+
+<p>
+Não existem tickets correspondentes aos filtros atuais.
+</p>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+box.innerHTML =
+tickets.map(ticket => `
+
+<div class="admin-card">
+
+<h3>
+🎧 #${this.escape(ticket.id)}
+—
+${this.escape(
+ticket.subject || "Sem assunto"
+)}
+</h3>
+
+
+<p>
+👤
+<strong>
+${this.escape(
+ticket.user_name || "Usuário não identificado"
+)}
+</strong>
+</p>
+
+
+<p>
+✉️
+${this.escape(
+ticket.user_email || "-"
+)}
+</p>
+
+
+<p>
+Status:
+<strong>
+${this.escape(
+ticket.status || "-"
+)}
+</strong>
+</p>
+
+
+<p>
+Prioridade:
+<strong>
+${this.escape(
+ticket.priority || "normal"
+)}
+</strong>
+</p>
+
+
+<p>
+${this.formatDate(
+ticket.created_at
+)}
+</p>
+
+
+<button
+type="button"
+onclick="
+ResgataTickets.detail('${this.escapeJs(ticket.id)}')
+"
+>
+Abrir atendimento
+</button>
+
+</div>
+
+`).join("");
+
+
+} catch (error) {
+
+console.error(
+"ERRO LISTA TICKETS:",
+error
+);
+
+
+const box =
+document.getElementById(
+"tickets-list"
+);
+
+if (box) {
+
+box.innerHTML = `
+
+<div class="empty-state">
+
+<strong>
+Erro ao carregar atendimentos.
+</strong>
+
+<p>
+Verifique a conexão com a API.
+</p>
+
+</div>
+
+`;
+
+}
+
+}
+
+},
+
+
+
+async detail(id) {
+
+try {
+
+const response =
+await this.api(
+"/api/admin/tickets/" +
+encodeURIComponent(id)
+);
+
+const data =
+await response.json();
+
+
+if (!data.ok) {
+throw new Error(
+data.error || "Ticket não encontrado"
+);
+}
+
+
+const ticket =
+data.ticket;
+
+
+const assignments =
+data.assignments || [];
+
+
+const audit =
+data.audit || [];
+
+
+const box =
+document.getElementById(
+"ticket-detail"
+);
+
+
+if (!box) return;
+
+
+box.innerHTML = `
+
+<div class="admin-card">
+
+<h2>
+🎧 Atendimento #${this.escape(ticket.id)}
+</h2>
+
+
+<p>
+<strong>Usuário:</strong>
+${this.escape(
+ticket.user_name || "-"
+)}
+</p>
+
+
+<p>
+<strong>E-mail:</strong>
+${this.escape(
+ticket.user_email || "-"
+)}
+</p>
+
+
+<p>
+<strong>Assunto:</strong>
+${this.escape(
+ticket.subject || "-"
+)}
+</p>
+
+
+<hr>
+
+
+<h3>Mensagem</h3>
+
+<p>
+${this.escape(
+ticket.message || "Sem mensagem."
+)}
+</p>
+
+
+<hr>
+
+
+<h3>Alterar status</h3>
+
+
+<select id="ticket-detail-status">
+
+<option value="open"
+${ticket.status === "open" ? "selected" : ""}>
+Aberto
+</option>
+
+<option value="in_progress"
+${ticket.status === "in_progress" ? "selected" : ""}>
+Em atendimento
+</option>
+
+<option value="waiting_user"
+${ticket.status === "waiting_user" ? "selected" : ""}>
+Aguardando usuário
+</option>
+
+<option value="waiting_specialist"
+${ticket.status === "waiting_specialist" ? "selected" : ""}>
+Aguardando especialista
+</option>
+
+<option value="resolved"
+${ticket.status === "resolved" ? "selected" : ""}>
+Resolvido
+</option>
+
+<option value="closed"
+${ticket.status === "closed" ? "selected" : ""}>
+Fechado
+</option>
+
+<option value="cancelled"
+${ticket.status === "cancelled" ? "selected" : ""}>
+Cancelado
+</option>
+
+</select>
+
+
+<button
+type="button"
+onclick="
+ResgataTickets.updateStatus('${this.escapeJs(ticket.id)}')
+"
+>
+Salvar status
+</button>
+
+
+<hr>
+
+
+<h3>
+👨‍💼 Especialistas vinculados
+</h3>
+
+
+${
+assignments.length
+?
+assignments.map(item => `
+
+<div>
+
+<strong>
+${this.escape(
+item.specialist_name || "Especialista"
+)}
+</strong>
+
+<p>
+${this.escape(
+item.specialist_specialty || ""
+)}
+</p>
+
+</div>
+
+`).join("")
+:
+"<p>Nenhum especialista vinculado.</p>"
+}
+
+
+<hr>
+
+
+<h3>
+📜 Histórico
+</h3>
+
+
+${
+audit.length
+?
+audit.map(item => `
+
+<div>
+
+<strong>
+${this.escape(
+item.action || "atividade"
+)}
+</strong>
+
+<p>
+${this.escape(
+item.created_at || ""
+)}
+</p>
+
+</div>
+
+`).join("")
+:
+"<p>Nenhum histórico registrado.</p>"
+}
+
+
+</div>
+
+`;
+
+} catch (error) {
+
+console.error(
+"ERRO DETALHE TICKET:",
+error
+);
+
+}
+
+},
+
+
+
+async updateStatus(id) {
+
+const select =
+document.getElementById(
+"ticket-detail-status"
+);
+
+
+if (!select) return;
+
+
+const status =
+select.value;
+
+
+try {
+
+const response =
+await this.api(
+"/api/admin/tickets/" +
+encodeURIComponent(id) +
+"/status",
+{
+method: "PATCH",
+body: JSON.stringify({
+status
+})
+}
+);
+
+
+const data =
+await response.json();
+
+
+if (!data.ok) {
+throw new Error(
+data.error || "Erro ao alterar status"
+);
+}
+
+
+await this.load();
+
+
+} catch (error) {
+
+console.error(
+"ERRO STATUS TICKET:",
+error
+);
+
+alert(
+"Não foi possível alterar o status."
+);
+
+}
+
+},
+
+
+
+escape(value) {
+
+return String(
+value ?? ""
+)
+.replace(/&/g, "&amp;")
+.replace(/</g, "&lt;")
+.replace(/>/g, "&gt;")
+.replace(/"/g, "&quot;")
+.replace(/'/g, "&#039;");
+
+},
+
+
+
+escapeJs(value) {
+
+return String(
+value ?? ""
+)
+.replace(/\\/g, "\\\\")
+.replace(/'/g, "\\'");
+
+},
+
+
+
+formatDate(value) {
+
+if (!value) return "—";
+
+const date =
+new Date(value);
+
+if (
+Number.isNaN(
+date.getTime()
+)
+) {
+return this.escape(value);
+}
+
+return date.toLocaleString(
+"pt-BR"
+);
+
+}
+
+};
+
+
+
+window.loadTickets =
+() => ResgataTickets.load();
+
+
+
+// ============================================================
+// AUTOCARREGAMENTO DO MÓDULO
+// ============================================================
+
+function resgataAutoLoadTickets() {
+
+const page =
+document.getElementById(
+"page-tickets"
+);
+
+
+if (!page) return;
+
+
+const visible =
+page.classList.contains("active") ||
+page.style.display !== "none";
+
+
+if (visible) {
+
+window.ResgataTickets.load();
+
+}
+
+}
+
+
+document.addEventListener(
+"DOMContentLoaded",
+() => {
+
+setTimeout(
+resgataAutoLoadTickets,
+500
+);
+
+}
+);
+
+
+const ticketObserver =
+new MutationObserver(
+() => {
+
+const page =
+document.getElementById(
+"page-tickets"
+);
+
+if (
+page &&
+page.classList.contains("active")
+) {
+
+window.ResgataTickets.load();
+
+}
+
+}
+);
+
+
+document.addEventListener(
+"DOMContentLoaded",
+() => {
+
+const page =
+document.getElementById(
+"page-tickets"
+);
+
+if (page) {
+
+ticketObserver.observe(
+page,
+{
+attributes: true,
+attributeFilter: [
+"class",
+"style"
+]
+}
+);
+
+}
+
+}
+);
+

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071426">
+  <meta name="description" content="Editor de Fotos PhotoLive Magic">
+  <title>Editor de Fotos — PhotoLive Magic</title>
+  <link rel="stylesheet" href="./editor-fotos.css">
+</head>
+
+<body class="photo-editor-page">
+
+  <!-- TOPO -->
+  <header class="editor-header">
+    <div class="editor-header-inner">
+
+      <a href="../../index.html" class="editor-logo">
+        <span class="editor-logo-icon">📸</span>
+        <span>
+          <strong>PhotoLive Magic</strong>
+          <small>Editor de Fotos</small>
+        </span>
+      </a>
+
+      <nav class="editor-navigation">
+        <a href="../../index.html" class="editor-nav-btn editor-home-btn">
+          ← Início
+        </a>
+
+        <a href="../../conta/minha-conta.html" class="editor-nav-btn editor-account-btn">
+          Minha Conta
+        </a>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- CONTEÚDO -->
+  <main class="editor-page">
+
+    <!-- HERO -->
+    <section class="editor-hero">
+
+      <div class="editor-hero-content">
+
+        <div class="editor-badge">
+          📸 EDITOR DE FOTOS
+        </div>
+
+        <h1>
+          Edite suas fotos<br>
+          <span>do seu jeito.</span>
+        </h1>
+
+        <p>
+          Ajuste, transforme e melhore suas fotos diretamente no navegador.
+          O arquivo original permanece preservado.
+        </p>
+
+        <div class="editor-trust">
+
+          <div class="trust-item">
+            <span>🔒</span>
+            <div>
+              <strong>Original preservado</strong>
+              <small>Edite uma nova versão</small>
+            </div>
+          </div>
+
+          <div class="trust-item">
+            <span>⚡</span>
+            <div>
+              <strong>Rápido</strong>
+              <small>Processamento no navegador</small>
+            </div>
+          </div>
+
+          <div class="trust-item">
+            <span>💾</span>
+            <div>
+              <strong>Salve quando quiser</strong>
+              <small>Baixe sua nova versão</small>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ÁREA PRINCIPAL -->
+    <section class="editor-workspace">
+
+      <!-- UPLOAD / ESTADO VAZIO -->
+      <div id="emptyState" class="editor-empty-state">
+
+        <div class="upload-icon">
+          📷
+        </div>
+
+        <h2>Comece escolhendo uma foto</h2>
+
+        <p>
+          Selecione uma imagem do seu celular ou computador
+          para começar a editar.
+        </p>
+
+        <label for="fileInput" class="main-upload-btn">
+          📷 Escolher foto
+        </label>
+
+        <input
+          type="file"
+          id="fileInput"
+          accept="image/*"
+          hidden
+        >
+
+        <div class="upload-formats">
+          JPG · JPEG · PNG · WEBP
+        </div>
+
+        <div class="upload-security">
+          🛡️ Seu arquivo original não é alterado.
+        </div>
+
+      </div>
+
+      <!-- EDITOR -->
+      <div id="editorModal" class="editor-modal">
+
+        <div class="editor-panel">
+
+          <!-- CABEÇALHO DO EDITOR -->
+          <div class="editor-panel-header">
+
+            <div class="editor-file-info">
+              <span class="editor-file-icon">🖼️</span>
+
+              <div>
+                <strong id="editorFileName">
+                  Foto selecionada
+                </strong>
+
+                <small>
+                  Edição em nova versão
+                </small>
+              </div>
+            </div>
+
+            <div class="editor-panel-actions">
+
+              <button
+                type="button"
+                id="undoBtn"
+                class="editor-action-btn"
+                title="Desfazer"
+              >
+                ↶
+              </button>
+
+              <button
+                type="button"
+                id="redoBtn"
+                class="editor-action-btn"
+                title="Refazer"
+              >
+                ↷
+              </button>
+
+              <button
+                type="button"
+                id="resetEditorBtn"
+                class="editor-action-btn"
+              >
+                Restaurar
+              </button>
+
+              <button
+                type="button"
+                id="saveEditorTopBtn"
+                class="editor-save-btn"
+              >
+                💾 Salvar cópia
+              </button>
+
+              <button
+                type="button"
+                id="closeEditorBtn"
+                class="editor-close-btn"
+                aria-label="Fechar editor"
+              >
+                ×
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- CORPO -->
+          <div class="editor-panel-body">
+
+            <!-- PREVIEW -->
+            <div class="editor-preview-column">
+
+              <div class="preview-top">
+
+                <div>
+                  <span class="preview-label">
+                    VISUALIZAÇÃO
+                  </span>
+
+                  <strong>
+                    Sua foto
+                  </strong>
+                </div>
+
+                <span class="preview-status">
+                  ● Em edição
+                </span>
+
+              </div>
+
+              <div class="editor-preview-area">
+
+                <div class="preview-grid"></div>
+
+                <canvas id="editorCanvas"></canvas>
+
+              </div>
+
+              <div class="preview-info">
+
+                <span>
+                  🔒 Original preservado
+                </span>
+
+                <span>
+                  ⚡ Alterações em tempo real
+                </span>
+
+              </div>
+
+            </div>
+
+            <!-- CONTROLES -->
+            <aside class="editor-controls">
+
+              <div class="controls-heading">
+                <span>Ajustes</span>
+                <small>Personalize sua foto</small>
+              </div>
+
+              <!-- MELHORAR -->
+              <button
+                type="button"
+                id="autoEnhanceBtn"
+                class="auto-enhance-btn"
+              >
+                ✨ Melhorar automaticamente
+              </button>
+
+              <!-- BRILHO -->
+              <div class="control-group">
+
+                <div class="control-label">
+                  <span>☀️ Brilho</span>
+                  <strong id="brightnessValue">0</strong>
+                </div>
+
+                <input
+                  type="range"
+                  id="brightnessRange"
+                  min="-100"
+                  max="100"
+                  value="0"
+                >
+
+              </div>
+
+              <!-- CONTRASTE -->
+              <div class="control-group">
+
+                <div class="control-label">
+                  <span>◐ Contraste</span>
+                  <strong id="contrastValue">0</strong>
+                </div>
+
+                <input
+                  type="range"
+                  id="contrastRange"
+                  min="-100"
+                  max="100"
+                  value="0"
+                >
+
+              </div>
+
+              <!-- SATURAÇÃO -->
+              <div class="control-group">
+
+                <div class="control-label">
+                  <span>🎨 Saturação</span>
+                  <strong id="saturationValue">0</strong>
+                </div>
+
+                <input
+                  type="range"
+                  id="saturationRange"
+                  min="-100"
+                  max="100"
+                  value="0"
+                >
+
+              </div>
+
+              <!-- PRO -->
+              <div class="editor-pro-offer">
+
+                <div class="pro-title">
+                  ✨ Editor Pro
+                </div>
+
+                <p>
+                  Mais controles para deixar suas fotos ainda melhores.
+                </p>
+
+                <button
+                  type="button"
+                  class="pro-open-btn"
+                  onclick="document.getElementById('pro-editor-panel')?.classList.toggle('is-open')"
+                >
+                  Conhecer recursos Pro
+                </button>
+
+              </div>
+
+              <div id="pro-editor-panel" class="pro-editor-panel">
+
+                <div class="pro-section-title">
+                  CONTROLES PRO
+                </div>
+
+                <div class="pro-control">
+
+                  <label for="exposureRange">
+                    Exposição
+                  </label>
+
+                  <input
+                    type="range"
+                    id="exposureRange"
+                    min="-100"
+                    max="100"
+                    value="0"
+                  >
+
+                </div>
+
+                <div class="pro-control">
+
+                  <label for="temperatureRange">
+                    Temperatura
+                  </label>
+
+                  <input
+                    type="range"
+                    id="temperatureRange"
+                    min="-100"
+                    max="100"
+                    value="0"
+                  >
+
+                </div>
+
+                <div class="pro-control">
+
+                  <label for="shadowsRange">
+                    Sombras
+                  </label>
+
+                  <input
+                    type="range"
+                    id="shadowsRange"
+                    min="-100"
+                    max="100"
+                    value="0"
+                  >
+
+                </div>
+
+                <div class="pro-control">
+
+                  <label for="highlightsRange">
+                    Realces
+                  </label>
+
+                  <input
+                    type="range"
+                    id="highlightsRange"
+                    min="-100"
+                    max="100"
+                    value="0"
+                  >
+
+                </div>
+
+                <div class="pro-control">
+
+                  <label for="sharpnessRange">
+                    Nitidez
+                  </label>
+
+                  <input
+                    type="range"
+                    id="sharpnessRange"
+                    min="0"
+                    max="100"
+                    value="0"
+                  >
+
+                </div>
+
+                <div class="pro-filters">
+
+                  <span>Filtros</span>
+
+                  <div class="filter-buttons">
+
+                    <button type="button" data-filter="original">
+                      Original
+                    </button>
+
+                    <button type="button" data-filter="quente">
+                      Quente
+                    </button>
+
+                    <button type="button" data-filter="frio">
+                      Frio
+                    </button>
+
+                    <button type="button" data-filter="vintage">
+                      Vintage
+                    </button>
+
+                    <button type="button" data-filter="pb">
+                      P&B
+                    </button>
+
+                    <button type="button" data-filter="dramatico">
+                      Dramático
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- RECORTE -->
+              <div class="tool-section">
+
+                <div class="tool-title">
+                  ✂️ Recorte
+                </div>
+
+                <div class="tool-buttons">
+
+                  <button type="button" data-crop-ratio="free">
+                    Livre
+                  </button>
+
+                  <button type="button" data-crop-ratio="1:1">
+                    1:1
+                  </button>
+
+                  <button type="button" data-crop-ratio="4:3">
+                    4:3
+                  </button>
+
+                  <button type="button" data-crop-ratio="16:9">
+                    16:9
+                  </button>
+
+                </div>
+
+              </div>
+
+              <!-- ROTAÇÃO -->
+              <div class="tool-section">
+
+                <div class="tool-title">
+                  🔄 Rotação
+                </div>
+
+                <div class="tool-buttons two">
+
+                  <button type="button" id="rotateLeftBtn">
+                    ↶ Esquerda
+                  </button>
+
+                  <button type="button" id="rotateRightBtn">
+                    ↷ Direita
+                  </button>
+
+                </div>
+
+              </div>
+
+              <div class="editor-tip">
+                💡 Você pode desfazer alterações e restaurar a foto
+                original a qualquer momento.
+              </div>
+
+            </aside>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- INFORMAÇÕES -->
+    <section class="editor-info-grid">
+
+      <article class="editor-info-card">
+        <span>☀️</span>
+        <h3>Ajuste sua imagem</h3>
+        <p>
+          Controle brilho, contraste e saturação de forma simples.
+        </p>
+      </article>
+
+      <article class="editor-info-card">
+        <span>✂️</span>
+        <h3>Transforme sua foto</h3>
+        <p>
+          Recorte, gire e prepare sua imagem para diferentes formatos.
+        </p>
+      </article>
+
+      <article class="editor-info-card">
+        <span>💾</span>
+        <h3>Salve uma nova cópia</h3>
+        <p>
+          Sua foto original continua preservada enquanto você edita.
+        </p>
+      </article>
+
+    </section>
+
+    <!-- SEGURANÇA -->
+    <section class="editor-security">
+
+      <div class="security-icon">
+        🛡️
+      </div>
+
+      <div>
+        <strong>Seus arquivos são seus.</strong>
+
+        <p>
+          O PhotoLive Magic foi pensado para trabalhar com seus arquivos
+          sem armazenamento desnecessário. Você mantém o controle do que
+          deseja editar, baixar e guardar.
+        </p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="./editor-fotos.js"></script>
+
+</body>
+</html>

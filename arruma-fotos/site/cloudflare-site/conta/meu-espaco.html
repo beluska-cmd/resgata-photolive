@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Espaço — PhotoLive Magic</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #07111f;
+      color: #ffffff;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      width: 100%;
+      background: #0b1b31;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .topbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-size: 21px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav a,
+    .logout {
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.05);
+      color: #ffffff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .nav a:hover,
+    .logout:hover {
+      background: rgba(255,255,255,.11);
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 42px 24px 70px;
+    }
+
+    .hero {
+      padding: 38px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #102b4b, #0b1b31);
+      border: 1px solid rgba(255,255,255,.1);
+      margin-bottom: 28px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(80,180,255,.13);
+      border: 1px solid rgba(80,180,255,.25);
+      color: #8fd3ff;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 5vw, 52px);
+    }
+
+    .hero p {
+      margin: 0;
+      color: #c9d7e8;
+      font-size: 17px;
+      line-height: 1.6;
+      max-width: 700px;
+    }
+
+    .account {
+      margin-top: 20px;
+      color: #8fd3ff;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    .section-title {
+      margin-bottom: 18px;
+    }
+
+    .section-title span {
+      color: #72c7ff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+
+    .section-title h2 {
+      margin: 6px 0;
+      font-size: 28px;
+    }
+
+    .section-title p {
+      margin: 0;
+      color: #aebed0;
+      line-height: 1.5;
+    }
+
+    .diagnostic {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      padding: 25px;
+      border-radius: 18px;
+      background: #0d2239;
+      border: 1px solid rgba(114,199,255,.2);
+    }
+
+    .diagnostic h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+    }
+
+    .diagnostic p {
+      margin: 0;
+      color: #b9c9da;
+      line-height: 1.5;
+    }
+
+    .free {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: #76e3ad;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 18px;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #07111f;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .button.secondary {
+      background: #183452;
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,.13);
+    }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      min-height: 230px;
+      padding: 23px;
+      border-radius: 18px;
+      background: #0d1f34;
+      border: 1px solid rgba(255,255,255,.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .icon {
+      font-size: 30px;
+      margin-bottom: 15px;
+    }
+
+    .card h3 {
+      margin: 0 0 9px;
+      font-size: 20px;
+    }
+
+    .card p {
+      margin: 0;
+      color: #b7c7d8;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .status {
+      display: inline-block;
+      width: fit-content;
+      margin-bottom: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(118,227,173,.1);
+      color: #76e3ad;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .status.dev {
+      background: rgba(255,196,90,.1);
+      color: #ffc45a;
+    }
+
+    .card .button {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .help {
+      padding: 28px;
+      border-radius: 18px;
+      background: #0d2239;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .help h2 {
+      margin: 0 0 8px;
+    }
+
+    .help p {
+      margin: 0 0 18px;
+      color: #b8c8d9;
+      line-height: 1.5;
+    }
+
+    footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 25px 24px 40px;
+      color: #71849a;
+      font-size: 13px;
+    }
+
+    .loading {
+      color: #8fa6bd;
+      font-size: 14px;
+    }
+
+    @media (max-width: 850px) {
+      .services {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .diagnostic {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        width: 100%;
+      }
+
+      .nav a,
+      .logout {
+        flex: 1;
+        text-align: center;
+      }
+
+      .page {
+        padding: 25px 16px 50px;
+      }
+
+      .hero {
+        padding: 25px;
+      }
+
+      .services {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+
+      <a href="../minha-conta.html" class="brand">
+        ✨ PhotoLive Magic
+      </a>
+
+      <nav class="nav">
+        <a href="minha-conta-usuario.html">👤 Minha Conta</a>
+        <a href="../minha-conta.html">🏠 Central</a>
+        <button type="button" class="logout" id="logoutBtn">🚪 Sair</button>
+      </nav>
+
+    </div>
+  </header>
+
+
+  <main class="page">
+
+    <section class="hero">
+
+      <span class="badge">CENTRAL DO CLIENTE</span>
+
+      <h1>Meu Espaço</h1>
+
+      <p>
+        Seus serviços e ferramentas do PhotoLive Magic em um só lugar.
+        Escolha o que deseja utilizar e continue cuidando dos seus arquivos.
+      </p>
+
+      <div class="account">
+        Conta: <strong id="accountEmail">Carregando...</strong>
+      </div>
+
+    </section>
+
+
+    <section class="section">
+
+      <div class="diagnostic">
+
+        <div>
+          <span class="free">GRATUITO</span>
+
+          <h3>🔎 Diagnóstico</h3>
+
+          <p>
+            Analise seus arquivos e descubra o que pode ser melhorado,
+            organizado ou recuperado.
+          </p>
+        </div>
+
+        <a
+          href="../index.html#diagnostico-gratuito"
+          class="button">
+          Fazer diagnóstico
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <section class="section">
+
+      <div class="section-title">
+        <span>SERVIÇOS</span>
+        <h2>Seus serviços</h2>
+        <p>
+          Acesse os recursos disponíveis no PhotoLive Magic.
+        </p>
+      </div>
+
+
+      <div class="services">
+
+        <article class="card">
+
+          <div class="icon">📸</div>
+
+          <span class="status">DISPONÍVEL</span>
+
+          <h3>Editor de Fotos</h3>
+
+          <p>
+            Edite, ajuste, melhore e salve novas versões das suas fotos.
+          </p>
+
+          <a href="minha-conta.html" class="button">
+            Acessar
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="icon">🎬</div>
+
+          <span class="status">DISPONÍVEL</span>
+
+          <h3>Editor de Vídeos</h3>
+
+          <p>
+            Trabalhe com seus vídeos usando as ferramentas disponíveis.
+          </p>
+
+          <a href="../servicos/editor-videos/index.html" class="button">
+            Acessar
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="icon">🛟</div>
+
+          <span class="status">SERVIÇO</span>
+
+          <h3>Recuperar</h3>
+
+          <p>
+            Recursos voltados para recuperação de arquivos e fotos.
+          </p>
+
+          <a href="../servicos.html" class="button secondary">
+            Conhecer
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="icon">📂</div>
+
+          <span class="status dev">EM DESENVOLVIMENTO</span>
+
+          <h3>Organizar</h3>
+
+          <p>
+            Organize seus arquivos de forma inteligente, evitando
+            cópias desnecessárias.
+          </p>
+
+          <a href="../servicos.html" class="button secondary">
+            Conhecer
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="icon">✨</div>
+
+          <span class="status">DISPONÍVEL</span>
+
+          <h3>Transformar</h3>
+
+          <p>
+            Transforme suas fotos criando novas versões sem alterar
+            o arquivo original.
+          </p>
+
+          <a href="transformar/index.html" class="button">
+            Transformar
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="icon">🛠️</div>
+
+          <span class="status">DISPONÍVEIS</span>
+
+          <h3>Ferramentas</h3>
+
+          <p>
+            Acesse ferramentas auxiliares para trabalhar com seus arquivos.
+          </p>
+
+          <a href="../servicos.html" class="button secondary">
+            Ver ferramentas
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="icon">⭐</div>
+
+          <span class="status">PREMIUM</span>
+
+          <h3>Planos e serviços</h3>
+
+          <p>
+            Conheça os recursos pagos e escolha os serviços para sua conta.
+          </p>
+
+          <a href="../servicos.html" class="button secondary">
+            Conhecer planos
+          </a>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="section">
+
+      <div class="help">
+
+        <h2>💬 Sugestões e Atendimento</h2>
+
+        <p>
+          Precisa de ajuda ou quer enviar uma sugestão para melhorar o
+          PhotoLive Magic?
+        </p>
+
+        <a href="atendimento.html" class="button">
+          Atendimento
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+    PhotoLive Magic — Seus arquivos, do seu jeito.
+  </footer>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../acesso/auth-config.js"></script>
+
+  <script>
+    (function () {
+
+      async function init() {
+
+        const emailElement =
+          document.getElementById("accountEmail");
+
+        const logoutButton =
+          document.getElementById("logoutBtn");
+
+        if (!window.supabase) {
+          emailElement.textContent =
+            "Sistema de acesso indisponível.";
+          return;
+        }
+
+        if (
+          !window.PHOTOLIVE_SUPABASE_URL ||
+          !window.PHOTOLIVE_SUPABASE_ANON_KEY
+        ) {
+          emailElement.textContent =
+            "Configuração de acesso indisponível.";
+          return;
+        }
+
+        const client =
+          window.supabase.createClient(
+            window.PHOTOLIVE_SUPABASE_URL,
+            window.PHOTOLIVE_SUPABASE_ANON_KEY
+          );
+
+        const result =
+          await client.auth.getSession();
+
+        if (
+          result.error ||
+          !result.data ||
+          !result.data.session
+        ) {
+          window.location.href =
+            "../acesso.html?modo=login";
+          return;
+        }
+
+        emailElement.textContent =
+          result.data.session.user.email || "";
+
+        logoutButton.addEventListener(
+          "click",
+          async function () {
+
+            logoutButton.disabled = true;
+            logoutButton.textContent = "Saindo...";
+
+            await client.auth.signOut();
+
+            window.location.href =
+              "../acesso.html?modo=login";
+          }
+        );
+
+      }
+
+      init();
+
+    })();
+  </script>
+
+</body>
+</html>

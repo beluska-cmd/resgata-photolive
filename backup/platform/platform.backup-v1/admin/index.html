@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resgata+ | Administração</title>
+  <link rel="stylesheet" href="/admin/style.css">
+</head>
+<body>
+
+<header>
+  <strong>RESGATA+ ADMIN</strong>
+  <a href="/">Central do Cliente</a>
+</header>
+
+<main>
+  <section class="hero">
+    <span>PLATAFORMA ADMINISTRATIVA</span>
+    <h1>Controle central do Resgata+</h1>
+    <p>
+      Gerencie serviços, usuários, dispositivos, atualizações,
+      suporte e configurações da plataforma.
+    </p>
+  </section>
+
+  <section class="cards">
+    <article>
+      <b>👥</b>
+      <h2>Usuários</h2>
+      <p>Contas e acesso aos serviços.</p>
+    </article>
+
+    <article>
+      <b>📱</b>
+      <h2>Dispositivos</h2>
+      <p>Dispositivos vinculados ao Resgata+.</p>
+    </article>
+
+    <article>
+      <b>🛠️</b>
+      <h2>Serviços</h2>
+      <p>Controle do que pode ser disponibilizado ao cliente.</p>
+    </article>
+
+    <article>
+      <b>🔄</b>
+      <h2>Atualizações</h2>
+      <p>Controle de versões e atualizações.</p>
+    </article>
+
+    <article>
+      <b>🆘</b>
+      <h2>Suporte</h2>
+      <p>Atendimentos e solicitações.</p>
+    </article>
+
+    <article>
+      <b>🔐</b>
+      <h2>Segurança</h2>
+      <p>Configurações, registros e proteção.</p>
+    </article>
+  </section>
+
+  <section class="service-list">
+    <h2>Serviços cadastrados</h2>
+    <div id="services">Carregando...</div>
+  </section>
+</main>
+
+<script>
+async function loadAdminServices() {
+  const response = await fetch("/api/admin/services");
+  const data = await response.json();
+
+  document.getElementById("services").innerHTML =
+    data.services.map(service => `
+      <div class="service">
+        <strong>${service.name}</strong>
+        <span>${service.category}</span>
+        <span>${service.enabled ? "ATIVO" : "DESATIVADO"}</span>
+        <span>${service.clientVisible ? "VISÍVEL" : "OCULTO"}</span>
+      </div>
+    `).join("");
+}
+
+loadAdminServices();
+</script>
+
+</body>
+</html>

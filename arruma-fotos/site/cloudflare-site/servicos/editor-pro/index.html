@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor Pro — PhotoLive Magic</title>
+  <link rel="stylesheet" href="./editor-pro.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../acesso/auth-config.js"></script>
+</head>
+<body>
+
+<header class="pro-header">
+  <div>
+    <span class="eyebrow">PHOTOLIVE MAGIC</span>
+    <h1>Editor Pro</h1>
+    <p>Mais controle para transformar suas fotos.</p>
+  </div>
+  <a href="../ferramentas/index.html" class="back-link">← Central de Ferramentas</a>
+</header>
+
+<main class="pro-shell">
+
+  <section class="upload-card" id="uploadCard">
+    <div class="upload-icon">✦</div>
+    <h2>Comece com uma foto</h2>
+    <p>Escolha uma imagem para editar. O original permanece preservado.</p>
+
+    <label class="primary-btn upload-btn">
+      Escolher foto
+      <input id="proFileInput" type="file" accept="image/*" hidden>
+    </label>
+  </section>
+
+  <section class="editor-layout" id="editorLayout" hidden>
+
+    <div class="canvas-panel">
+      <div class="canvas-toolbar">
+        <button id="beforeBtn" type="button">Antes</button>
+        <span id="imageInfo">Foto carregada</span>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="proCanvas"></canvas>
+      </div>
+
+      <div class="action-row">
+        <button id="undoBtn" type="button">↶ Desfazer</button>
+        <button id="redoBtn" type="button">↷ Refazer</button>
+        <button id="resetBtn" type="button">Restaurar</button>
+      </div>
+
+      <div class="action-row">
+        <button id="rotateLeftBtn" type="button">↺ Girar</button>
+        <button id="rotateRightBtn" type="button">↻ Girar</button>
+        <button id="flipHBtn" type="button">↔ Espelhar</button>
+        <button id="flipVBtn" type="button">↕ Espelhar</button>
+      </div>
+
+      <button id="saveBtn" class="primary-btn save-btn" type="button">
+        💾 Baixar foto editada
+      </button>
+    </div>
+
+    <aside class="controls-panel">
+
+      <div class="control-section">
+        <h2>Ajustes</h2>
+
+        <label>
+          <span>Exposição <output id="exposureValue">0</output></span>
+          <input id="exposure" type="range" min="-50" max="50" value="0">
+        </label>
+
+        <label>
+          <span>Temperatura <output id="temperatureValue">0</output></span>
+          <input id="temperature" type="range" min="-50" max="50" value="0">
+        </label>
+
+        <label>
+          <span>Sombras <output id="shadowsValue">0</output></span>
+          <input id="shadows" type="range" min="-50" max="50" value="0">
+        </label>
+
+        <label>
+          <span>Realces <output id="highlightsValue">0</output></span>
+          <input id="highlights" type="range" min="-50" max="50" value="0">
+        </label>
+
+        <label>
+          <span>Nitidez <output id="sharpnessValue">0</output></span>
+          <input id="sharpness" type="range" min="0" max="100" value="0">
+        </label>
+      </div>
+
+      <div class="control-section">
+        <h2>Filtros</h2>
+
+        <div class="filter-grid">
+          <button class="filter-btn active" data-filter="original">Original</button>
+          <button class="filter-btn" data-filter="warm">Quente</button>
+          <button class="filter-btn" data-filter="cool">Frio</button>
+          <button class="filter-btn" data-filter="vintage">Vintage</button>
+          <button class="filter-btn" data-filter="mono">P&B</button>
+          <button class="filter-btn" data-filter="dramatic">Dramático</button>
+        </div>
+      </div>
+
+      <div class="pro-note">
+        <strong>Editor Pro</strong>
+        <p>Recursos avançados para quem quer mais controle sobre a edição.</p>
+      </div>
+
+    </aside>
+
+  </section>
+
+</main>
+
+<script src="./editor-pro.js"></script>
+</body>
+</html>

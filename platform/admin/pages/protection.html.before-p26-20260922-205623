@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Resgata+ — Proteção</title>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #e4e7ec;
+      --primary: #2563eb;
+      --green: #15803d;
+      --yellow: #a16207;
+      --orange: #c2410c;
+      --red: #b91c1c;
+      --blue-bg: #eff6ff;
+      --green-bg: #dcfce7;
+      --yellow-bg: #fef9c3;
+      --orange-bg: #ffedd5;
+      --red-bg: #fee2e2;
+      --shadow: 0 8px 25px rgba(15, 23, 42, .06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 22px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header {
+      max-width: 1450px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      font-size: 26px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    main {
+      max-width: 1450px;
+      margin: 25px auto;
+      padding: 0 18px 60px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 15px;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+    }
+
+    button.secondary {
+      background: #eef2f7;
+      color: var(--text);
+    }
+
+    .notice {
+      background: var(--blue-bg);
+      border: 1px solid #bfdbfe;
+      border-radius: 15px;
+      padding: 17px;
+      margin-bottom: 22px;
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 13px;
+      margin-bottom: 22px;
+    }
+
+    .metric {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 17px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    .metric-detail {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+    }
+
+    .item-title {
+      font-weight: 750;
+      margin-bottom: 5px;
+    }
+
+    .item-meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .badge {
+      display: inline-flex;
+      margin-top: 8px;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .green {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .yellow {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .orange {
+      background: var(--orange-bg);
+      color: var(--orange);
+    }
+
+    .red {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .category {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+    }
+
+    .category-name {
+      font-weight: 750;
+      margin-bottom: 4px;
+    }
+
+    .category-description {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      min-height: 34px;
+    }
+
+    .category-state {
+      margin-top: 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      gap: 5px;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .bar-track {
+      height: 9px;
+      background: #edf0f5;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 99px;
+      min-width: 2px;
+    }
+
+    .empty {
+      padding: 25px 10px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .loading {
+      opacity: .65;
+    }
+
+    .error {
+      display: none;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 10px;
+      background: var(--red-bg);
+      border: 1px solid #fecaca;
+      color: var(--red);
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 1200px) {
+      .metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .category-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header">
+    <div>
+      <h1>🛡️ Central de Proteção</h1>
+      <p class="subtitle">
+        Segurança, spam, golpes, phishing e solicitações de remoção.
+      </p>
+    </div>
+
+    <button
+      class="secondary"
+      id="refreshButton"
+      type="button"
+    >
+      Atualizar
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <div class="notice">
+    <strong>Princípio do Resgata+</strong>
+    O Resgata+ analisa, explica e apresenta opções.
+    Bloqueios, exclusões e remoções devem respeitar permissões,
+    regras da plataforma e confirmação do usuário quando necessária.
+  </div>
+
+  <section class="metrics">
+
+    <div class="metric">
+      <div class="metric-label">Categorias</div>
+      <div class="metric-value" id="metricCategories">—</div>
+      <div class="metric-detail" id="metricCategoriesDetail">
+        — ativas
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Regras</div>
+      <div class="metric-value" id="metricRules">—</div>
+      <div class="metric-detail" id="metricRulesDetail">
+        — ativas
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Denúncias</div>
+      <div class="metric-value" id="metricReports">—</div>
+      <div class="metric-detail" id="metricReportsDetail">
+        — suspeitas
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Remoções</div>
+      <div class="metric-value" id="metricRemovals">—</div>
+      <div class="metric-detail" id="metricRemovalsDetail">
+        — pendentes
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Segurança</div>
+      <div class="metric-value" id="metricSecurity">—</div>
+      <div class="metric-detail" id="metricSecurityDetail">
+        — pendentes
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-label">Alto risco</div>
+      <div class="metric-value" id="metricHighRisk">—</div>
+      <div class="metric-detail">
+        denúncias classificadas
+      </div>
+    </div>
+
+  </section>
+
+
+  <section class="grid">
+
+    <div class="card full">
+      <div class="card-header">
+        <div>
+          <h2>⚙️ Gerenciar categorias</h2>
+        </div>
+
+        <button
+          type="button"
+          id="newCategoryButton"
+        >
+          Nova categoria
+        </button>
+      </div>
+
+      <div class="card-body">
+
+        <form
+          id="categoryForm"
+          style="display:none; margin-bottom:18px;"
+        >
+
+          <div
+            style="
+              display:grid;
+              grid-template-columns:
+                repeat(auto-fit,minmax(180px,1fr));
+              gap:10px;
+            "
+          >
+
+            <input
+              id="categoryId"
+              placeholder="ID"
+              required
+            >
+
+            <input
+              id="categoryName"
+              placeholder="Nome"
+              required
+            >
+
+            <input
+              id="categorySeverity"
+              placeholder="Risco padrão"
+              value="attention"
+            >
+
+            <input
+              id="categoryDescription"
+              placeholder="Descrição"
+            >
+
+          </div>
+
+          <div style="margin-top:10px;">
+            <label>
+              <input
+                id="categoryEnabled"
+                type="checkbox"
+                checked
+              >
+              Ativa
+            </label>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button type="submit">
+              Salvar categoria
+            </button>
+
+            <button
+              type="button"
+              class="secondary"
+              id="cancelCategoryButton"
+            >
+              Cancelar
+            </button>
+          </div>
+
+        </form>
+
+        <div
+          id="adminCategories"
+          class="list"
+        >
+          <div class="empty">
+            Carregando...
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="card-header">
+        <div>
+          <h2>⚙️ Gerenciar regras</h2>
+        </div>
+
+        <button
+          type="button"
+          id="newRuleButton"
+        >
+          Nova regra
+        </button>
+      </div>
+
+      <div class="card-body">
+
+        <form
+          id="ruleForm"
+          style="display:none; margin-bottom:18px;"
+        >
+
+          <div
+            style="
+              display:grid;
+              grid-template-columns:
+                repeat(auto-fit,minmax(180px,1fr));
+              gap:10px;
+            "
+          >
+
+            <input
+              id="ruleId"
+              placeholder="ID"
+              required
+            >
+
+            <input
+              id="ruleName"
+              placeholder="Nome"
+              required
+            >
+
+            <input
+              id="ruleCategory"
+              placeholder="ID da categoria"
+              required
+            >
+
+            <input
+              id="rulePattern"
+              placeholder="Padrão / expressão"
+              required
+            >
+
+            <input
+              id="ruleAction"
+              placeholder="Ação"
+              value="review"
+            >
+
+          </div>
+
+          <div style="margin-top:10px;">
+            <label>
+              <input
+                id="ruleEnabled"
+                type="checkbox"
+                checked
+              >
+              Ativa
+            </label>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button type="submit">
+              Salvar regra
+            </button>
+
+            <button
+              type="button"
+              class="secondary"
+              id="cancelRuleButton"
+            >
+              Cancelar
+            </button>
+          </div>
+
+        </form>
+
+        <div
+          id="adminRules"
+          class="list"
+        >
+          <div class="empty">
+            Carregando...
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <section class="grid">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Categorias</h2>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="categories"
+          class="category-grid"
+        >
+          <div class="empty">
+            Carregando...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Distribuição das categorias</h2>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="categoryRisk"
+          class="bars"
+        >
+          <div class="empty">
+            Carregando...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Regras de análise</h2>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="rules"
+          class="list"
+        >
+          <div class="empty">
+            Carregando...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Denúncias por canal</h2>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="channels"
+          class="bars"
+        >
+          <div class="empty">
+            Nenhuma denúncia registrada.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Denúncias recentes</h2>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="reports"
+          class="list"
+        >
+          <div class="empty">
+            Nenhuma denúncia registrada.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Solicitações de remoção</h2>
+      </div>
+
+      <div class="card-body">
+        <div
+          id="removals"
+          class="list"
+        >
+          <div class="empty">
+            Nenhuma solicitação registrada.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="card-header">
+        <h2>Como o módulo funciona</h2>
+      </div>
+
+      <div class="card-body">
+        <div class="list">
+
+          <div class="item">
+            <div class="item-title">
+              1. Receber
+            </div>
+
+            <div class="item-meta">
+              O aplicativo envia somente informações permitidas
+              e autorizadas pelo usuário.
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="item-title">
+              2. Analisar
+            </div>
+
+            <div class="item-meta">
+              Regras, sinais e futuramente modelos de IA podem
+              ajudar a identificar padrões de risco.
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="item-title">
+              3. Explicar
+            </div>
+
+            <div class="item-meta">
+              O sistema deve mostrar os motivos que levaram
+              à classificação, evitando conclusões sem evidência.
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="item-title">
+              4. Confirmar
+            </div>
+
+            <div class="item-meta">
+              Quando a ação exigir confirmação, o usuário decide
+              se deseja bloquear, excluir, denunciar ou tentar
+              cancelar uma comunicação.
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="item-title">
+              5. Registrar
+            </div>
+
+            <div class="item-meta">
+              O histórico registra a análise e a ação realizada,
+              respeitando as regras de privacidade.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <div
+    id="errorBox"
+    class="error"
+  ></div>
+
+  <div class="footer-note">
+    Resgata+ — Recuperar. Organizar. Proteger. Resolver.
+  </div>
+
+</main>
+
+<script>
+  const API = window.location.origin;
+
+  const $ = id => document.getElementById(id);
+
+  function token() {
+    return (
+      localStorage.getItem("adminToken") ||
+      sessionStorage.getItem("adminToken") ||
+      localStorage.getItem("resgata_admin_token") ||
+      sessionStorage.getItem("resgata_admin_token") ||
+      ""
+    );
+  }
+
+  async function api(path, options = {}) {
+      const headers = {
+        ...(options.headers || {}),
+        Authorization: "Bearer " + token()
+      };
+
+      if (options.body && !headers["Content-Type"]) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      const response = await fetch(API + path, {
+        ...options,
+        headers
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || data.detail || "Erro na API");
+      }
+
+      return data;
+    }
+
+    return data;
+  }
+
+  function esc(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function riskClass(value) {
+    const v = String(value || "").toLowerCase();
+
+    if (
+      v.includes("high") ||
+      v.includes("alto") ||
+      v.includes("critical")
+    ) return "red";
+
+    if (
+      v.includes("suspicious") ||
+      v.includes("suspeit")
+    ) return "orange";
+
+    if (
+      v.includes("attention") ||
+      v.includes("aten")
+    ) return "yellow";
+
+    return "green";
+  }
+
+  function number(value) {
+    return Number(value || 0).toLocaleString("pt-BR");
+  }
+
+  function renderBars(element, rows, labelKey) {
+    const el = $(element);
+
+    if (!rows || !rows.length) {
+      el.innerHTML =
+        '<div class="empty">Nenhum dado registrado.</div>';
+      return;
+    }
+
+    const max = Math.max(
+      ...rows.map(row => Number(row.total || 0)),
+      1
+    );
+
+    el.innerHTML = rows.map(row => {
+      const value = Number(row.total || 0);
+      const label = row[labelKey] || "Não informado";
+      const width = Math.max(
+        value > 0 ? (value / max) * 100 : 0,
+        value > 0 ? 2 : 0
+      );
+
+      return `
+        <div class="bar-row">
+          <div class="bar-label">
+            <span>${esc(label)}</span>
+            <strong>${number(value)}</strong>
+          </div>
+
+          <div class="bar-track">
+            <div
+              class="bar-fill"
+              style="width:${width}%"
+            ></div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  async function load() {
+    document.body.classList.add("loading");
+
+    try {
+      const [
+        summary,
+        categories,
+        rules,
+        reports,
+        removals
+      ] = await Promise.all([
+        api("/api/admin/protection/summary"),
+        api("/api/admin/protection/categories"),
+        api("/api/admin/protection/rules"),
+        api("/api/admin/protection/reports"),
+        api("/api/admin/protection/removal-requests")
+      ]);
+
+      const s = summary.summary || {};
+
+      const categoryData = s.categories || {};
+      const ruleData = s.rules || {};
+      const reportData = s.reports || {};
+      const removalData = s.removals || {};
+      const securityData = s.security || {};
+
+      $("metricCategories").textContent =
+        number(categoryData.total);
+
+      $("metricCategoriesDetail").textContent =
+        number(categoryData.enabled) + " ativas";
+
+      $("metricRules").textContent =
+        number(ruleData.total);
+
+      $("metricRulesDetail").textContent =
+        number(ruleData.enabled) + " ativas";
+
+      $("metricReports").textContent =
+        number(reportData.total);
+
+      $("metricReportsDetail").textContent =
+        number(reportData.suspicious);
+
+      $("metricRemovals").textContent =
+        number(removalData.total);
+
+      $("metricRemovalsDetail").textContent =
+        number(removalData.pending) + " pendentes";
+
+      $("metricSecurity").textContent =
+        number(securityData.total);
+
+      $("metricSecurityDetail").textContent =
+        number(securityData.pending) + " pendentes";
+
+      $("metricHighRisk").textContent =
+        number(reportData.highRisk);
+
+      renderCategories(
+        categories.categories || []
+      );
+
+      renderRules(
+        rules.rules || []
+      );
+
+      renderReports(
+        reports.reports || []
+      );
+
+      renderRemovals(
+        removals.requests ||
+        removals.removalRequests ||
+        []
+      );
+
+      renderBars(
+        "categoryRisk",
+        s.categoriesByRisk || [],
+        "severity"
+      );
+
+      renderBars(
+        "channels",
+        s.reportsByChannel || [],
+        "channel"
+      );
+
+    } catch (error) {
+      console.error(error);
+
+      $("errorBox").textContent =
+        error.message || String(error);
+
+      $("errorBox").style.display = "block";
+
+    } finally {
+      document.body.classList.remove("loading");
+    }
+  }
+
+  function renderCategories(rows) {
+    const el = $("categories");
+
+    if (!rows.length) {
+      el.innerHTML =
+        '<div class="empty">Nenhuma categoria cadastrada.</div>';
+      return;
+    }
+
+    el.innerHTML = rows.map(row => `
+      <div class="category">
+
+        <div class="category-name">
+          ${esc(row.name || row.id)}
+        </div>
+
+        <div class="category-description">
+          ${esc(row.description || "Sem descrição")}
+        </div>
+
+        <span class="badge ${riskClass(row.severity_default)}">
+          ${esc(row.severity_default || "atenção")}
+        </span>
+
+        <div class="category-state">
+          ${
+            Number(row.enabled) === 1 ||
+            row.enabled === true
+              ? "● Ativa"
+              : "○ Desativada"
+          }
+        </div>
+
+      </div>
+    `).join("");
+  }
+
+  function renderRules(rows) {
+    const el = $("rules");
+
+    if (!rows.length) {
+      el.innerHTML =
+        '<div class="empty">Nenhuma regra cadastrada.</div>';
+      return;
+    }
+
+    el.innerHTML = rows.map(row => `
+      <div class="item">
+
+        <div class="item-title">
+          ${esc(row.name || row.id)}
+        </div>
+
+        <div class="item-meta">
+          Categoria:
+          ${esc(row.category || row.category_id || "—")}
+        </div>
+
+        <div class="item-meta">
+          Padrão:
+          ${esc(row.pattern || "—")}
+        </div>
+
+        <div class="item-meta">
+          Ação:
+          ${esc(row.action || "review")}
+        </div>
+
+        <span class="badge ${
+          row.enabled ? "green" : "yellow"
+        }">
+          ${row.enabled ? "Ativa" : "Desativada"}
+        </span>
+
+      </div>
+    `).join("");
+  }
+
+  function renderReports(rows) {
+    const el = $("reports");
+
+    if (!rows.length) {
+      el.innerHTML =
+        '<div class="empty">Nenhuma denúncia registrada.</div>';
+      return;
+    }
+
+    el.innerHTML = rows
+      .slice(0, 20)
+      .map(row => `
+        <div class="item">
+
+          <div class="item-title">
+            ${esc(row.category || "Proteção")}
+          </div>
+
+          <div class="item-meta">
+            Canal:
+            ${esc(row.channel || "—")}
+          </div>
+
+          <div class="item-meta">
+            Motivo:
+            ${esc(row.reason || "Sem descrição")}
+          </div>
+
+          <span class="badge ${riskClass(row.risk_level)}">
+            ${esc(row.risk_level || "atenção")}
+          </span>
+
+        </div>
+      `)
+      .join("");
+  }
+
+  function renderRemovals(rows) {
+    const el = $("removals");
+
+    if (!rows.length) {
+      el.innerHTML =
+        '<div class="empty">Nenhuma solicitação registrada.</div>';
+      return;
+    }
+
+    el.innerHTML = rows
+      .slice(0, 20)
+      .map(row => `
+        <div class="item">
+
+          <div class="item-title">
+            ${esc(row.target || "Destino não informado")}
+          </div>
+
+          <div class="item-meta">
+            Canal:
+            ${esc(row.channel || "—")}
+          </div>
+
+          <div class="item-meta">
+            Tipo:
+            ${esc(row.request_type || "—")}
+          </div>
+
+          <span class="badge ${riskClass(row.status)}">
+            ${esc(row.status || "pending")}
+          </span>
+
+        </div>
+      `)
+      .join("");
+  }
+
+
+  async function createCategory(payload) {
+    return api("/api/admin/protection/categories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token()
+      },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async function createRule(payload) {
+    return api("/api/admin/protection/rules", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token()
+      },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  function showAdminCategories(rows) {
+    const el =
+      $("adminCategories");
+
+    if (!rows.length) {
+      el.innerHTML =
+        '<div class="empty">Nenhuma categoria.</div>';
+      return;
+    }
+
+    el.innerHTML =
+      rows.map(row => `
+        <div class="item">
+
+          <div class="item-title">
+            ${esc(row.name || row.id)}
+          </div>
+
+          <div class="item-meta">
+            ID: ${esc(row.id)}
+          </div>
+
+          <div class="item-meta">
+            Risco padrão:
+            ${esc(row.severity_default || "attention")}
+          </div>
+
+          <span class="badge ${
+            Number(row.enabled) === 1
+              ? "green"
+              : "yellow"
+          }">
+            ${
+              Number(row.enabled) === 1
+                ? "Ativa"
+                : "Desativada"
+            }
+          </span>
+
+        </div>
+      `).join("");
+  }
+
+  function showAdminRules(rows) {
+    const el =
+      $("adminRules");
+
+    if (!rows.length) {
+      el.innerHTML =
+        '<div class="empty">Nenhuma regra.</div>';
+      return;
+    }
+
+    el.innerHTML =
+      rows.map(row => `
+        <div class="item">
+
+          <div class="item-title">
+            ${esc(row.name || row.id)}
+          </div>
+
+          <div class="item-meta">
+            ID: ${esc(row.id)}
+          </div>
+
+          <div class="item-meta">
+            Categoria:
+            ${esc(row.category || row.category_id || "—")}
+          </div>
+
+          <div class="item-meta">
+            Padrão:
+            ${esc(row.pattern || "—")}
+          </div>
+
+          <span class="badge ${
+            row.enabled
+              ? "green"
+              : "yellow"
+          }">
+            ${row.enabled ? "Ativa" : "Desativada"}
+          </span>
+
+        </div>
+      `).join("");
+  }
+
+  async function loadAdminProtectionLists() {
+    try {
+      const [
+        categories,
+        rules
+      ] = await Promise.all([
+        api("/api/admin/protection/categories"),
+        api("/api/admin/protection/rules")
+      ]);
+
+      showAdminCategories(
+        categories.categories || []
+      );
+
+      showAdminRules(
+        rules.rules || []
+      );
+
+    } catch (error) {
+      console.error(
+        "Erro carregando administração:",
+        error
+      );
+    }
+  }
+
+  $("newCategoryButton")
+    .addEventListener("click", () => {
+      $("categoryForm").style.display = "block";
+      $("categoryId").focus();
+    });
+
+  $("cancelCategoryButton")
+    .addEventListener("click", () => {
+      $("categoryForm").reset();
+      $("categorySeverity").value = "attention";
+      $("categoryEnabled").checked = true;
+      $("categoryForm").style.display = "none";
+    });
+
+  $("categoryForm")
+    .addEventListener("submit", async event => {
+      event.preventDefault();
+
+      try {
+        await createCategory({
+          id: $("categoryId").value.trim(),
+          name: $("categoryName").value.trim(),
+          description:
+            $("categoryDescription").value.trim(),
+          severity_default:
+            $("categorySeverity").value.trim() ||
+            "attention",
+          enabled:
+            $("categoryEnabled").checked ? 1 : 0
+        });
+
+        $("categoryForm").reset();
+        $("categorySeverity").value = "attention";
+        $("categoryEnabled").checked = true;
+        $("categoryForm").style.display = "none";
+
+        await load();
+        await loadAdminProtectionLists();
+
+        alert("Categoria criada.");
+
+      } catch (error) {
+        alert(
+          "Não foi possível criar a categoria: " +
+          error.message
+        );
+      }
+    });
+
+  $("newRuleButton")
+    .addEventListener("click", () => {
+      $("ruleForm").style.display = "block";
+      $("ruleId").focus();
+    });
+
+  $("cancelRuleButton")
+    .addEventListener("click", () => {
+      $("ruleForm").reset();
+      $("ruleAction").value = "review";
+      $("ruleEnabled").checked = true;
+      $("ruleForm").style.display = "none";
+    });
+
+  $("ruleForm")
+    .addEventListener("submit", async event => {
+      event.preventDefault();
+
+      try {
+        await createRule({
+          id: $("ruleId").value.trim(),
+          name: $("ruleName").value.trim(),
+          category_id:
+            $("ruleCategory").value.trim(),
+          pattern:
+            $("rulePattern").value.trim(),
+          action:
+            $("ruleAction").value.trim() ||
+            "review",
+          enabled:
+            $("ruleEnabled").checked ? 1 : 0
+        });
+
+        $("ruleForm").reset();
+        $("ruleAction").value = "review";
+        $("ruleEnabled").checked = true;
+        $("ruleForm").style.display = "none";
+
+        await load();
+        await loadAdminProtectionLists();
+
+        alert("Regra criada.");
+
+      } catch (error) {
+        alert(
+          "Não foi possível criar a regra: " +
+          error.message
+        );
+      }
+    });
+
+
+  $("refreshButton").addEventListener(
+    "click",
+    load
+  );
+
+  load();
+  loadAdminProtectionLists();
+</script>
+
+</body>
+</html>

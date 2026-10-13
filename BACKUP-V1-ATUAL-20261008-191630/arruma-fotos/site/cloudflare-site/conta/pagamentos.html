@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagamentos — PhotoLive Magic</title>
+
+<style>
+:root{
+  --dark:#063b52;
+  --dark2:#075d73;
+  --blue:#2879ff;
+  --turq:#08b8c6;
+  --green:#32c96b;
+  --yellow:#ffd84d;
+  --orange:#ff9d42;
+  --purple:#8b5cf6;
+  --ice:#f3fbfe;
+  --text:#073b52;
+  --muted:#587483;
+  --border:#d8edf3;
+  --white:#fff;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 5% 5%,rgba(8,184,198,.16),transparent 25%),
+    radial-gradient(circle at 95% 8%,rgba(40,121,255,.14),transparent 25%),
+    linear-gradient(135deg,#eefaff,#f9fdff 48%,#edf8fc);
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+.page{
+  width:min(1240px,calc(100% - 32px));
+  margin:auto;
+  padding:20px 0 48px;
+}
+
+/* TOPO */
+
+.topbar{
+  min-height:70px;
+  padding:12px 18px 12px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--border);
+  border-radius:20px;
+  box-shadow:0 12px 35px rgba(6,59,82,.09);
+  margin-bottom:24px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-weight:950;
+  color:var(--dark);
+  white-space:nowrap;
+}
+
+.brand-mark{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  color:white;
+  background:linear-gradient(135deg,#2879ff,#08b8c6);
+}
+
+.topnav{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.topnav a{
+  min-height:42px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:9px 14px;
+  border-radius:12px;
+  font-size:.86rem;
+  font-weight:800;
+  color:#315d70;
+}
+
+.topnav a:hover{
+  background:#eef9fc;
+}
+
+.topnav .central{
+  color:#fff;
+  background:linear-gradient(135deg,#063b52,#087f93);
+}
+
+/* HERO */
+
+.hero{
+  padding:31px;
+  margin-bottom:22px;
+  border-radius:27px;
+  color:#fff;
+  background:
+    radial-gradient(circle at 88% 15%,rgba(255,216,77,.28),transparent 27%),
+    radial-gradient(circle at 12% 100%,rgba(40,121,255,.30),transparent 30%),
+    linear-gradient(135deg,#063b52,#075b72 58%,#087d91);
+  box-shadow:0 20px 50px rgba(6,59,82,.18);
+}
+
+.eyebrow{
+  font-size:.74rem;
+  font-weight:900;
+  letter-spacing:.15em;
+  opacity:.76;
+}
+
+.hero h1{
+  margin:7px 0 8px;
+  font-size:clamp(1.8rem,4vw,2.7rem);
+}
+
+.hero p{
+  max-width:760px;
+  margin:0;
+  color:rgba(255,255,255,.84);
+  line-height:1.65;
+}
+
+/* RESUMO */
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;
+  margin-bottom:22px;
+}
+
+.summary-card{
+  min-height:158px;
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(145deg,#fff,#eefaff);
+  border:1px solid var(--border);
+  border-radius:21px;
+  box-shadow:0 11px 30px rgba(6,59,82,.07);
+}
+
+.summary-card::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:4px;
+}
+
+.summary-card:nth-child(1)::after{
+  background:linear-gradient(90deg,#2879ff,#08b8c6);
+}
+
+.summary-card:nth-child(2)::after{
+  background:linear-gradient(90deg,#32c96b,#08b8a4);
+}
+
+.summary-card:nth-child(3)::after{
+  background:linear-gradient(90deg,#ff9d42,#ffd84d);
+}
+
+.summary-card:nth-child(4)::after{
+  background:linear-gradient(90deg,#8b5cf6,#2879ff);
+}
+
+.icon{
+  width:45px;
+  height:45px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:#eaf7ff;
+  font-size:1.3rem;
+}
+
+.label{
+  margin-top:13px;
+  color:var(--muted);
+  font-size:.69rem;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.value{
+  margin-top:3px;
+  color:var(--dark);
+  font-size:1.55rem;
+  font-weight:950;
+}
+
+.help{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:.8rem;
+}
+
+/* CONTEÚDO */
+
+.grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);
+  gap:20px;
+}
+
+.section{
+  padding:24px;
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--border);
+  border-radius:23px;
+  box-shadow:0 11px 30px rgba(6,59,82,.07);
+}
+
+.section + .section{
+  margin-top:20px;
+}
+
+.section-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:1.12rem;
+}
+
+.section-title p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:.84rem;
+  line-height:1.5;
+}
+
+.badge{
+  padding:7px 10px;
+  border-radius:999px;
+  background:#eef9ff;
+  color:#176a8f;
+  font-size:.69rem;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+/* ESTADO VAZIO */
+
+.empty{
+  min-height:215px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:25px;
+  border:1px dashed #abd9e7;
+  border-radius:19px;
+  background:linear-gradient(135deg,#f1fbff,#e6f7ff);
+}
+
+.empty-icon{
+  width:68px;
+  height:68px;
+  display:grid;
+  place-items:center;
+  margin-bottom:12px;
+  border-radius:19px;
+  background:#fff;
+  box-shadow:0 8px 20px rgba(6,59,82,.08);
+  font-size:1.8rem;
+}
+
+.empty strong{
+  font-size:1.02rem;
+}
+
+.empty span{
+  max-width:540px;
+  margin-top:7px;
+  color:var(--muted);
+  font-size:.85rem;
+  line-height:1.55;
+}
+
+/* FORMAS */
+
+.methods{
+  display:grid;
+  gap:11px;
+}
+
+.method{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:14px;
+  border:1px solid #e0eff4;
+  border-radius:15px;
+  background:#f8fcfe;
+}
+
+.method-icon{
+  width:43px;
+  height:43px;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  border-radius:13px;
+  background:#eaf7ff;
+  font-size:1.25rem;
+}
+
+.method strong{
+  display:block;
+  font-size:.88rem;
+}
+
+.method span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:.76rem;
+}
+
+/* SEGURANÇA */
+
+.security{
+  margin-top:17px;
+  padding:16px;
+  border-radius:16px;
+  background:#f4faff;
+  border:1px solid #d9edf4;
+  color:var(--muted);
+  font-size:.78rem;
+  line-height:1.55;
+}
+
+/* AÇÕES */
+
+.actions{
+  margin-top:22px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.central-button{
+  min-height:48px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:11px 19px;
+  border-radius:14px;
+  color:#fff;
+  font-weight:900;
+  background:linear-gradient(135deg,#063b52,#087f93);
+  box-shadow:0 9px 22px rgba(6,59,82,.17);
+}
+
+/* RESPONSIVO */
+
+@media(max-width:1050px){
+  .summary{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:700px){
+  .page{
+    width:calc(100% - 18px);
+    padding-top:10px;
+  }
+
+  .topbar{
+    padding:13px;
+    align-items:flex-start;
+    flex-direction:column;
+    border-radius:18px;
+  }
+
+  .topnav{
+    width:100%;
+    justify-content:stretch;
+  }
+
+  .topnav a{
+    flex:1 1 auto;
+  }
+
+  .hero{
+    padding:23px;
+    border-radius:21px;
+  }
+
+  .summary{
+    grid-template-columns:1fr;
+  }
+
+  .summary-card{
+    min-height:145px;
+  }
+
+  .section{
+    padding:19px;
+    border-radius:19px;
+  }
+
+  .section-title{
+    flex-direction:column;
+  }
+
+  .badge{
+    align-self:flex-start;
+  }
+
+  .actions{
+    justify-content:stretch;
+  }
+
+  .central-button{
+    width:100%;
+  }
+}
+
+@media(max-width:390px){
+  .topnav{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .topnav a{
+    width:100%;
+  }
+
+  .hero h1{
+    font-size:1.65rem;
+  }
+
+  .section{
+    padding:16px;
+  }
+}
+</style>
+
+<style id="photolive-payment-options-v3">
+  .payment-options-access{
+    margin-top:28px;
+    border-radius:22px;
+    border:1px solid rgba(40,121,255,.14);
+    background:linear-gradient(145deg,#ffffff,#f4fbfd);
+    box-shadow:0 10px 26px rgba(8,43,85,.07);
+    overflow:hidden;
+  }
+
+  .payment-options-access-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:22px 24px;
+  }
+
+  .payment-options-kicker{
+    display:block;
+    margin-bottom:5px;
+    color:#2879ff;
+    font-size:.7rem;
+    font-weight:800;
+    letter-spacing:.14em;
+  }
+
+  .payment-options-access h2{
+    margin:0;
+    color:#082b55;
+    font-size:1.35rem;
+  }
+
+  .payment-options-access-head p{
+    margin:6px 0 0;
+    color:#416575;
+  }
+
+  .payment-options-toggle{
+    min-height:46px;
+    padding:0 18px;
+    border:0;
+    border-radius:14px;
+    background:linear-gradient(135deg,#2879ff,#08c6c8);
+    color:#fff;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 8px 18px rgba(40,121,255,.18);
+    white-space:nowrap;
+  }
+
+  .payment-options-toggle:hover{
+    filter:brightness(1.03);
+  }
+
+  .payment-options-panel{
+    padding:0 24px 24px;
+  }
+
+  .payment-methods-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:16px;
+  }
+
+  .payment-method-card{
+    min-width:0;
+    padding:20px;
+    border:1px solid rgba(8,43,85,.08);
+    border-radius:18px;
+    background:#fff;
+  }
+
+  .payment-method-icon{
+    width:48px;
+    height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:14px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#e7f4ff,#d9fbf6);
+    font-size:1.4rem;
+  }
+
+  .payment-method-label{
+    display:block;
+    margin-bottom:5px;
+    color:#2879ff;
+    font-size:.68rem;
+    font-weight:800;
+    letter-spacing:.12em;
+  }
+
+  .payment-method-content h3{
+    margin:0;
+    color:#082b55;
+    font-size:1.05rem;
+  }
+
+  .payment-method-content p{
+    margin:7px 0 0;
+    color:#416575;
+    line-height:1.5;
+  }
+
+  .save-payment-option{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-top:15px;
+    padding:12px;
+    border-radius:13px;
+    background:#eef8ff;
+    cursor:pointer;
+  }
+
+  .save-payment-option input{
+    width:19px;
+    height:19px;
+    margin-top:2px;
+    flex:0 0 auto;
+    accent-color:#2879ff;
+  }
+
+  .save-payment-option span{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+  }
+
+  .save-payment-option strong{
+    color:#082b55;
+    font-size:.86rem;
+  }
+
+  .save-payment-option small{
+    color:#416575;
+    line-height:1.35;
+  }
+
+  .payment-method-note{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px solid rgba(8,43,85,.08);
+    color:#416575;
+    font-size:.79rem;
+    line-height:1.5;
+  }
+
+  .saved-card-empty{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    margin-top:15px;
+    padding:13px;
+    border-radius:13px;
+    background:#f1f8fb;
+  }
+
+  .saved-card-empty > span{
+    font-size:1.2rem;
+  }
+
+  .saved-card-empty strong{
+    display:block;
+    color:#082b55;
+    font-size:.86rem;
+  }
+
+  .saved-card-empty p{
+    margin:4px 0 0;
+    font-size:.78rem;
+  }
+
+  .payment-security-box{
+    display:flex;
+    gap:13px;
+    align-items:flex-start;
+    margin-top:16px;
+    padding:16px;
+    border-radius:16px;
+    background:linear-gradient(135deg,#eafcff,#eef4ff);
+  }
+
+  .security-icon{
+    flex:0 0 auto;
+    font-size:1.35rem;
+  }
+
+  .payment-security-box strong{
+    color:#082b55;
+  }
+
+  .payment-security-box p{
+    margin:5px 0 0;
+    color:#416575;
+    font-size:.82rem;
+    line-height:1.5;
+  }
+
+  @media(max-width:900px){
+    .payment-methods-grid{
+      grid-template-columns:1fr 1fr;
+    }
+
+    .payment-method-card:last-child{
+      grid-column:1 / -1;
+    }
+  }
+
+  @media(max-width:650px){
+    .payment-options-access-head{
+      flex-direction:column;
+      align-items:stretch;
+    }
+
+    .payment-options-toggle{
+      width:100%;
+    }
+
+    .payment-methods-grid{
+      grid-template-columns:1fr;
+    }
+
+    .payment-method-card:last-child{
+      grid-column:auto;
+    }
+
+    .payment-options-access-head,
+    .payment-options-panel{
+      padding-left:17px;
+      padding-right:17px;
+    }
+  }
+</style>
+
+</head>
+
+<body>
+
+<main class="page">
+
+<header class="topbar">
+
+  <a class="brand" href="../index.html">
+    <span class="brand-mark">✨</span>
+    <span>PhotoLive Magic</span>
+  </a>
+
+  <nav class="topnav" aria-label="Navegação de pagamentos">
+    <a href="../index.html">🏠 Início</a>
+    <a href="minha-conta-usuario.html">👤 Minha Conta</a>
+    <a class="central" href="minha-conta.html">☰ Central PhotoLive</a>
+  </nav>
+
+</header>
+
+<section class="hero">
+
+  <div class="eyebrow">ÁREA FINANCEIRA</div>
+
+  <h1>💳 Pagamentos</h1>
+
+  <p>
+    Consulte seus pagamentos, valores, serviços contratados e
+    histórico financeiro da sua conta PhotoLive Magic.
+  </p>
+
+</section>
+
+<section class="summary">
+
+  <article class="summary-card">
+    <div class="icon">💰</div>
+    <div class="label">TOTAL PAGO</div>
+    <div class="value" id="totalPaid">R$ 0,00</div>
+    <div class="help">Valor total registrado</div>
+  </article>
+
+  <article class="summary-card">
+    <div class="icon">✅</div>
+    <div class="label">PAGAMENTOS</div>
+    <div class="value" id="paidCount">0</div>
+    <div class="help">Pagamentos confirmados</div>
+  </article>
+
+  <article class="summary-card">
+    <div class="icon">⏳</div>
+    <div class="label">PENDENTES</div>
+    <div class="value" id="pendingCount">0</div>
+    <div class="help">Aguardando confirmação</div>
+  </article>
+
+  <article class="summary-card">
+    <div class="icon">📅</div>
+    <div class="label">ÚLTIMO PAGAMENTO</div>
+    <div class="value" id="lastPayment">—</div>
+    <div class="help">Data mais recente</div>
+  </article>
+
+</section>
+
+<div class="grid">
+
+  <div>
+
+    <section class="section">
+
+      <div class="section-title">
+        <div>
+          <h2>📋 Histórico de pagamentos</h2>
+          <p>Consulte os pagamentos registrados na sua conta.</p>
+        </div>
+
+        <span class="badge">ATUALIZADO</span>
+      </div>
+
+      <div class="empty" id="paymentsEmpty">
+
+        <div class="empty-icon">💳</div>
+
+        <strong>Nenhum pagamento registrado</strong>
+
+        <span>
+          Quando você contratar um serviço e o pagamento for registrado,
+          as informações aparecerão automaticamente aqui.
+        </span>
+
+      </div>
+
+      <div id="paymentsList" style="display:none"></div>
+
+    </section>
+
+  </div>
+
+  <aside>
+
+    <section class="section">
+
+      <div class="section-title">
+        <div>
+          <h2>💳 Formas de pagamento</h2>
+          <p>Informações sobre os meios utilizados.</p>
+        </div>
+      </div>
+
+      <div class="methods">
+
+        <div class="method">
+          <div class="method-icon">💳</div>
+          <div>
+            <strong>Pagamento online</strong>
+            <span>Processado de forma segura</span>
+          </div>
+        </div>
+
+        <div class="method">
+          <div class="method-icon">🔒</div>
+          <div>
+            <strong>Pagamento protegido</strong>
+            <span>Dados financeiros não ficam expostos</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="security">
+        🔒 <strong>Segurança:</strong>
+        o PhotoLive Magic não exibe dados completos de cartão ou
+        informações bancárias sensíveis nesta tela.
+      </div>
+
+    </section>
+
+  </aside>
+
+</div>
+
+
+
+<section class="payment-options-access" id="paymentOptionsAccess">
+  <div class="payment-options-access-head">
+    <div>
+      <span class="payment-options-kicker">OPÇÕES DE PAGAMENTO</span>
+      <h2>💳 Formas de pagamento</h2>
+      <p>Escolha como deseja pagar suas compras no PhotoLive Magic.</p>
+    </div>
+
+    <button
+      type="button"
+      class="payment-options-toggle"
+      id="paymentOptionsToggle"
+      aria-expanded="false"
+      aria-controls="paymentOptionsPanel"
+    >
+      💳 Ver formas de pagamento
+    </button>
+  </div>
+
+  <div
+    class="payment-options-panel"
+    id="paymentOptionsPanel"
+    hidden
+  >
+    <div class="payment-methods-grid">
+
+      <article class="payment-method-card">
+        <div class="payment-method-icon">💳</div>
+
+        <div class="payment-method-content">
+          <span class="payment-method-label">CARTÃO</span>
+
+          <h3>Cartão de crédito ou débito</h3>
+
+          <p>
+            Use seu cartão durante a contratação de um serviço.
+          </p>
+
+          <label class="save-payment-option">
+            <input type="checkbox" id="saveCardOption">
+
+            <span>
+              <strong>Salvar cartão para próximas compras</strong>
+              <small>
+                Opcional. Você decide se deseja salvar.
+              </small>
+            </span>
+          </label>
+
+          <div class="payment-method-note">
+            🔒 O número completo do cartão e o CVV não ficam expostos no PhotoLive.
+          </div>
+        </div>
+      </article>
+
+      <article class="payment-method-card">
+        <div class="payment-method-icon">⚡</div>
+
+        <div class="payment-method-content">
+          <span class="payment-method-label">PIX</span>
+
+          <h3>Pagamento via Pix</h3>
+
+          <p>
+            Uma opção rápida para concluir sua compra.
+          </p>
+
+          <div class="payment-method-note">
+            ⚡ O pagamento é iniciado durante a contratação do serviço.
+          </div>
+        </div>
+      </article>
+
+      <article class="payment-method-card">
+        <div class="payment-method-icon">💾</div>
+
+        <div class="payment-method-content">
+          <span class="payment-method-label">MÉTODOS SALVOS</span>
+
+          <h3>Cartões salvos</h3>
+
+          <div class="saved-card-empty">
+            <span>💳</span>
+
+            <div>
+              <strong>Nenhum cartão salvo</strong>
+
+              <p>
+                Se você escolher salvar um cartão durante uma compra,
+                ele poderá aparecer aqui.
+              </p>
+            </div>
+          </div>
+
+          <div class="payment-method-note">
+            🔒 Por segurança, o PhotoLive não deve exibir número completo nem CVV.
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="payment-security-box">
+      <div class="security-icon">🛡️</div>
+
+      <div>
+        <strong>Você controla seus métodos de pagamento</strong>
+
+        <p>
+          Salvar um cartão é opcional. Quando disponível, os dados sensíveis
+          devem ser tratados pelo provedor de pagamento, e não armazenados
+          diretamente pelo PhotoLive Magic.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+
+  const money = value =>
+    new Intl.NumberFormat("pt-BR",{
+      style:"currency",
+      currency:"BRL"
+    }).format(Number(value)||0);
+
+  const totalPaid =
+    document.getElementById("totalPaid");
+
+  const paidCount =
+    document.getElementById("paidCount");
+
+  const pendingCount =
+    document.getElementById("pendingCount");
+
+  const lastPayment =
+    document.getElementById("lastPayment");
+
+  const empty =
+    document.getElementById("paymentsEmpty");
+
+  const list =
+    document.getElementById("paymentsList");
+
+  let payments=[];
+
+  try{
+
+    const saved =
+      localStorage.getItem("photolivePayments");
+
+    if(saved){
+
+      const parsed=JSON.parse(saved);
+
+      if(Array.isArray(parsed)){
+        payments=parsed;
+      }
+
+    }
+
+  }catch(error){
+    payments=[];
+  }
+
+  const paid=payments.filter(payment=>{
+    const status=String(payment.status||"").toLowerCase();
+
+    return [
+      "pago",
+      "paga",
+      "paid",
+      "confirmado",
+      "confirmada",
+      "approved",
+      "aprovado",
+      "aprovada"
+    ].includes(status);
+  });
+
+  const pending=payments.filter(payment=>{
+    const status=String(payment.status||"").toLowerCase();
+
+    return [
+      "pendente",
+      "pending",
+      "aguardando",
+      "processando",
+      "processing"
+    ].includes(status);
+  });
+
+  const total=paid.reduce((sum,payment)=>{
+
+    return sum+
+      (
+        Number(payment.amount)||
+        Number(payment.value)||
+        Number(payment.total)||
+        0
+      );
+
+  },0);
+
+  totalPaid.textContent=money(total);
+  paidCount.textContent=paid.length;
+  pendingCount.textContent=pending.length;
+
+  if(paid.length){
+
+    const dates=paid
+      .map(payment=>payment.date||payment.created_at||payment.createdAt)
+      .filter(Boolean)
+      .map(date=>new Date(date))
+      .filter(date=>!isNaN(date.getTime()))
+      .sort((a,b)=>b-a);
+
+    if(dates.length){
+      lastPayment.textContent=
+        dates[0].toLocaleDateString("pt-BR");
+    }
+
+  }
+
+  /*
+   * A tela permanece vazia até que pagamentos reais sejam
+   * registrados no sistema. Não são criados valores fictícios.
+   */
+
+  if(payments.length){
+    empty.style.display="none";
+    list.style.display="block";
+  }
+
+})();
+</script>
+
+
+<script id="photolive-payment-options-script">
+(function(){
+  const button = document.getElementById("paymentOptionsToggle");
+  const panel = document.getElementById("paymentOptionsPanel");
+
+  if (!button || !panel) return;
+
+  button.addEventListener("click", function(){
+    const willOpen = panel.hidden;
+
+    panel.hidden = !willOpen;
+    button.setAttribute("aria-expanded", String(willOpen));
+
+    button.textContent = willOpen
+      ? "✕ Ocultar formas de pagamento"
+      : "💳 Ver formas de pagamento";
+  });
+})();
+</script>
+
+</body>
+</html>

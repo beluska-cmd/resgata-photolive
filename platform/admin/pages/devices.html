@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>Resgata+ Admin — Dispositivos</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .devices-page {
+      padding: 24px;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+
+    .devices-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .devices-header h1 {
+      margin: 0;
+    }
+
+    .devices-header p {
+      margin: 6px 0 0;
+      opacity: .7;
+    }
+
+    .devices-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .devices-actions input,
+    .devices-actions select,
+    .devices-actions button {
+      min-height: 42px;
+      border-radius: 10px;
+      border: 1px solid rgba(127,127,127,.25);
+      padding: 0 13px;
+    }
+
+    .devices-actions input {
+      min-width: 280px;
+    }
+
+    .devices-actions button {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .device-metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .device-metric {
+      border: 1px solid rgba(127,127,127,.18);
+      border-radius: 14px;
+      padding: 18px;
+      background: rgba(127,127,127,.05);
+    }
+
+    .device-metric strong {
+      display: block;
+      font-size: 28px;
+      margin-top: 6px;
+    }
+
+    .devices-table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(127,127,127,.18);
+      border-radius: 14px;
+    }
+
+    .devices-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 950px;
+    }
+
+    .devices-table th,
+    .devices-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid rgba(127,127,127,.12);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .devices-table th {
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: .65;
+    }
+
+    .device-name {
+      font-weight: 700;
+    }
+
+    .device-sub {
+      font-size: 12px;
+      opacity: .65;
+      margin-top: 3px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-active {
+      background: rgba(34,197,94,.14);
+    }
+
+    .status-inactive,
+    .status-offline {
+      background: rgba(234,179,8,.14);
+    }
+
+    .status-blocked {
+      background: rgba(239,68,68,.14);
+    }
+
+    .status-unknown {
+      background: rgba(127,127,127,.14);
+    }
+
+    .device-row-action {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .empty-state,
+    .error-state,
+    .loading-state {
+      padding: 40px;
+      text-align: center;
+      opacity: .75;
+    }
+
+    .device-detail {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      display: none;
+      align-items: stretch;
+      justify-content: flex-end;
+      z-index: 9999;
+    }
+
+    .device-detail.open {
+      display: flex;
+    }
+
+    .device-drawer {
+      width: min(680px, 100%);
+      background: var(--bg, #fff);
+      color: var(--text, #111);
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .device-drawer-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 22px;
+    }
+
+    .device-drawer-close {
+      border: 0;
+      background: transparent;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail-card {
+      padding: 13px;
+      border-radius: 12px;
+      background: rgba(127,127,127,.07);
+    }
+
+    .detail-card span {
+      display: block;
+      font-size: 11px;
+      opacity: .6;
+      margin-bottom: 4px;
+    }
+
+    .detail-section {
+      margin-top: 24px;
+    }
+
+    .detail-section h3 {
+      margin-bottom: 10px;
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .detail-list-item {
+      padding: 11px;
+      border-radius: 10px;
+      background: rgba(127,127,127,.06);
+      font-size: 13px;
+    }
+
+    .detail-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .detail-actions button {
+      border: 1px solid rgba(127,127,127,.25);
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1100px) {
+      .device-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .devices-page {
+        padding: 15px;
+      }
+
+      .device-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .devices-actions input {
+        min-width: 100%;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="devices-page">
+    <header class="devices-header">
+      <div>
+        <h1>📱 Dispositivos</h1>
+        <p>Gerencie os dispositivos registrados no Resgata+.</p>
+      </div>
+
+      <div class="devices-actions">
+        <input
+          id="search"
+          type="search"
+          placeholder="Pesquisar dispositivo, usuário ou versão..."
+        >
+
+        <select id="status">
+          <option value="">Todos os status</option>
+          <option value="active">Ativos</option>
+          <option value="inactive">Inativos</option>
+          <option value="offline">Offline</option>
+          <option value="blocked">Bloqueados</option>
+          <option value="unknown">Desconhecidos</option>
+        </select>
+
+        <button id="refresh">
+          Atualizar
+        </button>
+      </div>
+    </header>
+
+    <section class="device-metrics">
+      <div class="device-metric">
+        <span>Total</span>
+        <strong id="metric-total">0</strong>
+      </div>
+
+      <div class="device-metric">
+        <span>Ativos</span>
+        <strong id="metric-active">0</strong>
+      </div>
+
+      <div class="device-metric">
+        <span>Inativos</span>
+        <strong id="metric-inactive">0</strong>
+      </div>
+
+      <div class="device-metric">
+        <span>Offline</span>
+        <strong id="metric-offline">0</strong>
+      </div>
+
+      <div class="device-metric">
+        <span>Bloqueados</span>
+        <strong id="metric-blocked">0</strong>
+      </div>
+    </section>
+
+    <section class="devices-table-wrap">
+      <div id="state" class="loading-state">
+        Carregando dispositivos...
+      </div>
+
+      <table
+        id="devices-table"
+        class="devices-table"
+        hidden
+      >
+        <thead>
+          <tr>
+            <th>Dispositivo</th>
+            <th>Usuário</th>
+            <th>Android</th>
+            <th>Resgata+</th>
+            <th>Último acesso</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody id="devices-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <aside
+    id="device-detail"
+    class="device-detail"
+    aria-hidden="true"
+  >
+    <div class="device-drawer">
+      <div class="device-drawer-header">
+        <div>
+          <h2 id="detail-title">Dispositivo</h2>
+          <p id="detail-subtitle"></p>
+        </div>
+
+        <button
+          id="detail-close"
+          class="device-drawer-close"
+          aria-label="Fechar"
+        >
+          ×
+        </button>
+      </div>
+
+      <div id="detail-content">
+        Carregando...
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    let adminToken = localStorage.getItem("resgata_admin_token") || "";
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function authHeaders(json = false) {
+      const headers = {
+        Authorization: `Bearer ${adminToken}`
+      };
+
+      if (json) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      return headers;
+    }
+
+    function formatDate(value) {
+      if (!value) return "Nunca";
+
+      const numeric = Number(value);
+
+      if (!Number.isNaN(numeric)) {
+        return new Date(numeric).toLocaleString("pt-BR");
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return String(value);
+      }
+
+      return date.toLocaleString("pt-BR");
+    }
+
+    function statusLabel(status) {
+      const labels = {
+        active: "Ativo",
+        inactive: "Inativo",
+        offline: "Offline",
+        blocked: "Bloqueado",
+        unknown: "Desconhecido"
+      };
+
+      return labels[status] || status || "Desconhecido";
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        headers: {
+          ...authHeaders(options.body),
+          ...(options.headers || {})
+        }
+      });
+
+      const data = await response.json().catch(() => ({
+        ok: false,
+        error: "INVALID_JSON"
+      }));
+
+      if (response.status === 401) {
+        localStorage.removeItem("resgata_admin_token");
+        adminToken = "";
+        alert("Sessão administrativa expirada. Faça login novamente.");
+        window.location.href = "../login.html";
+        throw new Error("ADMIN_AUTH_REQUIRED");
+      }
+
+      if (!response.ok || data.ok === false) {
+        throw new Error(data.error || "REQUEST_ERROR");
+      }
+
+      return data;
+    }
+
+    async function loadSummary() {
+      const data = await api("/api/admin/devices/summary");
+
+      const summary = data.summary || {};
+
+      document.getElementById("metric-total").textContent =
+        summary.total ?? 0;
+
+      document.getElementById("metric-active").textContent =
+        summary.active ?? 0;
+
+      document.getElementById("metric-inactive").textContent =
+        summary.inactive ?? 0;
+
+      document.getElementById("metric-offline").textContent =
+        summary.offline ?? 0;
+
+      document.getElementById("metric-blocked").textContent =
+        summary.blocked ?? 0;
+    }
+
+    async function loadDevices() {
+      const state = document.getElementById("state");
+      const table = document.getElementById("devices-table");
+      const body = document.getElementById("devices-body");
+
+      state.className = "loading-state";
+      state.textContent = "Carregando dispositivos...";
+      state.hidden = false;
+      table.hidden = true;
+
+      const params = new URLSearchParams();
+
+      const search = document
+        .getElementById("search")
+        .value
+        .trim();
+
+      const status = document
+        .getElementById("status")
+        .value;
+
+      if (search) params.set("search", search);
+      if (status) params.set("status", status);
+
+      try {
+        const data = await api(
+          `/api/admin/devices?${params.toString()}`
+        );
+
+        const devices = Array.isArray(data.devices)
+          ? data.devices
+          : [];
+
+        body.innerHTML = "";
+
+        if (!devices.length) {
+          state.className = "empty-state";
+          state.textContent = "Nenhum dispositivo encontrado.";
+          return;
+        }
+
+        for (const device of devices) {
+          const tr = document.createElement("tr");
+
+          tr.innerHTML = `
+            <td>
+              <div class="device-name">
+                ${escapeHtml(device.name || device.model || "Dispositivo")}
+              </div>
+              <div class="device-sub">
+                ${escapeHtml(device.id)}
+              </div>
+            </td>
+
+            <td>
+              <div>${escapeHtml(device.user_name || "Sem usuário")}</div>
+              <div class="device-sub">
+                ${escapeHtml(device.user_email || "")}
+              </div>
+            </td>
+
+            <td>
+              ${escapeHtml(device.android_version || "—")}
+            </td>
+
+            <td>
+              ${escapeHtml(device.app_version || "—")}
+            </td>
+
+            <td>
+              ${escapeHtml(formatDate(device.last_seen))}
+            </td>
+
+            <td>
+              <span class="status status-${escapeHtml(device.status || "unknown")}">
+                ${escapeHtml(statusLabel(device.status))}
+              </span>
+            </td>
+
+            <td>
+              <button
+                class="device-row-action"
+                data-device-id="${escapeHtml(device.id)}"
+              >
+                Ver
+              </button>
+            </td>
+          `;
+
+          body.appendChild(tr);
+        }
+
+        state.hidden = true;
+        table.hidden = false;
+
+        body.querySelectorAll("[data-device-id]").forEach(button => {
+          button.addEventListener("click", () => {
+            openDevice(button.dataset.deviceId);
+          });
+        });
+      } catch (error) {
+        state.className = "error-state";
+        state.textContent =
+          `Erro ao carregar dispositivos: ${error.message}`;
+      }
+    }
+
+    async function openDevice(deviceId) {
+      const modal = document.getElementById("device-detail");
+      const content = document.getElementById("detail-content");
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+
+      content.innerHTML = "Carregando detalhes...";
+
+      try {
+        const data = await api(
+          `/api/admin/devices/${encodeURIComponent(deviceId)}`
+        );
+
+        const device = data.device || {};
+
+        document.getElementById("detail-title").textContent =
+          device.name || device.model || "Dispositivo";
+
+        document.getElementById("detail-subtitle").textContent =
+          device.id || "";
+
+        const diagnostics = Array.isArray(data.diagnostics)
+          ? data.diagnostics
+          : [];
+
+        const requests = Array.isArray(data.requests)
+          ? data.requests
+          : [];
+
+        const audit = Array.isArray(data.audit)
+          ? data.audit
+          : [];
+
+        content.innerHTML = `
+          <div class="detail-grid">
+            <div class="detail-card">
+              <span>ID</span>
+              ${escapeHtml(device.id)}
+            </div>
+
+            <div class="detail-card">
+              <span>Usuário</span>
+              ${escapeHtml(device.user_name || "Sem usuário")}
+            </div>
+
+            <div class="detail-card">
+              <span>E-mail</span>
+              ${escapeHtml(device.user_email || "—")}
+            </div>
+
+            <div class="detail-card">
+              <span>Plano</span>
+              ${escapeHtml(device.user_plan || "—")}
+            </div>
+
+            <div class="detail-card">
+              <span>Modelo</span>
+              ${escapeHtml(device.model || "—")}
+            </div>
+
+            <div class="detail-card">
+              <span>Android</span>
+              ${escapeHtml(device.android_version || "—")}
+            </div>
+
+            <div class="detail-card">
+              <span>Resgata+</span>
+              ${escapeHtml(device.app_version || "—")}
+            </div>
+
+            <div class="detail-card">
+              <span>Status</span>
+              ${escapeHtml(statusLabel(device.status))}
+            </div>
+
+            <div class="detail-card">
+              <span>Último acesso</span>
+              ${escapeHtml(formatDate(device.last_seen))}
+            </div>
+
+            <div class="detail-card">
+              <span>Registrado em</span>
+              ${escapeHtml(formatDate(device.created_at))}
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <button data-status="active">
+              Marcar ativo
+            </button>
+
+            <button data-status="inactive">
+              Marcar inativo
+            </button>
+
+            <button data-status="offline">
+              Marcar offline
+            </button>
+
+            <button data-status="blocked">
+              Bloquear
+            </button>
+
+            <button id="refresh-device">
+              Registrar solicitação de atualização
+            </button>
+          </div>
+
+          <section class="detail-section">
+            <h3>Diagnósticos</h3>
+
+            <div class="detail-list">
+              ${
+                diagnostics.length
+                  ? diagnostics.map(item => `
+                    <div class="detail-list-item">
+                      ${escapeHtml(JSON.stringify(item))}
+                    </div>
+                  `).join("")
+                  : '<div class="detail-list-item">Nenhum diagnóstico registrado.</div>'
+              }
+            </div>
+          </section>
+
+          <section class="detail-section">
+            <h3>Solicitações</h3>
+
+            <div class="detail-list">
+              ${
+                requests.length
+                  ? requests.map(item => `
+                    <div class="detail-list-item">
+                      ${escapeHtml(JSON.stringify(item))}
+                    </div>
+                  `).join("")
+                  : '<div class="detail-list-item">Nenhuma solicitação registrada.</div>'
+              }
+            </div>
+          </section>
+
+          <section class="detail-section">
+            <h3>Auditoria</h3>
+
+            <div class="detail-list">
+              ${
+                audit.length
+                  ? audit.map(item => `
+                    <div class="detail-list-item">
+                      <strong>${escapeHtml(item.action)}</strong>
+                      <br>
+                      ${escapeHtml(formatDate(item.created_at))}
+                      <br>
+                      ${escapeHtml(item.details || "")}
+                    </div>
+                  `).join("")
+                  : '<div class="detail-list-item">Nenhum evento administrativo registrado.</div>'
+              }
+            </div>
+          </section>
+        `;
+
+        content
+          .querySelectorAll("[data-status]")
+          .forEach(button => {
+            button.addEventListener("click", async () => {
+              await updateStatus(
+                device.id,
+                button.dataset.status
+              );
+            });
+          });
+
+        const refreshButton =
+          document.getElementById("refresh-device");
+
+        if (refreshButton) {
+          refreshButton.addEventListener(
+            "click",
+            async () => {
+              try {
+                const result = await api(
+                  `/api/admin/devices/${encodeURIComponent(device.id)}/refresh`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({})
+                  }
+                );
+
+                alert(result.message || "Solicitação registrada.");
+                await openDevice(device.id);
+              } catch (error) {
+                alert(`Erro: ${error.message}`);
+              }
+            }
+          );
+        }
+      } catch (error) {
+        content.innerHTML =
+          `<div class="error-state">Erro: ${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    async function updateStatus(deviceId, status) {
+      try {
+        await api(
+          `/api/admin/devices/${encodeURIComponent(deviceId)}/status`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ status })
+          }
+        );
+
+        await loadSummary();
+        await loadDevices();
+        await openDevice(deviceId);
+
+        alert("Status atualizado.");
+      } catch (error) {
+        alert(`Erro: ${error.message}`);
+      }
+    }
+
+    function closeDetail() {
+      const modal = document.getElementById("device-detail");
+
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    document
+      .getElementById("refresh")
+      .addEventListener("click", async () => {
+        await Promise.all([
+          loadSummary(),
+          loadDevices()
+        ]);
+      });
+
+    document
+      .getElementById("status")
+      .addEventListener("change", loadDevices);
+
+    let searchTimer;
+
+    document
+      .getElementById("search")
+      .addEventListener("input", () => {
+        clearTimeout(searchTimer);
+
+        searchTimer = setTimeout(
+          loadDevices,
+          300
+        );
+      });
+
+    document
+      .getElementById("detail-close")
+      .addEventListener("click", closeDetail);
+
+    document
+      .getElementById("device-detail")
+      .addEventListener("click", event => {
+        if (event.target.id === "device-detail") {
+          closeDetail();
+        }
+      });
+
+    if (!adminToken) {
+      window.location.href = "../login.html";
+    } else {
+      Promise.all([
+        loadSummary(),
+        loadDevices()
+      ]);
+    }
+  </script>
+</body>
+</html>

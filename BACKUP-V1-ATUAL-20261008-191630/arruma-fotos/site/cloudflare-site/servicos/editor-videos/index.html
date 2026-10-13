@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Editor de Vídeos — PhotoLive Magic</title><meta name="description" content="Ferramentas locais para visualizar, selecionar trechos, controlar velocidade e capturar quadros de vídeos."><link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../photo-tools.css">
+<link rel="stylesheet" href="./editor-videos.css"></head>
+<body class="plm-tool-page" data-tool="editor-videos">
+<header class="plm-top"><div class="plm-brand"><div class="plm-brand-mark">✨</div><div><strong>PhotoLive Magic</strong><span>Editor de Vídeos</span></div></div><a class="plm-back" href="../../conta/minha-conta.html">← Minha conta</a></header>
+<main class="plm-main video-editor-main">
+
+<section class="video-editor-hero">
+  <div class="video-editor-hero-content">
+    <span class="plm-eyebrow">PHOTOLIVE MAGIC · VÍDEO</span>
+
+    <h1>Editor de Vídeos</h1>
+
+    <p class="video-editor-lead">
+      Edite seus vídeos de forma simples, rápida e diretamente no navegador.
+      Escolha um trecho, ajuste a velocidade, controle o áudio e capture quadros.
+    </p>
+
+    <div class="video-editor-highlights">
+      <span>🔒 Processamento local</span>
+      <span>⚡ Edição rápida</span>
+      <span>🎬 Sem instalação</span>
+    </div>
+
+    <div class="video-editor-hero-actions">
+      <label class="plm-btn primary video-editor-main-cta" for="file">
+        🎬 Escolher vídeo
+      </label>
+
+      <a class="video-editor-secondary-cta" href="../../conta/minha-conta.html">
+        ← Minha conta
+      </a>
+    </div>
+
+    <small class="video-editor-supported">
+      Selecione um arquivo de vídeo compatível com seu navegador.
+    </small>
+  </div>
+
+  <div class="video-editor-hero-icon" aria-hidden="true">
+    🎬
+  </div>
+</section>
+
+
+<section class="video-editor-benefits">
+
+  <article class="video-editor-benefit">
+    <span>✂️</span>
+    <div>
+      <strong>Selecione trechos</strong>
+      <p>Defina o início e o fim da reprodução.</p>
+    </div>
+  </article>
+
+  <article class="video-editor-benefit">
+    <span>⚡</span>
+    <div>
+      <strong>Controle a velocidade</strong>
+      <p>Acelere ou desacelere a reprodução.</p>
+    </div>
+  </article>
+
+  <article class="video-editor-benefit">
+    <span>🔇</span>
+    <div>
+      <strong>Controle o áudio</strong>
+      <p>Silencie ou ative o som do vídeo.</p>
+    </div>
+  </article>
+
+  <article class="video-editor-benefit">
+    <span>📸</span>
+    <div>
+      <strong>Capture quadros</strong>
+      <p>Salve momentos do vídeo como imagem.</p>
+    </div>
+  </article>
+
+</section>
+
+
+<section class="video-editor-workspace">
+
+  <div class="plm-card video-editor-player-card">
+
+    <div class="video-editor-section-heading">
+      <span class="video-editor-label">1 · SELECIONE</span>
+      <h2>Seu vídeo</h2>
+      <p>Escolha o arquivo que deseja visualizar e ajustar.</p>
+    </div>
+
+    <div class="plm-preview video-editor-preview">
+
+      <div id="empty" class="plm-empty video-editor-empty">
+        <div class="video-editor-empty-icon">🎬</div>
+        <strong>Escolha um vídeo para começar</strong>
+        <span>O vídeo será carregado diretamente no navegador.</span>
+
+        <input
+          id="file"
+          class="plm-file"
+          type="file"
+          accept="video/*"
+        >
+      </div>
+
+      <video id="video" controls hidden></video>
+
+    </div>
+
+    <div class="plm-actions video-editor-actions">
+
+      <label class="plm-btn primary" for="file">
+        🎬 Escolher vídeo
+      </label>
+
+      <button id="snapshot" class="plm-btn" disabled>
+        📸 Capturar quadro
+      </button>
+
+    </div>
+
+    <div id="status" class="plm-status"></div>
+
+  </div>
+
+
+  <div class="plm-card video-editor-controls-card">
+
+    <div class="video-editor-section-heading">
+      <span class="video-editor-label">2 · AJUSTE</span>
+      <h2>Controles</h2>
+      <p>Personalize a reprodução do seu vídeo.</p>
+    </div>
+
+    <div class="plm-field video-editor-control">
+      <label>
+        Velocidade
+        <span id="speedv">1×</span>
+      </label>
+
+      <input
+        id="speed"
+        type="range"
+        min="25"
+        max="200"
+        value="100"
+      >
+    </div>
+
+
+    <div class="plm-field video-editor-control">
+      <label>
+        Início
+        <span id="startv">0</span>
+      </label>
+
+      <input
+        id="start"
+        type="range"
+        min="0"
+        max="0"
+        value="0"
+        step="0.1"
+      >
+    </div>
+
+
+    <div class="plm-field video-editor-control">
+      <label>
+        Fim
+        <span id="endv">0</span>
+      </label>
+
+      <input
+        id="end"
+        type="range"
+        min="0"
+        max="0"
+        value="0"
+        step="0.1"
+      >
+    </div>
+
+
+    <div class="plm-actions video-editor-control-actions">
+
+      <button id="apply" class="plm-btn">
+        ▶ Aplicar início
+      </button>
+
+      <button id="mute" class="plm-btn">
+        🔇 Silenciar
+      </button>
+
+    </div>
+
+    <div class="plm-note">
+      Esta versão usa recursos nativos do navegador para reprodução,
+      velocidade, seleção de trecho e captura de quadros.
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="video-editor-how">
+
+  <div class="video-editor-section-heading centered">
+    <span class="video-editor-label">COMO FUNCIONA</span>
+    <h2>Edite seu vídeo em poucos passos</h2>
+    <p>Uma experiência simples para fazer ajustes rápidos sem instalar programas.</p>
+  </div>
+
+  <div class="video-editor-steps">
+
+    <article>
+      <span>01</span>
+      <strong>Escolha seu vídeo</strong>
+      <p>Envie um vídeo do seu dispositivo.</p>
+    </article>
+
+    <article>
+      <span>02</span>
+      <strong>Faça os ajustes</strong>
+      <p>Controle trecho, velocidade e áudio.</p>
+    </article>
+
+    <article>
+      <span>03</span>
+      <strong>Revise o resultado</strong>
+      <p>Use o player para conferir suas alterações.</p>
+    </article>
+
+    <article>
+      <span>04</span>
+      <strong>Capture o momento</strong>
+      <p>Salve um quadro do vídeo quando precisar.</p>
+    </article>
+
+  </div>
+
+</section>
+
+
+<section class="video-editor-final-cta">
+
+  <div>
+    <span class="video-editor-label">PHOTO​LIVE MAGIC</span>
+    <h2>Seu vídeo, seu controle.</h2>
+    <p>
+      Ferramentas práticas para ajustes rápidos diretamente no navegador.
+    </p>
+  </div>
+
+  <label class="plm-btn primary" for="file">
+    🎬 Começar agora
+  </label>
+
+</section>
+
+<section class="video-editor-final-cta">
+  <div>
+    <span class="plm-eyebrow">PHOTOLIVE MAGIC</span>
+    <h2>Pronto para editar seus vídeos?</h2>
+    <p>Escolha seu plano e tenha acesso ao Editor de Vídeos.</p>
+  </div>
+
+  <a class="plm-btn primary" href="../../pagamentos/pagamento.html?product_slug=editor-videos">
+    💳 Ver planos e contratar
+  </a>
+</section>
+
+</main>
+<script>
+const f=document.getElementById('file'),v=document.getElementById('video'),empty=document.getElementById('empty'),start=document.getElementById('start'),end=document.getElementById('end'),speed=document.getElementById('speed'),status=document.getElementById('status');let url='';f.onchange=e=>{const file=e.target.files[0];if(!file)return;url&&URL.revokeObjectURL(url);url=URL.createObjectURL(file);v.src=url;v.hidden=false;empty.hidden=true;v.onloadedmetadata=()=>{start.max=end.max=v.duration;end.value=v.duration;document.getElementById('endv').textContent=v.duration.toFixed(1);document.getElementById('snapshot').disabled=false;status.textContent=`${file.name} · ${v.videoWidth}×${v.videoHeight} · ${v.duration.toFixed(1)}s`}};speed.oninput=()=>{v.playbackRate=+speed.value/100;document.getElementById('speedv').textContent=(+speed.value/100).toFixed(2)+'×'};start.oninput=()=>{document.getElementById('startv').textContent=(+start.value).toFixed(1);if(+start.value>+end.value)end.value=start.value};end.oninput=()=>{document.getElementById('endv').textContent=(+end.value).toFixed(1);if(+end.value<+start.value)start.value=end.value};document.getElementById('apply').onclick=()=>{v.currentTime=+start.value;v.ontimeupdate=()=>{if(v.currentTime>=+end.value){v.pause();v.ontimeupdate=null}}};document.getElementById('mute').onclick=()=>{v.muted=!v.muted;document.getElementById('mute').textContent=v.muted?'🔊 Ativar som':'🔇 Silenciar'};document.getElementById('snapshot').onclick=()=>{const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='photolive-quadro.png';a.click();URL.revokeObjectURL(a.href)},'image/png')};
+</script></body></html>

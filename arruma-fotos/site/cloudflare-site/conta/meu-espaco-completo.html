@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Espaço — PhotoLive Magic</title>
+
+<style>
+:root{
+  --dark:#062b45;
+  --dark2:#07566b;
+  --turq:#08c6c8;
+  --blue:#2879ff;
+  --green:#42d66f;
+  --yellow:#ffd84d;
+  --purple:#8b5cf6;
+  --red:#ff5263;
+  --ice:#f4fbfd;
+  --text:#073b52;
+  --muted:#58727f;
+  --white:#fff;
+  --shadow:0 16px 40px rgba(3,42,65,.16);
+}
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Inter,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 5% 5%,rgba(255,216,77,.25),transparent 24%),
+    radial-gradient(circle at 95% 5%,rgba(139,92,246,.24),transparent 25%),
+    radial-gradient(circle at 5% 95%,rgba(66,214,111,.20),transparent 26%),
+    radial-gradient(circle at 95% 95%,rgba(255,82,99,.18),transparent 26%),
+    linear-gradient(135deg,#062b45,#07566b 48%,#087f91 75%,#062b45);
+  overflow-x:hidden;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg,transparent 20%,rgba(8,198,200,.12),transparent 68%),
+    linear-gradient(45deg,transparent 30%,rgba(255,216,77,.08),transparent 70%);
+  animation:water 10s ease-in-out infinite alternate;
+}
+
+@keyframes water{
+  from{transform:translateX(-2%)}
+  to{transform:translateX(2%) translateY(1%)}
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(3,31,50,.90);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.14);
+}
+
+.topbar-inner{
+  width:min(1180px,calc(100% - 32px));
+  min-height:70px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.logo{
+  color:#fff;
+  font-size:1.15rem;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.logo span{color:var(--turq)}
+
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:5px;
+}
+
+.nav a{
+  color:#e9fbff;
+  padding:10px 13px;
+  border-radius:11px;
+  font-size:.88rem;
+  font-weight:800;
+}
+
+.nav a:hover{
+  background:rgba(255,255,255,.12);
+}
+
+.nav .logout{
+  background:linear-gradient(135deg,var(--red),#ff785f);
+}
+
+.container{
+  width:min(1180px,calc(100% - 32px));
+  margin:auto;
+  padding:38px 0 70px;
+  position:relative;
+  z-index:2;
+}
+
+.hero{
+  color:#fff;
+  text-align:center;
+  padding:12px 0 34px;
+}
+
+.badge{
+  display:inline-block;
+  padding:7px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.25);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.hero h1{
+  margin:14px 0 8px;
+  font-size:clamp(2rem,5vw,3.4rem);
+  line-height:1.05;
+}
+
+.hero p{
+  max-width:680px;
+  margin:0 auto;
+  color:#dffaff;
+  line-height:1.6;
+}
+
+.email{
+  margin-top:12px;
+  color:#fff;
+  font-weight:800;
+  word-break:break-word;
+}
+
+.section{
+  margin-top:28px;
+}
+
+.section-heading{
+  color:#fff;
+  margin-bottom:17px;
+}
+
+.section-heading h2{
+  margin:0 0 5px;
+  font-size:1.55rem;
+}
+
+.section-heading p{
+  margin:0;
+  color:#d9f5fa;
+}
+
+.services{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+
+.card{
+  position:relative;
+  background:rgba(255,255,255,.97);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.8);
+}
+
+.card:before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:5px;
+  background:linear-gradient(
+    90deg,
+    var(--yellow),
+    var(--green),
+    var(--turq),
+    var(--blue),
+    var(--purple),
+    var(--red)
+  );
+}
+
+.card.active{
+  border:2px solid rgba(66,214,111,.65);
+}
+
+.card-icon{
+  width:56px;
+  height:56px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:#eefaff;
+  font-size:1.7rem;
+  margin-bottom:14px;
+}
+
+.active-label{
+  display:inline-block;
+  margin-bottom:10px;
+  padding:5px 10px;
+  border-radius:999px;
+  background:#e9fff0;
+  color:#14723b;
+  font-size:.7rem;
+  font-weight:900;
+}
+
+.card h3{
+  margin:0 0 8px;
+  font-size:1.13rem;
+}
+
+.card p{
+  margin:0 0 15px;
+  color:var(--muted);
+  line-height:1.5;
+  font-size:.9rem;
+}
+
+.price{
+  margin-bottom:15px;
+  color:var(--dark);
+  font-weight:900;
+}
+
+.price small{
+  color:var(--muted);
+  font-weight:600;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  padding:10px 14px;
+  border-radius:11px;
+  font-size:.83rem;
+  font-weight:900;
+  border:0;
+  cursor:pointer;
+}
+
+.btn-primary{
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--turq));
+}
+
+.btn-buy{
+  color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--red));
+}
+
+.btn-light{
+  color:var(--dark);
+  background:#eaf7fa;
+}
+
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+}
+
+.quick{
+  background:rgba(255,255,255,.95);
+  border-radius:17px;
+  padding:19px;
+  box-shadow:0 10px 25px rgba(3,42,65,.12);
+  transition:.2s ease;
+}
+
+.quick:hover{
+  transform:translateY(-2px);
+}
+
+.quick strong{
+  display:block;
+  margin-bottom:5px;
+}
+
+.quick span{
+  color:var(--muted);
+  font-size:.82rem;
+  line-height:1.4;
+}
+
+.empty{
+  grid-column:1/-1;
+  background:rgba(255,255,255,.96);
+  border-radius:20px;
+  padding:25px;
+  text-align:center;
+  color:var(--muted);
+}
+
+footer{
+  padding-top:35px;
+  text-align:center;
+  color:#d8f5fa;
+  font-size:.82rem;
+}
+
+@media(max-width:1000px){
+  .services{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .quick-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:700px){
+  .topbar-inner{
+    padding:12px 0;
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .nav{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .nav a{
+    font-size:.78rem;
+    padding:8px 10px;
+  }
+
+  .container{
+    width:calc(100% - 22px);
+    padding-top:25px;
+  }
+
+  .services,
+  .quick-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero{
+    padding-top:5px;
+  }
+
+  .card{
+    padding:19px;
+  }
+}
+
+@media(max-width:360px){
+  .container{
+    width:calc(100% - 16px);
+  }
+
+  .logo{
+    font-size:1rem;
+  }
+
+  .nav a{
+    padding:7px 8px;
+    font-size:.73rem;
+  }
+
+  .actions .btn{
+    width:100%;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  body:before{
+    animation:none;
+  }
+
+  .quick{
+    transition:none;
+  }
+}
+</style>
+
+<style id="photolive-header-conta-link">
+.photolive-header-account-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:9px 14px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#08c6c8,#2879ff);
+  color:#fff !important;
+  font-weight:800;
+  text-decoration:none !important;
+  box-shadow:0 6px 18px rgba(8,198,200,.22);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+
+.photolive-header-account-link:hover{
+  transform:translateY(-1px);
+  box-shadow:0 9px 24px rgba(8,198,200,.30);
+}
+
+@media(max-width:700px){
+  .photolive-header-account-link{
+    width:100%;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+
+    <a class="logo" href="../index.html">
+      ✦ PhotoLive <span>Magic</span>
+    </a>
+
+    <nav class="nav">
+      <a href="../index.html">Início</a>
+      <a href="../servicos.html">Serviços</a>
+      <a href="minha-conta.html">Minha Conta</a>
+      <a href="#" id="logoutBtn" class="logout">Sair</a>
+    </nav>
+
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+
+    <span class="badge">ÁREA PRIVADA</span>
+
+    <h1>Meu Espaço</h1>
+
+    <p>
+      Veja seus serviços, descubra novos recursos e acesse tudo
+      de forma simples em um único lugar.
+    </p>
+
+    <div class="email" id="accountEmail">
+      Carregando sua conta...
+    </div>
+
+  </section>
+
+
+  <!-- SERVIÇOS ATIVOS -->
+
+  <section class="section">
+
+    <div class="section-heading">
+      <h2>⭐ Meus serviços</h2>
+      <p>Veja o que já está disponível para sua conta.</p>
+    </div>
+
+    <div class="services" id="activeServices">
+
+      <div class="empty">
+        Carregando seus serviços...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- OUTROS SERVIÇOS -->
+
+  <section class="section">
+
+    <div class="section-heading">
+      <h2>✨ Conheça outros serviços</h2>
+      <p>
+        Encontre o recurso que você precisa e adquira diretamente pelo painel.
+      </p>
+    </div>
+
+    <div class="services">
+
+      <article class="card">
+
+        <div class="card-icon">📸</div>
+
+        <h3>Editor de Fotos</h3>
+
+        <p>
+          Edite, ajuste, recorte, melhore e salve novas versões
+          das suas fotos diretamente no navegador.
+        </p>
+
+        <div class="price">
+          A partir de R$ 5,90
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary"
+             href="../servicos/editor-fotos/index.html">
+            Ver serviço
+          </a>
+
+          <a class="btn btn-buy"
+             href="../pagamentos/pagamento.html?produto=editor-fotos">
+            Adquirir
+          </a>
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-icon">🎬</div>
+
+        <h3>Editor de Vídeos</h3>
+
+        <p>
+          Trabalhe com seus vídeos usando ferramentas simples
+          diretamente pelo navegador.
+        </p>
+
+        <div class="price">
+          A partir de R$ 7,90
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary"
+             href="../servicos/editor-videos/index.html">
+            Ver serviço
+          </a>
+
+          <a class="btn btn-buy"
+             href="../pagamentos/pagamento.html?produto=editor-videos">
+            Adquirir
+          </a>
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-icon">♻️</div>
+
+        <h3>Recuperar</h3>
+
+        <p>
+          Recursos para ajudar a recuperar arquivos importantes
+          que foram perdidos ou excluídos.
+        </p>
+
+        <div class="price">
+          A partir de R$ 14,90
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary"
+             href="../servicos.html#recuperar">
+            Ver serviço
+          </a>
+
+          <a class="btn btn-buy"
+             href="../pagamentos/pagamento.html?produto=recuperar">
+            Adquirir
+          </a>
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-icon">🔎</div>
+
+        <h3>Diagnóstico</h3>
+
+        <p>
+          Entenda seus arquivos e descubra o que pode ser
+          organizado, recuperado ou melhorado.
+        </p>
+
+        <div class="price">
+          A partir de R$ 5,90
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary"
+             href="../index.html#diagnostico-gratuito">
+            Ver serviço
+          </a>
+
+          <a class="btn btn-buy"
+             href="../pagamentos/pagamento.html?produto=diagnostico">
+            Adquirir
+          </a>
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-icon">📦</div>
+
+        <h3>Pacote Essencial</h3>
+
+        <p>
+          Uma combinação prática dos principais recursos
+          do PhotoLive Magic.
+        </p>
+
+        <div class="price">
+          A partir de R$ 12,90
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary"
+             href="../servicos.html">
+            Ver serviços
+          </a>
+
+          <a class="btn btn-buy"
+             href="../pagamentos/pagamento.html?produto=pacote-essencial">
+            Adquirir
+          </a>
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-icon">🚀</div>
+
+        <h3>Pacote Completo</h3>
+
+        <p>
+          Reúna mais recursos em uma experiência completa
+          para cuidar dos seus arquivos.
+        </p>
+
+        <div class="price">
+          A partir de R$ 24,90
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary"
+             href="../servicos.html">
+            Ver serviços
+          </a>
+
+          <a class="btn btn-buy"
+             href="../pagamentos/pagamento.html?produto=pacote-completo">
+            Adquirir
+          </a>
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-icon">👑</div>
+
+        <h3>Premium</h3>
+
+        <p>
+          Uma experiência mais completa dentro do
+          PhotoLive Magic.
+        </p>
+
+        <div class="price">
+          A partir de R$ 34,90
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary"
+             href="../servicos.html#premium">
+            Ver serviço
+          </a>
+
+          <a class="btn btn-buy"
+             href="../pagamentos/pagamento.html?produto=premium">
+            Adquirir
+          </a>
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-icon">📂</div>
+
+        <h3>Organizar</h3>
+
+        <p>
+          Organize seus arquivos de forma prática,
+          evitando cópias desnecessárias.
+        </p>
+
+        <div class="actions">
+          <a class="btn btn-primary"
+             href="../servicos.html#organizar">
+            Ver serviço
+          </a>
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- FERRAMENTAS -->
+
+  <section class="section">
+
+    <div class="section-heading">
+      <h2>🛠️ Ferramentas rápidas</h2>
+      <p>Alguns recursos para trabalhar diretamente com suas fotos.</p>
+    </div>
+
+    <div class="quick-grid">
+
+      <a class="quick" href="../servicos/organizador-fotos/index.html">
+        <strong>📂 Organizador</strong>
+        <span>Organize suas fotos.</span>
+      </a>
+
+      <a class="quick" href="../servicos/colagem-fotos/index.html">
+        <strong>🖼️ Colagem</strong>
+        <span>Crie colagens de fotos.</span>
+      </a>
+
+      <a class="quick" href="../servicos/redimensionar-fotos/index.html">
+        <strong>📐 Redimensionar</strong>
+        <span>Ajuste o tamanho das imagens.</span>
+      </a>
+
+      <a class="quick" href="../servicos/compressor-fotos/index.html">
+        <strong>🗜️ Compressor</strong>
+        <span>Reduza o tamanho dos arquivos.</span>
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- MINHA CONTA -->
+
+  <section class="section">
+
+    <div class="section-heading">
+      <h2>👤 Minha Conta</h2>
+      <p>Gerencie seus dados, pedidos, pagamentos e configurações.</p>
+    </div>
+
+    <div class="quick-grid">
+
+      <a class="quick" href="minha-conta.html#dados">
+        <strong>👤 Meus dados</strong>
+        <span>Informações pessoais e segurança.</span>
+      </a>
+
+      <a class="quick" href="minha-conta.html#pedidos">
+        <strong>📦 Meus pedidos</strong>
+        <span>Consulte suas compras.</span>
+      </a>
+
+      <a class="quick" href="minha-conta.html#pagamentos">
+        <strong>💳 Pagamentos</strong>
+        <span>Consulte pagamentos e cobranças.</span>
+      </a>
+
+      <a class="quick" href="minha-conta.html#plano">
+        <strong>⭐ Meu plano</strong>
+        <span>Consulte seu plano.</span>
+      </a>
+
+      <a class="quick" href="minha-conta.html#ofertas">
+        <strong>🎁 Ofertas</strong>
+        <span>Veja ofertas disponíveis.</span>
+      </a>
+
+      <a class="quick" href="minha-conta.html#ajuda">
+        <strong>🆘 Atendimento</strong>
+        <span>Precisa de ajuda? Fale conosco.</span>
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <footer>
+    PhotoLive Magic — Seus arquivos, do seu jeito.
+  </footer>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../auth-config.js"></script>
+
+<script>
+(function(){
+
+  const API =
+    window.PHOTOLIVE_PAYMENT_API ||
+    "https://photolive-infinitepay.analisyone.workers.dev";
+
+  const SERVICE_MAP = {
+
+    "editor-fotos":{
+      name:"Editor de Fotos",
+      icon:"📸",
+      description:"Edite, ajuste, recorte e salve novas versões das suas fotos.",
+      url:"../servicos/editor-fotos/index.html"
+    },
+
+    "editor-videos":{
+      name:"Editor de Vídeos",
+      icon:"🎬",
+      description:"Trabalhe com seus vídeos diretamente no navegador.",
+      url:"../servicos/editor-videos/index.html"
+    },
+
+    "recuperar":{
+      name:"Recuperar",
+      icon:"♻️",
+      description:"Recursos para ajudar na recuperação de arquivos.",
+      url:"../servicos.html#recuperar"
+    },
+
+    "diagnostico":{
+      name:"Diagnóstico",
+      icon:"🔎",
+      description:"Analise seus arquivos e descubra o que pode ser feito.",
+      url:"../index.html#diagnostico-gratuito"
+    },
+
+    "organizar":{
+      name:"Organizar",
+      icon:"📦",
+      description:"Organize seus arquivos sem cópias desnecessárias.",
+      url:"../servicos.html#organizar"
+    },
+
+    "premium":{
+      name:"Premium",
+      icon:"👑",
+      description:"Uma experiência mais completa.",
+      url:"../servicos.html#premium"
+    },
+
+    "pacote-essencial":{
+      name:"Pacote Essencial",
+      icon:"📦",
+      description:"Principais recursos reunidos em um pacote.",
+      url:"../pagamentos/pagamento.html?produto=pacote-essencial"
+    },
+
+    "pacote-completo":{
+      name:"Pacote Completo",
+      icon:"🚀",
+      description:"Mais recursos em uma única experiência.",
+      url:"../pagamentos/pagamento.html?produto=pacote-completo"
+    }
+
+  };
+
+
+  function escapeHTML(value){
+
+    return String(value ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+
+  }
+
+
+  async function init(){
+
+    if(!window.supabase){
+
+      document.getElementById("accountEmail").textContent =
+        "Sistema de acesso indisponível.";
+
+      return;
+
+    }
+
+
+    if(
+      !window.PHOTOLIVE_SUPABASE_URL ||
+      !window.PHOTOLIVE_SUPABASE_ANON_KEY
+    ){
+
+      document.getElementById("accountEmail").textContent =
+        "Configuração de acesso indisponível.";
+
+      return;
+
+    }
+
+
+    const client =
+      window.supabase.createClient(
+        window.PHOTOLIVE_SUPABASE_URL,
+        window.PHOTOLIVE_SUPABASE_ANON_KEY
+      );
+
+
+    const {data,error} =
+      await client.auth.getSession();
+
+
+    if(error || !data.session){
+
+      window.location.href =
+        "../acesso.html?modo=login";
+
+      return;
+
+    }
+
+
+    document.getElementById("accountEmail").textContent =
+      data.session.user.email || "";
+
+
+    await loadEntitlements(
+      data.session.access_token
+    );
+
+
+    document
+      .getElementById("logoutBtn")
+      .addEventListener("click",async function(event){
+
+        event.preventDefault();
+
+        await client.auth.signOut();
+
+        window.location.href =
+          "../acesso.html?modo=login";
+
+      });
+
+  }
+
+
+  async function loadEntitlements(token){
+
+    const box =
+      document.getElementById("activeServices");
+
+
+    try{
+
+      const response =
+        await fetch(API + "/orders/me",{
+          method:"GET",
+          headers:{
+            "Authorization":"Bearer " + token
+          }
+        });
+
+
+      const body =
+        await response.json();
+
+
+      const entitlements =
+        Array.isArray(body.entitlements)
+          ? body.entitlements
+          : [];
+
+
+      if(!entitlements.length){
+
+        box.innerHTML = `
+          <div class="empty">
+            <strong>Você ainda não possui serviços contratados.</strong>
+            <br><br>
+            Veja as opções abaixo e escolha o que combina com você.
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      const cards =
+        entitlements.map(function(item){
+
+          const key =
+            String(
+              item.product_slug ||
+              item.product ||
+              item.slug ||
+              ""
+            ).toLowerCase();
+
+
+          const service =
+            SERVICE_MAP[key];
+
+
+          if(!service){
+
+            return "";
+
+          }
+
+
+          return `
+            <article class="card active">
+
+              <span class="active-label">
+                ✓ ATIVO
+              </span>
+
+              <div class="card-icon">
+                ${service.icon}
+              </div>
+
+              <h3>
+                ${escapeHTML(service.name)}
+              </h3>
+
+              <p>
+                ${escapeHTML(service.description)}
+              </p>
+
+              <div class="actions">
+
+                <a
+                  class="btn btn-primary"
+                  href="${service.url}">
+                  Abrir serviço
+                </a>
+
+              </div>
+
+            </article>
+          `;
+
+        }).filter(Boolean);
+
+
+      box.innerHTML =
+        cards.length
+          ? cards.join("")
+          : `
+            <div class="empty">
+              Seus serviços aparecerão aqui quando forem ativados.
+            </div>
+          `;
+
+
+    }catch(error){
+
+      console.error(
+        "PhotoLive Magic — erro ao carregar serviços:",
+        error
+      );
+
+
+      box.innerHTML = `
+        <div class="empty">
+          Não foi possível consultar seus serviços agora.
+          <br><br>
+          Você pode continuar navegando e conhecer as opções abaixo.
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  init();
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,5530 @@
+const API = "";
+
+const TOKEN_KEY = "resgata_admin_token";
+
+let admin = null;
+let dashboard = null;
+
+const pageTitles = {
+  dashboard: "Dashboard",
+  users: "Usuários",
+  devices: "Dispositivos",
+  services: "Serviços",
+  requests: "Solicitações",
+  tickets: "Atendimento",
+  specialists: "Especialistas",
+  updates: "Atualizações",
+  plans: "Planos",
+  security: "Segurança",
+  protection: "Limpeza e Proteção",
+  reports: "Relatórios",
+  logs: "Logs",
+  settings: "Configurações",
+  admins: "Administradores"
+};
+
+function token() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function showToast(message, type = "info") {
+  const toast = document.getElementById("toast");
+
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.className = `toast show ${type}`;
+
+  setTimeout(() => {
+    toast.className = "toast";
+  }, 3500);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+async function api(path, options = {}) {
+
+  const headers = new Headers(
+    options.headers || {}
+  );
+
+  headers.set(
+    "Authorization",
+    `Bearer ${token()}`
+  );
+
+  if (
+    options.body &&
+    typeof options.body !== "string"
+  ) {
+    headers.set(
+      "Content-Type",
+      "application/json"
+    );
+
+    options.body = JSON.stringify(
+      options.body
+    );
+  }
+
+  const response = await fetch(
+    `${API}${path}`,
+    {
+      ...options,
+      headers
+    }
+  );
+
+  let data = {};
+
+  try {
+    data = await response.json();
+  } catch {
+    data = {};
+  }
+
+  if (response.status === 401) {
+
+    localStorage.removeItem(TOKEN_KEY);
+
+    location.href =
+      "/admin/login.html";
+
+    throw new Error(
+      "Sessão administrativa expirada."
+    );
+  }
+
+  if (!response.ok) {
+
+    throw new Error(
+      data.error ||
+      `Erro HTTP ${response.status}`
+    );
+  }
+
+  return data;
+}
+
+
+// ============================================================
+// LOGIN ADMIN
+// ============================================================
+
+async function loadAdmin() {
+
+  if (!token()) {
+
+    location.href =
+      "/admin/login.html";
+
+    return null;
+  }
+
+  try {
+
+    const data =
+      await api("/api/admin/me");
+
+    admin = data.admin;
+
+    document.getElementById(
+      "sidebarAdminName"
+    ).textContent =
+      admin.name || "Administrador";
+
+    document.getElementById(
+      "sidebarAdminRole"
+    ).textContent =
+      admin.role || "admin";
+
+    return admin;
+
+  } catch (error) {
+
+    showToast(
+      error.message,
+      "error"
+    );
+
+    return null;
+  }
+}
+
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+
+function openPage(page) {
+
+  if (!pageTitles[page]) {
+    page = "dashboard";
+  }
+
+  document.querySelectorAll(
+    ".page"
+  ).forEach(element => {
+
+    element.classList.remove(
+      "active"
+    );
+
+  });
+
+  const selected =
+    document.getElementById(
+      `page-${page}`
+    );
+
+  if (selected) {
+    selected.classList.add(
+      "active"
+    );
+  }
+
+  document.querySelectorAll(
+    ".nav-item"
+  ).forEach(button => {
+
+    button.classList.toggle(
+      "active",
+      button.dataset.page === page
+    );
+
+  });
+
+  document.getElementById(
+    "pageTitle"
+  ).textContent =
+    pageTitles[page];
+
+  if (page === "dashboard") {
+    loadDashboard();
+  }
+
+  if (window.innerWidth < 900) {
+    document
+      .querySelector(".sidebar")
+      ?.classList.remove("mobile-open");
+  }
+}
+
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+
+async function loadDashboard() {
+
+  try {
+
+    const [
+      dashboardData,
+      services,
+      specialists,
+      security
+    ] = await Promise.all([
+      api("/api/admin/dashboard"),
+      api("/api/admin/services"),
+      api("/api/admin/specialists"),
+      api("/api/admin/security/events?limit=20")
+    ]);
+
+    dashboard = dashboardData;
+
+    renderMetrics(
+      dashboardData
+    );
+
+    renderServices(
+      services.services || []
+    );
+
+    renderSpecialists(
+      specialists.specialists || []
+    );
+
+    renderSecurityAlerts(
+      security.events || []
+    );
+
+    renderActivity(
+      dashboardData
+    );
+
+    renderProtection(
+      dashboardData.dashboard || {}
+    );
+
+    document.getElementById(
+      "lastUpdate"
+    ).textContent =
+      `Atualizado às ${new Date().toLocaleTimeString("pt-BR")}`;
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      `Erro no dashboard: ${error.message}`,
+      "error"
+    );
+  }
+}
+
+
+// ============================================================
+// MÉTRICAS
+// ============================================================
+
+function renderMetrics(data) {
+
+  const users =
+    data.users || {};
+
+  const devices =
+    data.devices || {};
+
+  const requests =
+    data.requests || {};
+
+  const tickets =
+    data.tickets || {};
+
+  document.getElementById(
+    "metricUsers"
+  ).textContent =
+    users.total || 0;
+
+  document.getElementById(
+    "metricUsersActive"
+  ).textContent =
+    `${users.active || 0} ativos`;
+
+  document.getElementById(
+    "metricDevices"
+  ).textContent =
+    devices.total || 0;
+
+  document.getElementById(
+    "metricRequests"
+  ).textContent =
+    requests.total || 0;
+
+  document.getElementById(
+    "metricTickets"
+  ).textContent =
+    tickets.total || 0;
+
+  document.getElementById(
+    "metricSecurity"
+  ).textContent =
+    data.security?.total || 0;
+
+  document.getElementById(
+    "metricProtection"
+  ).textContent =
+    data.protection?.total || 0;
+}
+
+
+// ============================================================
+// SERVIÇOS
+// ============================================================
+
+function renderServices(services) {
+
+  const box =
+    document.getElementById(
+      "servicesOverview"
+    );
+
+  if (!services.length) {
+
+    box.innerHTML = `
+      <div class="empty-state">
+        Nenhum serviço cadastrado.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    services.map(service => {
+
+      const enabled =
+        service.enabled !== false;
+
+      return `
+        <div class="service-row">
+
+          <div class="service-row-icon">
+            🧩
+          </div>
+
+          <div class="service-row-info">
+
+            <strong>
+              ${escapeHtml(service.name)}
+            </strong>
+
+            <span>
+              ${escapeHtml(
+                service.category || ""
+              )}
+            </span>
+
+          </div>
+
+          <span class="
+            status-badge
+            ${enabled
+              ? "success"
+              : "disabled"}
+          ">
+            ${enabled
+              ? "Ativo"
+              : "Desativado"}
+          </span>
+
+        </div>
+      `;
+
+    }).join("");
+}
+
+
+// ============================================================
+// ESPECIALISTAS
+// ============================================================
+
+function renderSpecialists(
+  specialists
+) {
+
+  const box =
+    document.getElementById(
+      "specialistsOverview"
+    );
+
+  if (!specialists.length) {
+
+    box.innerHTML = `
+      <div class="empty-state">
+        Nenhum especialista cadastrado.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    specialists
+      .slice(0, 6)
+      .map(specialist => {
+
+        const online =
+          specialist.availability ===
+          "online";
+
+        return `
+          <div class="specialist-row">
+
+            <div class="specialist-avatar">
+              ${escapeHtml(
+                (specialist.name || "A")
+                  .charAt(0)
+                  .toUpperCase()
+              )}
+            </div>
+
+            <div class="specialist-info">
+
+              <strong>
+                ${escapeHtml(
+                  specialist.name
+                )}
+              </strong>
+
+              <span>
+                ${escapeHtml(
+                  specialist.specialty ||
+                  "Especialista"
+                )}
+              </span>
+
+            </div>
+
+            <span class="
+              status-badge
+              ${online
+                ? "success"
+                : "neutral"}
+            ">
+              ${online
+                ? "Online"
+                : "Offline"}
+            </span>
+
+          </div>
+        `;
+
+      }).join("");
+}
+
+
+// ============================================================
+// SEGURANÇA
+// ============================================================
+
+function renderSecurityAlerts(events) {
+
+  const box =
+    document.getElementById(
+      "alertsList"
+    );
+
+  const unresolved =
+    events.filter(
+      event =>
+        Number(event.resolved) === 0
+    );
+
+  if (!unresolved.length) {
+
+    box.innerHTML = `
+      <div class="no-alert">
+        <span>✓</span>
+        <div>
+          <strong>
+            Nenhum alerta pendente
+          </strong>
+          <p>
+            Não há eventos de segurança pendentes.
+          </p>
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    unresolved
+      .slice(0, 6)
+      .map(event => {
+
+        return `
+          <div class="
+            alert-row
+            ${escapeHtml(
+              event.severity || "info"
+            )}
+          ">
+
+            <div class="alert-icon">
+              ${event.severity === "high"
+                ? "🔴"
+                : event.severity === "medium"
+                  ? "🟠"
+                  : "🔵"}
+            </div>
+
+            <div>
+
+              <strong>
+                ${escapeHtml(
+                  event.title ||
+                  "Evento de segurança"
+                )}
+              </strong>
+
+              <p>
+                ${escapeHtml(
+                  event.description || ""
+                )}
+              </p>
+
+            </div>
+
+          </div>
+        `;
+
+      }).join("");
+}
+
+
+// ============================================================
+// ATIVIDADE
+// ============================================================
+
+function renderActivity(data) {
+
+  const box =
+    document.getElementById(
+      "recentActivity"
+    );
+
+  const activity =
+    data.audit?.recent ||
+    data.audit?.logs ||
+    data.activity ||
+    [];
+
+  if (!Array.isArray(activity) ||
+      !activity.length) {
+
+    box.innerHTML = `
+      <div class="empty-state">
+        Nenhuma atividade recente encontrada.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    activity
+      .slice(0, 8)
+      .map(item => {
+
+        return `
+          <div class="activity-row">
+
+            <div class="activity-icon">
+              📝
+            </div>
+
+            <div class="activity-info">
+
+              <strong>
+                ${escapeHtml(
+                  item.action ||
+                  "Atividade"
+                )}
+              </strong>
+
+              <span>
+                ${escapeHtml(
+                  item.entity ||
+                  ""
+                )}
+              </span>
+
+            </div>
+
+            <time>
+              ${escapeHtml(
+                item.created_at ||
+                item.createdAt ||
+                ""
+              )}
+            </time>
+
+          </div>
+        `;
+
+      }).join("");
+}
+
+
+// ============================================================
+// PROTEÇÃO
+// ============================================================
+
+function renderProtection(data) {
+
+  const protection =
+    data.protection || {};
+
+  const security =
+    data.security || {};
+
+  document.getElementById(
+    "protectionReports"
+  ).textContent =
+    protection.total || 0;
+
+  document.getElementById(
+    "removalRequests"
+  ).textContent =
+    protection.removalRequests || 0;
+
+  document.getElementById(
+    "pendingRemovalRequests"
+  ).textContent =
+    protection.removalRequests || 0;
+
+  document.getElementById(
+    "unresolvedSecurity"
+  ).textContent =
+    security.total || 0;
+}
+
+
+// ============================================================
+// LOGOUT
+// ============================================================
+
+async function logout() {
+
+  try {
+
+    await api(
+      "/api/admin/logout",
+      {
+        method: "POST"
+      }
+    );
+
+  } catch {}
+
+  localStorage.removeItem(
+    TOKEN_KEY
+  );
+
+  location.href =
+    "/admin/login.html";
+}
+
+
+// ============================================================
+// EVENTOS
+// ============================================================
+
+document.querySelectorAll(
+  ".nav-item"
+).forEach(button => {
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      openPage(
+        button.dataset.page
+      );
+
+    }
+  );
+
+});
+
+
+document.querySelectorAll(
+  "[data-page-link]"
+).forEach(button => {
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      openPage(
+        button.dataset.pageLink
+      );
+
+    }
+  );
+
+});
+
+
+document.getElementById(
+  "refreshButton"
+)?.addEventListener(
+  "click",
+  async () => {
+
+    await loadDashboard();
+
+    showToast(
+      "Dashboard atualizado.",
+      "success"
+    );
+
+  }
+);
+
+
+document.getElementById(
+  "logoutButton"
+)?.addEventListener(
+  "click",
+  logout
+);
+
+
+document.getElementById(
+  "mobileMenu"
+)?.addEventListener(
+  "click",
+  () => {
+
+    document
+      .querySelector(".sidebar")
+      ?.classList.toggle(
+        "mobile-open"
+      );
+
+  }
+);
+
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+
+(async () => {
+
+  const currentAdmin =
+    await loadAdmin();
+
+  if (!currentAdmin) {
+    return;
+  }
+
+  await loadDashboard();
+
+})();
+
+
+// ============================================================
+// USUÁRIOS — ADMIN
+// ============================================================
+
+let usersSearchTimer = null;
+
+async function loadUsers() {
+
+  const body =
+    document.getElementById(
+      "usersTableBody"
+    );
+
+  if (!body) {
+    return;
+  }
+
+  body.innerHTML = `
+    <tr>
+      <td colspan="6" class="table-loading">
+        Carregando usuários...
+      </td>
+    </tr>
+  `;
+
+  try {
+
+    const search =
+      document.getElementById(
+        "usersSearch"
+      )?.value || "";
+
+    const status =
+      document.getElementById(
+        "usersStatus"
+      )?.value || "";
+
+    const plan =
+      document.getElementById(
+        "usersPlan"
+      )?.value || "";
+
+    const params =
+      new URLSearchParams();
+
+    if (search.trim()) {
+      params.set(
+        "search",
+        search.trim()
+      );
+    }
+
+    if (status) {
+      params.set(
+        "status",
+        status
+      );
+    }
+
+    if (plan) {
+      params.set(
+        "plan",
+        plan
+      );
+    }
+
+    params.set(
+      "limit",
+      "500"
+    );
+
+    const data =
+      await api(
+        `/api/admin/users?${params.toString()}`
+      );
+
+    const users =
+      data.users || [];
+
+    document.getElementById(
+      "usersTotal"
+    ).textContent =
+      `${data.total || users.length} usuários`;
+
+    if (!users.length) {
+
+      body.innerHTML = `
+        <tr>
+          <td
+            colspan="6"
+            class="table-empty"
+          >
+            Nenhum usuário encontrado.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    body.innerHTML =
+      users.map(user => {
+
+        return `
+          <tr>
+
+            <td>
+
+              <button
+                class="user-name-button"
+                data-user-id="${escapeHtml(user.id)}"
+              >
+
+                <span class="table-avatar">
+                  ${escapeHtml(
+                    (user.name || "U")
+                      .charAt(0)
+                      .toUpperCase()
+                  )}
+                </span>
+
+                <span>
+                  ${escapeHtml(
+                    user.name ||
+                    "Usuário sem nome"
+                  )}
+                </span>
+
+              </button>
+
+            </td>
+
+
+            <td>
+              ${escapeHtml(
+                user.email || "-"
+              )}
+            </td>
+
+
+            <td>
+
+              <span class="
+                plan-badge
+                ${user.plan === "premium"
+                  ? "premium"
+                  : ""}
+              ">
+                ${escapeHtml(
+                  user.plan || "free"
+                )}
+              </span>
+
+            </td>
+
+
+            <td>
+
+              <span class="
+                status-badge
+                ${user.status === "active"
+                  ? "success"
+                  : user.status === "blocked"
+                    ? "disabled"
+                    : "neutral"}
+              ">
+                ${escapeHtml(
+                  user.status || "-"
+                )}
+              </span>
+
+            </td>
+
+
+            <td>
+              ${formatDate(
+                user.created_at
+              )}
+            </td>
+
+
+            <td class="table-actions">
+
+              <button
+                class="table-action"
+                data-user-id="${escapeHtml(user.id)}"
+              >
+                Ver
+              </button>
+
+            </td>
+
+          </tr>
+        `;
+
+      }).join("");
+
+
+    body.querySelectorAll(
+      "[data-user-id]"
+    ).forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          openUserDrawer(
+            button.dataset.userId
+          );
+
+        }
+      );
+
+    });
+
+  } catch (error) {
+
+    body.innerHTML = `
+      <tr>
+        <td
+          colspan="6"
+          class="table-error"
+        >
+          Erro ao carregar usuários:
+          ${escapeHtml(
+            error.message
+          )}
+        </td>
+      </tr>
+    `;
+
+    showToast(
+      error.message,
+      "error"
+    );
+  }
+}
+
+
+function formatDate(value) {
+
+  if (!value) {
+    return "-";
+  }
+
+  const numeric =
+    Number(value);
+
+  const date =
+    Number.isFinite(numeric)
+      ? new Date(numeric)
+      : new Date(value);
+
+  if (Number.isNaN(
+    date.getTime()
+  )) {
+    return String(value);
+  }
+
+  return date.toLocaleDateString(
+    "pt-BR"
+  );
+}
+
+
+async function openUserDrawer(
+  userId
+) {
+
+  const backdrop =
+    document.getElementById(
+      "userDrawer"
+    );
+
+  const content =
+    document.getElementById(
+      "drawerContent"
+    );
+
+  backdrop.classList.add(
+    "open"
+  );
+
+  content.innerHTML = `
+    <div class="loading">
+      Carregando perfil...
+    </div>
+  `;
+
+  try {
+
+    const data =
+      await api(
+        `/api/admin/users/${encodeURIComponent(userId)}`
+      );
+
+    renderUserDrawer(data);
+
+  } catch (error) {
+
+    content.innerHTML = `
+      <div class="drawer-error">
+        ${escapeHtml(
+          error.message
+        )}
+      </div>
+    `;
+
+  }
+}
+
+
+function renderUserDrawer(data) {
+
+  const user =
+    data.user || {};
+
+  const devices =
+    data.devices || [];
+
+  const requests =
+    data.requests || [];
+
+  const tickets =
+    data.tickets || [];
+
+  const diagnostics =
+    data.diagnostics || [];
+
+  document.getElementById(
+    "drawerUserName"
+  ).textContent =
+    user.name || "Usuário";
+
+
+  const content =
+    document.getElementById(
+      "drawerContent"
+    );
+
+  content.innerHTML = `
+
+    <section class="drawer-section">
+
+      <div class="profile-card">
+
+        <div class="profile-avatar">
+          ${escapeHtml(
+            (user.name || "U")
+              .charAt(0)
+              .toUpperCase()
+          )}
+        </div>
+
+        <div>
+
+          <h3>
+            ${escapeHtml(
+              user.name ||
+              "Usuário"
+            )}
+          </h3>
+
+          <p>
+            ${escapeHtml(
+              user.email ||
+              "-"
+            )}
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="drawer-section">
+
+      <h3>
+        Conta
+      </h3>
+
+      <div class="detail-grid">
+
+        <div>
+          <span>Plano</span>
+          <strong>
+            ${escapeHtml(
+              user.plan || "free"
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>
+            ${escapeHtml(
+              user.status || "-"
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <span>Cadastro</span>
+          <strong>
+            ${formatDate(
+              user.created_at
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <span>ID</span>
+          <strong class="id-value">
+            ${escapeHtml(
+              user.id || "-"
+            )}
+          </strong>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="drawer-section">
+
+      <h3>
+        Ações
+      </h3>
+
+      <div class="drawer-actions">
+
+        <select
+          id="drawerStatus"
+          class="drawer-select"
+        >
+
+          <option
+            value="active"
+            ${user.status === "active"
+              ? "selected"
+              : ""}
+          >
+            Ativo
+          </option>
+
+          <option
+            value="inactive"
+            ${user.status === "inactive"
+              ? "selected"
+              : ""}
+          >
+            Inativo
+          </option>
+
+          <option
+            value="blocked"
+            ${user.status === "blocked"
+              ? "selected"
+              : ""}
+          >
+            Bloqueado
+          </option>
+
+          <option
+            value="suspended"
+            ${user.status === "suspended"
+              ? "selected"
+              : ""}
+          >
+            Suspenso
+          </option>
+
+        </select>
+
+
+        <button
+          id="saveUserStatus"
+          class="primary-button"
+        >
+          Salvar status
+        </button>
+
+
+        <select
+          id="drawerPlan"
+          class="drawer-select"
+        >
+
+          <option
+            value="free"
+            ${user.plan === "free"
+              ? "selected"
+              : ""}
+          >
+            Gratuito
+          </option>
+
+          <option
+            value="premium"
+            ${user.plan === "premium"
+              ? "selected"
+              : ""}
+          >
+            Premium
+          </option>
+
+        </select>
+
+
+        <button
+          id="saveUserPlan"
+          class="secondary-button"
+        >
+          Salvar plano
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <section class="drawer-section">
+
+      <h3>
+        Dispositivos
+        <span>
+          ${devices.length}
+        </span>
+      </h3>
+
+      ${
+        devices.length
+          ? `
+            <div class="mini-list">
+
+              ${devices.map(device => `
+                <div class="mini-row">
+
+                  <span>📱</span>
+
+                  <div>
+                    <strong>
+                      ${escapeHtml(
+                        device.name ||
+                        device.model ||
+                        "Dispositivo"
+                      )}
+                    </strong>
+
+                    <small>
+                      ${escapeHtml(
+                        device.model || "-"
+                      )}
+                      · Android
+                      ${escapeHtml(
+                        device.android_version ||
+                        "-"
+                      )}
+                    </small>
+                  </div>
+
+                </div>
+              `).join("")}
+
+            </div>
+          `
+          : `
+            <div class="drawer-empty">
+              Nenhum dispositivo registrado.
+            </div>
+          `
+      }
+
+    </section>
+
+
+    <section class="drawer-section">
+
+      <h3>
+        Solicitações
+        <span>
+          ${requests.length}
+        </span>
+      </h3>
+
+      ${
+        requests.length
+          ? `
+            <div class="mini-list">
+
+              ${requests.slice(0, 8).map(request => `
+                <div class="mini-row">
+
+                  <span>📋</span>
+
+                  <div>
+                    <strong>
+                      ${escapeHtml(
+                        request.service_id ||
+                        "Solicitação"
+                      )}
+                    </strong>
+
+                    <small>
+                      ${escapeHtml(
+                        request.status ||
+                        "-"
+                      )}
+                    </small>
+                  </div>
+
+                </div>
+              `).join("")}
+
+            </div>
+          `
+          : `
+            <div class="drawer-empty">
+              Nenhuma solicitação.
+            </div>
+          `
+      }
+
+    </section>
+
+
+    <section class="drawer-section">
+
+      <h3>
+        Atendimento
+        <span>
+          ${tickets.length}
+        </span>
+      </h3>
+
+      ${
+        tickets.length
+          ? `
+            <div class="mini-list">
+
+              ${tickets.slice(0, 8).map(ticket => `
+                <div class="mini-row">
+
+                  <span>🎧</span>
+
+                  <div>
+                    <strong>
+                      ${escapeHtml(
+                        ticket.subject ||
+                        "Atendimento"
+                      )}
+                    </strong>
+
+                    <small>
+                      ${escapeHtml(
+                        ticket.status ||
+                        "-"
+                      )}
+                    </small>
+                  </div>
+
+                </div>
+              `).join("")}
+
+            </div>
+          `
+          : `
+            <div class="drawer-empty">
+              Nenhum atendimento.
+            </div>
+          `
+      }
+
+    </section>
+
+
+    <section class="drawer-section">
+
+      <h3>
+        Diagnósticos
+        <span>
+          ${diagnostics.length}
+        </span>
+      </h3>
+
+      <div class="drawer-stat">
+        ${diagnostics.length}
+        diagnóstico(s) registrado(s).
+      </div>
+
+    </section>
+
+  `;
+
+
+  document.getElementById(
+    "saveUserStatus"
+  )?.addEventListener(
+    "click",
+    async () => {
+
+      const status =
+        document.getElementById(
+          "drawerStatus"
+        ).value;
+
+      try {
+
+        await api(
+          `/api/admin/users/${encodeURIComponent(user.id)}/status`,
+          {
+            method: "PATCH",
+            body: {
+              status
+            }
+          }
+        );
+
+        showToast(
+          "Status do usuário atualizado.",
+          "success"
+        );
+
+        await loadUsers();
+
+        await openUserDrawer(
+          user.id
+        );
+
+      } catch (error) {
+
+        showToast(
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+  document.getElementById(
+    "saveUserPlan"
+  )?.addEventListener(
+    "click",
+    async () => {
+
+      const plan =
+        document.getElementById(
+          "drawerPlan"
+        ).value;
+
+      try {
+
+        await api(
+          `/api/admin/users/${encodeURIComponent(user.id)}/plan`,
+          {
+            method: "PATCH",
+            body: {
+              plan
+            }
+          }
+        );
+
+        showToast(
+          "Plano do usuário atualizado.",
+          "success"
+        );
+
+        await loadUsers();
+
+        await openUserDrawer(
+          user.id
+        );
+
+      } catch (error) {
+
+        showToast(
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+// ============================================================
+// EVENTOS DA TELA DE USUÁRIOS
+// ============================================================
+
+document.getElementById(
+  "usersRefresh"
+)?.addEventListener(
+  "click",
+  loadUsers
+);
+
+
+document.getElementById(
+  "usersStatus"
+)?.addEventListener(
+  "change",
+  loadUsers
+);
+
+
+document.getElementById(
+  "usersPlan"
+)?.addEventListener(
+  "change",
+  loadUsers
+);
+
+
+document.getElementById(
+  "usersSearch"
+)?.addEventListener(
+  "input",
+  () => {
+
+    clearTimeout(
+      usersSearchTimer
+    );
+
+    usersSearchTimer =
+      setTimeout(
+        loadUsers,
+        350
+      );
+
+  }
+);
+
+
+document.getElementById(
+  "closeUserDrawer"
+)?.addEventListener(
+  "click",
+  () => {
+
+    document
+      .getElementById(
+        "userDrawer"
+      )
+      .classList.remove(
+        "open"
+      );
+
+  }
+);
+
+
+document.getElementById(
+  "userDrawer"
+)?.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target.id ===
+      "userDrawer"
+    ) {
+
+      event.currentTarget
+        .classList.remove(
+          "open"
+        );
+
+    }
+
+  }
+);
+
+
+// ============================================================
+// INTEGRAR COM A NAVEGAÇÃO EXISTENTE
+// ============================================================
+
+const originalOpenPage =
+  window.openPage;
+
+window.openPage =
+  function(page) {
+
+    if (
+      typeof originalOpenPage ===
+      "function"
+    ) {
+      originalOpenPage(page);
+    }
+
+    if (page === "users") {
+      loadUsers();
+    }
+
+  };
+
+
+// RESGATA+ — navegação direta das páginas administrativas
+document.addEventListener("click", event => {
+  const link = event.target.closest('a[data-page="services"]');
+
+  if (!link) return;
+
+  const href = link.getAttribute("href");
+
+  if (href) {
+    window.location.href = href;
+  }
+});
+
+
+// RESGATA+ SERVICES API INTEGRATION
+(function () {
+  const originalLoad = window.loadPageData;
+
+  async function getAdminToken() {
+    return (
+      localStorage.getItem("resgata_admin_token") ||
+      sessionStorage.getItem("resgata_admin_token") ||
+      ""
+    );
+  }
+
+  async function servicesApi(path = "", options = {}) {
+    const token = await getAdminToken();
+
+    const response = await fetch("/api/admin/services" + path, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+        ...(options.headers || {})
+      }
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+      throw new Error("Sessão administrativa expirada.");
+    }
+
+    if (!response.ok || data.ok === false) {
+      throw new Error(data.error || "Erro na API de serviços.");
+    }
+
+    return data;
+  }
+
+  async function loadServicesAdmin() {
+    const page = document.getElementById("page-services");
+
+    if (!page) return;
+
+    try {
+      const result = await servicesApi("");
+      const services = result.services || [];
+
+      const overview = document.getElementById("servicesOverview");
+
+      if (overview) {
+        overview.innerHTML = services.length
+          ? services.map(service => `
+              <div class="service-overview-item"
+                   style="padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;">
+                  <strong>${escapeHtmlServices(service.name)}</strong>
+                  <span>
+                    ${Number(service.enabled) === 1 ? "🟢 Ativo" : "🔴 Inativo"}
+                  </span>
+                </div>
+
+                <div style="font-size:13px;color:#6b7280;margin-top:5px;">
+                  ${escapeHtmlServices(service.category || "")}
+                </div>
+
+                <div style="font-size:13px;margin-top:5px;">
+                  ${Number(service.clientVisible) === 1
+                    ? "👁️ Visível para clientes"
+                    : "🙈 Oculto para clientes"}
+                </div>
+              </div>
+            `).join("")
+          : "<p>Nenhum serviço cadastrado.</p>";
+      }
+
+      const loading = page.querySelector("[data-services-loading]");
+
+      if (loading) {
+        loading.remove();
+      }
+
+    } catch (error) {
+      console.error("SERVICES ADMIN:", error);
+
+      const overview = document.getElementById("servicesOverview");
+
+      if (overview) {
+        overview.innerHTML = `
+          <div style="padding:15px;border-radius:10px;background:#fee2e2;color:#991b1b;">
+            Erro ao carregar serviços: ${escapeHtmlServices(error.message)}
+          </div>
+        `;
+      }
+    }
+  }
+
+  function escapeHtmlServices(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  window.loadServicesAdmin = loadServicesAdmin;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(loadServicesAdmin, 200);
+  });
+
+  document.addEventListener("click", event => {
+    const button = event.target.closest('[data-page="services"]');
+
+    if (!button) return;
+
+    setTimeout(loadServicesAdmin, 250);
+  });
+})();
+
+
+// RESGATA+ REAL SERVICES ADMIN UI
+(function () {
+  let servicesAdminData = [];
+  let editingServiceId = null;
+
+  function servicesAdminEscape(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function serviceApiHeaders() {
+    const token =
+      localStorage.getItem("resgata_admin_token") ||
+      localStorage.getItem("adminToken") ||
+      localStorage.getItem("admin_token") ||
+      "";
+
+    return {
+      "Content-Type": "application/json",
+      "Authorization": token ? `Bearer ${token}` : ""
+    };
+  }
+
+  async function serviceApi(path = "", options = {}) {
+    const response = await fetch(
+      "/api/admin/services" + path,
+      {
+        ...options,
+        headers: {
+          ...serviceApiHeaders(),
+          ...(options.headers || {})
+        }
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        `Erro HTTP ${response.status}`
+      );
+    }
+
+    return data;
+  }
+
+  function serviceElements() {
+    return {
+      page: document.getElementById("page-services"),
+      search: document.getElementById("serviceSearch"),
+      status: document.getElementById("serviceStatusFilter"),
+      visibility: document.getElementById("serviceVisibilityFilter"),
+      list: document.getElementById("servicesAdminList"),
+      count: document.getElementById("serviceResultCount"),
+      loading: document.getElementById("serviceLoading"),
+      total: document.getElementById("serviceMetricTotal"),
+      enabled: document.getElementById("serviceMetricEnabled"),
+      disabled: document.getElementById("serviceMetricDisabled"),
+      visible: document.getElementById("serviceMetricVisible"),
+      hidden: document.getElementById("serviceMetricHidden"),
+      modal: document.getElementById("serviceModal"),
+      modalTitle: document.getElementById("serviceModalTitle"),
+      form: document.getElementById("serviceForm"),
+      id: document.getElementById("serviceId"),
+      name: document.getElementById("serviceName"),
+      description: document.getElementById("serviceDescription"),
+      category: document.getElementById("serviceCategory"),
+      enabledCheck: document.getElementById("serviceEnabled"),
+      visibleCheck: document.getElementById("serviceVisible"),
+      formError: document.getElementById("serviceFormError"),
+      save: document.getElementById("serviceSaveButton")
+    };
+  }
+
+  function renderServiceMetrics() {
+    const el = serviceElements();
+
+    const total = servicesAdminData.length;
+    const enabled = servicesAdminData.filter(
+      service => Number(service.enabled) === 1
+    ).length;
+
+    const visible = servicesAdminData.filter(
+      service => Number(service.clientVisible) === 1
+    ).length;
+
+    if (el.total) el.total.textContent = total;
+    if (el.enabled) el.enabled.textContent = enabled;
+    if (el.disabled) el.disabled.textContent = total - enabled;
+    if (el.visible) el.visible.textContent = visible;
+    if (el.hidden) el.hidden.textContent = total - visible;
+  }
+
+  function filteredServices() {
+    const el = serviceElements();
+
+    const search = (
+      el.search?.value ||
+      ""
+    ).trim().toLowerCase();
+
+    const status = el.status?.value || "all";
+    const visibility = el.visibility?.value || "all";
+
+    return servicesAdminData.filter(service => {
+      const haystack = [
+        service.name,
+        service.description,
+        service.category,
+        service.id
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      if (search && !haystack.includes(search)) {
+        return false;
+      }
+
+      if (
+        status === "enabled" &&
+        Number(service.enabled) !== 1
+      ) {
+        return false;
+      }
+
+      if (
+        status === "disabled" &&
+        Number(service.enabled) === 1
+      ) {
+        return false;
+      }
+
+      if (
+        visibility === "visible" &&
+        Number(service.clientVisible) !== 1
+      ) {
+        return false;
+      }
+
+      if (
+        visibility === "hidden" &&
+        Number(service.clientVisible) === 1
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  function renderServicesAdmin() {
+    const el = serviceElements();
+
+    if (!el.list) {
+      return;
+    }
+
+    const services = filteredServices();
+
+    if (el.count) {
+      el.count.textContent =
+        `${services.length} serviço${services.length === 1 ? "" : "s"}`;
+    }
+
+    if (!services.length) {
+      el.list.innerHTML = `
+        <div class="service-empty">
+          <strong>Nenhum serviço encontrado.</strong>
+          <span>Ajuste os filtros ou cadastre um novo serviço.</span>
+        </div>
+      `;
+      return;
+    }
+
+    el.list.innerHTML = services.map(service => {
+      const enabled = Number(service.enabled) === 1;
+      const visible = Number(service.clientVisible) === 1;
+
+      return `
+        <article class="service-admin-row">
+          <div class="service-admin-main">
+            <div class="service-admin-icon">🧩</div>
+
+            <div class="service-admin-info">
+              <strong>${servicesAdminEscape(service.name)}</strong>
+
+              <span>
+                ${servicesAdminEscape(service.description)}
+              </span>
+
+              <small>
+                ${servicesAdminEscape(service.category)}
+                · ID: ${servicesAdminEscape(service.id)}
+              </small>
+            </div>
+          </div>
+
+          <div class="service-admin-status">
+            <span class="${enabled ? "service-status-on" : "service-status-off"}">
+              ${enabled ? "🟢 Ativo" : "🔴 Inativo"}
+            </span>
+
+            <span class="${visible ? "service-status-visible" : "service-status-hidden"}">
+              ${visible ? "👁 Visível" : "🚫 Oculto"}
+            </span>
+          </div>
+
+          <div class="service-admin-actions">
+            <button
+              type="button"
+              class="secondary-button service-edit-button"
+              data-service-action="edit"
+              data-service-id="${servicesAdminEscape(service.id)}"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              class="secondary-button"
+              data-service-action="toggle-status"
+              data-service-id="${servicesAdminEscape(service.id)}"
+            >
+              ${enabled ? "Desativar" : "Ativar"}
+            </button>
+
+            <button
+              type="button"
+              class="secondary-button"
+              data-service-action="toggle-visibility"
+              data-service-id="${servicesAdminEscape(service.id)}"
+            >
+              ${visible ? "Ocultar" : "Mostrar"}
+            </button>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  async function loadRealServicesAdmin() {
+    const el = serviceElements();
+
+    if (!el.page || !el.list) {
+      return;
+    }
+
+    if (el.loading) {
+      el.loading.hidden = false;
+    }
+
+    try {
+      const result = await serviceApi("");
+
+      servicesAdminData = Array.isArray(result.services)
+        ? result.services
+        : [];
+
+      renderServiceMetrics();
+      renderServicesAdmin();
+    } catch (error) {
+      console.error("SERVICES ADMIN:", error);
+
+      el.list.innerHTML = `
+        <div class="service-empty service-error">
+          <strong>Não foi possível carregar os serviços.</strong>
+          <span>${servicesAdminEscape(error.message)}</span>
+        </div>
+      `;
+    } finally {
+      if (el.loading) {
+        el.loading.hidden = true;
+      }
+    }
+  }
+
+  function openServiceModal(service = null) {
+    const el = serviceElements();
+
+    if (!el.modal) {
+      return;
+    }
+
+    editingServiceId = service?.id || null;
+
+    el.modalTitle.textContent =
+      service
+        ? "Editar serviço"
+        : "Novo serviço";
+
+    el.id.value = service?.id || "";
+    el.name.value = service?.name || "";
+    el.description.value = service?.description || "";
+    el.category.value = service?.category || "";
+    el.enabledCheck.checked =
+      service
+        ? Number(service.enabled) === 1
+        : true;
+
+    el.visibleCheck.checked =
+      service
+        ? Number(service.clientVisible) === 1
+        : true;
+
+    el.formError.hidden = true;
+    el.formError.textContent = "";
+
+    el.modal.hidden = false;
+    document.body.classList.add("service-modal-open");
+
+    setTimeout(() => {
+      el.name.focus();
+    }, 50);
+  }
+
+  function closeServiceModal() {
+    const el = serviceElements();
+
+    if (!el.modal) {
+      return;
+    }
+
+    el.modal.hidden = true;
+    document.body.classList.remove("service-modal-open");
+    editingServiceId = null;
+  }
+
+  async function saveService(event) {
+    event.preventDefault();
+
+    const el = serviceElements();
+
+    const payload = {
+      name: el.name.value.trim(),
+      description: el.description.value.trim(),
+      category: el.category.value.trim(),
+      enabled: el.enabledCheck.checked,
+      clientVisible: el.visibleCheck.checked
+    };
+
+    if (
+      !payload.name ||
+      !payload.description ||
+      !payload.category
+    ) {
+      el.formError.textContent =
+        "Preencha nome, descrição e categoria.";
+      el.formError.hidden = false;
+      return;
+    }
+
+    el.save.disabled = true;
+    el.save.textContent = "Salvando...";
+
+    try {
+      if (editingServiceId) {
+        await serviceApi(
+          `/${encodeURIComponent(editingServiceId)}`,
+          {
+            method: "PATCH",
+            body: JSON.stringify(payload)
+          }
+        );
+      } else {
+        await serviceApi(
+          "",
+          {
+            method: "POST",
+            body: JSON.stringify(payload)
+          }
+        );
+      }
+
+      closeServiceModal();
+      await loadRealServicesAdmin();
+    } catch (error) {
+      console.error("SAVE SERVICE:", error);
+
+      el.formError.textContent =
+        error.message || "Não foi possível salvar o serviço.";
+      el.formError.hidden = false;
+    } finally {
+      el.save.disabled = false;
+      el.save.textContent = "Salvar serviço";
+    }
+  }
+
+  async function toggleServiceStatus(service) {
+    const enabled =
+      Number(service.enabled) === 1;
+
+    await serviceApi(
+      `/${encodeURIComponent(service.id)}/status`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({
+          enabled: !enabled
+        })
+      }
+    );
+
+    await loadRealServicesAdmin();
+  }
+
+  async function toggleServiceVisibility(service) {
+    const visible =
+      Number(service.clientVisible) === 1;
+
+    await serviceApi(
+      `/${encodeURIComponent(service.id)}/visibility`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({
+          clientVisible: !visible
+        })
+      }
+    );
+
+    await loadRealServicesAdmin();
+  }
+
+  function bindServiceEvents() {
+    const el = serviceElements();
+
+    if (!el.page || el.page.dataset.servicesBound === "1") {
+      return;
+    }
+
+    el.page.dataset.servicesBound = "1";
+
+    el.search?.addEventListener(
+      "input",
+      renderServicesAdmin
+    );
+
+    el.status?.addEventListener(
+      "change",
+      renderServicesAdmin
+    );
+
+    el.visibility?.addEventListener(
+      "change",
+      renderServicesAdmin
+    );
+
+    document
+      .getElementById("serviceRefreshButton")
+      ?.addEventListener(
+        "click",
+        loadRealServicesAdmin
+      );
+
+    document
+      .getElementById("serviceCreateButton")
+      ?.addEventListener(
+        "click",
+        () => openServiceModal()
+      );
+
+    el.form?.addEventListener(
+      "submit",
+      saveService
+    );
+
+    el.page.addEventListener(
+      "click",
+      async event => {
+        const close =
+          event.target.closest(
+            "[data-service-modal-close]"
+          );
+
+        if (close) {
+          closeServiceModal();
+          return;
+        }
+
+        const button =
+          event.target.closest(
+            "[data-service-action]"
+          );
+
+        if (!button) {
+          return;
+        }
+
+        const serviceId =
+          button.dataset.serviceId;
+
+        const service =
+          servicesAdminData.find(
+            item => item.id === serviceId
+          );
+
+        if (!service) {
+          return;
+        }
+
+        const action =
+          button.dataset.serviceAction;
+
+        try {
+          button.disabled = true;
+
+          if (action === "edit") {
+            openServiceModal(service);
+            return;
+          }
+
+          if (action === "toggle-status") {
+            await toggleServiceStatus(service);
+            return;
+          }
+
+          if (action === "toggle-visibility") {
+            await toggleServiceVisibility(service);
+          }
+        } catch (error) {
+          console.error("SERVICE ACTION:", error);
+          alert(
+            error.message ||
+            "Não foi possível executar a ação."
+          );
+        } finally {
+          button.disabled = false;
+        }
+      }
+    );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+        if (
+          event.key === "Escape" &&
+          !el.modal.hidden
+        ) {
+          closeServiceModal();
+        }
+      }
+    );
+  }
+
+  window.loadRealServicesAdmin =
+    loadRealServicesAdmin;
+
+  function startRealServicesAdmin() {
+    bindServiceEvents();
+
+    const el = serviceElements();
+
+    if (
+      el.page &&
+      el.page.classList.contains("active")
+    ) {
+      loadRealServicesAdmin();
+    }
+  }
+
+  if (
+    document.readyState === "loading"
+  ) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      startRealServicesAdmin
+    );
+  } else {
+    startRealServicesAdmin();
+  }
+
+  document.addEventListener(
+    "click",
+    event => {
+      const button =
+        event.target.closest(
+          '[data-page="services"]'
+        );
+
+      if (!button) {
+        return;
+      }
+
+      setTimeout(
+        startRealServicesAdmin,
+        100
+      );
+    }
+  );
+})();
+
+
+// RESGATA+ REAL REQUESTS ADMIN UI
+(function () {
+
+  let requestsAdminData = [];
+  let selectedRequestId = null;
+
+  function requestToken() {
+    return (
+      localStorage.getItem("resgata_admin_token") ||
+      localStorage.getItem("adminToken") ||
+      localStorage.getItem("admin_token") ||
+      ""
+    );
+  }
+
+  function requestEscape(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function requestApi(path = "", options = {}) {
+
+    const response = await fetch(
+      "/api/admin/requests" + path,
+      {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${requestToken()}`,
+          ...(options.headers || {})
+        }
+      }
+    );
+
+    const data =
+      await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        `Erro HTTP ${response.status}`
+      );
+    }
+
+    return data;
+  }
+
+  function requestElements() {
+    return {
+      page: document.getElementById("page-requests"),
+      search: document.getElementById("requestSearch"),
+      status: document.getElementById("requestStatusFilter"),
+      service: document.getElementById("requestServiceFilter"),
+      list: document.getElementById("requestsAdminList"),
+      count: document.getElementById("requestResultCount"),
+      loading: document.getElementById("requestLoading"),
+      total: document.getElementById("requestMetricTotal"),
+      pending: document.getElementById("requestMetricPending"),
+      progress: document.getElementById("requestMetricProgress"),
+      resolved: document.getElementById("requestMetricResolved"),
+      cancelled: document.getElementById("requestMetricCancelled"),
+      modal: document.getElementById("requestModal"),
+      details: document.getElementById("requestDetails"),
+      statusEdit: document.getElementById("requestStatusEdit"),
+      saveStatus: document.getElementById("requestSaveStatus"),
+      formError: document.getElementById("requestFormError")
+    };
+  }
+
+  function requestStatusLabel(status) {
+
+    const labels = {
+      pending: "🟡 Pendente",
+      received: "🟣 Recebida",
+      in_progress: "🔵 Em andamento",
+      waiting_user: "🟠 Aguardando usuário",
+      waiting_specialist: "🟠 Aguardando especialista",
+      resolved: "🟢 Resolvida",
+      cancelled: "⚪ Cancelada",
+      rejected: "🔴 Recusada"
+    };
+
+    return labels[status] || status || "Desconhecido";
+  }
+
+  function requestStatusClass(status) {
+
+    return "request-status-" +
+      String(status || "unknown")
+        .replace(/[^a-z_]/g, "");
+  }
+
+  function requestDate(value) {
+
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return String(value);
+    }
+
+    return date.toLocaleString("pt-BR");
+  }
+
+  function requestUser(request) {
+    return (
+      request.user_name ||
+      request.user_email ||
+      request.user_id ||
+      "Usuário não identificado"
+    );
+  }
+
+  function requestService(request) {
+    return (
+      request.service_name ||
+      request.service_id ||
+      "Serviço não identificado"
+    );
+  }
+
+  function renderRequestServices() {
+
+    const el = requestElements();
+
+    if (!el.service) return;
+
+    const current = el.service.value;
+
+    const services = Array.from(
+      new Map(
+        requestsAdminData
+          .filter(item => item.service_id)
+          .map(item => [
+            item.service_id,
+            {
+              id: item.service_id,
+              name:
+                item.service_name ||
+                item.service_id
+            }
+          ])
+      ).values()
+    );
+
+    el.service.innerHTML = `
+      <option value="all">
+        Todos os serviços
+      </option>
+
+      ${services.map(service => `
+        <option value="${requestEscape(service.id)}">
+          ${requestEscape(service.name)}
+        </option>
+      `).join("")}
+    `;
+
+    if (
+      services.some(
+        service => service.id === current
+      )
+    ) {
+      el.service.value = current;
+    }
+  }
+
+  function renderRequestMetrics() {
+
+    const el = requestElements();
+
+    const total =
+      requestsAdminData.length;
+
+    const pending =
+      requestsAdminData.filter(
+        item => item.status === "pending"
+      ).length;
+
+    const progress =
+      requestsAdminData.filter(
+        item => item.status === "in_progress"
+      ).length;
+
+    const resolved =
+      requestsAdminData.filter(
+        item => item.status === "resolved"
+      ).length;
+
+    const cancelled =
+      requestsAdminData.filter(
+        item => item.status === "cancelled"
+      ).length;
+
+    if (el.total)
+      el.total.textContent = total;
+
+    if (el.pending)
+      el.pending.textContent = pending;
+
+    if (el.progress)
+      el.progress.textContent = progress;
+
+    if (el.resolved)
+      el.resolved.textContent = resolved;
+
+    if (el.cancelled)
+      el.cancelled.textContent = cancelled;
+  }
+
+  function filteredRequests() {
+
+    const el = requestElements();
+
+    const search =
+      (el.search?.value || "")
+        .trim()
+        .toLowerCase();
+
+    const status =
+      el.status?.value || "all";
+
+    const service =
+      el.service?.value || "all";
+
+    return requestsAdminData.filter(request => {
+
+      const text = [
+        request.id,
+        request.user_id,
+        request.user_name,
+        request.user_email,
+        request.service_id,
+        request.service_name,
+        request.device_id,
+        request.status
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      if (
+        search &&
+        !text.includes(search)
+      ) {
+        return false;
+      }
+
+      if (
+        status !== "all" &&
+        request.status !== status
+      ) {
+        return false;
+      }
+
+      if (
+        service !== "all" &&
+        request.service_id !== service
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  function renderRequests() {
+
+    const el = requestElements();
+
+    if (!el.list) return;
+
+    const requests =
+      filteredRequests();
+
+    if (el.count) {
+      el.count.textContent =
+        `${requests.length} ${
+          requests.length === 1
+            ? "solicitação"
+            : "solicitações"
+        }`;
+    }
+
+    if (!requests.length) {
+
+      el.list.innerHTML = `
+        <div class="request-empty">
+          <strong>
+            Nenhuma solicitação encontrada.
+          </strong>
+
+          <span>
+            As solicitações dos clientes
+            aparecerão aqui.
+          </span>
+        </div>
+      `;
+
+      return;
+    }
+
+    el.list.innerHTML =
+      requests.map(request => {
+
+        const status =
+          request.status || "pending";
+
+        return `
+          <article class="request-admin-row">
+
+            <div class="request-admin-main">
+
+              <div class="request-admin-icon">
+                📋
+              </div>
+
+              <div class="request-admin-info">
+
+                <strong>
+                  ${requestEscape(
+                    requestService(request)
+                  )}
+                </strong>
+
+                <span>
+                  ${requestEscape(
+                    requestUser(request)
+                  )}
+                </span>
+
+                <small>
+                  ID:
+                  ${requestEscape(request.id)}
+                  ·
+                  ${requestEscape(
+                    request.device_id ||
+                    "Sem dispositivo"
+                  )}
+                </small>
+
+              </div>
+
+            </div>
+
+            <div class="request-admin-status">
+
+              <span class="${requestStatusClass(status)}">
+                ${requestEscape(
+                  requestStatusLabel(status)
+                )}
+              </span>
+
+              <small>
+                ${requestEscape(
+                  requestDate(request.created_at)
+                )}
+              </small>
+
+            </div>
+
+            <div class="request-admin-actions">
+
+              <button
+                type="button"
+                class="secondary-button"
+                data-request-action="details"
+                data-request-id="${requestEscape(request.id)}"
+              >
+                Ver detalhes
+              </button>
+
+            </div>
+
+          </article>
+        `;
+
+      }).join("");
+  }
+
+  async function loadRealRequestsAdmin() {
+
+    const el = requestElements();
+
+    if (!el.page || !el.list) {
+      return;
+    }
+
+    if (el.loading) {
+      el.loading.hidden = false;
+    }
+
+    try {
+
+      const result =
+        await requestApi("");
+
+      requestsAdminData =
+        Array.isArray(result.requests)
+          ? result.requests
+          : [];
+
+      renderRequestServices();
+      renderRequestMetrics();
+      renderRequests();
+
+    } catch (error) {
+
+      console.error(
+        "RESGATA REQUESTS ADMIN:",
+        error
+      );
+
+      el.list.innerHTML = `
+        <div class="request-empty request-error">
+          <strong>
+            Não foi possível carregar as solicitações.
+          </strong>
+
+          <span>
+            ${requestEscape(error.message)}
+          </span>
+        </div>
+      `;
+
+    } finally {
+
+      if (el.loading) {
+        el.loading.hidden = true;
+      }
+
+    }
+  }
+
+  async function openRequestDetails(id) {
+
+    const el = requestElements();
+
+    try {
+
+      const result =
+        await requestApi(
+          `/${encodeURIComponent(id)}`
+        );
+
+      const request =
+        result.request || {};
+
+      selectedRequestId =
+        request.id;
+
+      let details = request.details;
+
+      if (
+        typeof details === "object"
+      ) {
+        details =
+          JSON.stringify(
+            details,
+            null,
+            2
+          );
+      }
+
+      if (!details) {
+        details =
+          "Nenhum detalhe adicional informado.";
+      }
+
+      el.details.innerHTML = `
+
+        <div class="request-detail-grid">
+
+          <div>
+            <span>ID</span>
+            <strong>
+              ${requestEscape(request.id)}
+            </strong>
+          </div>
+
+          <div>
+            <span>Serviço</span>
+            <strong>
+              ${requestEscape(
+                requestService(request)
+              )}
+            </strong>
+          </div>
+
+          <div>
+            <span>Usuário</span>
+            <strong>
+              ${requestEscape(
+                requestUser(request)
+              )}
+            </strong>
+          </div>
+
+          <div>
+            <span>E-mail</span>
+            <strong>
+              ${requestEscape(
+                request.user_email || "—"
+              )}
+            </strong>
+          </div>
+
+          <div>
+            <span>Dispositivo</span>
+            <strong>
+              ${requestEscape(
+                request.device_name ||
+                request.device_id ||
+                "—"
+              )}
+            </strong>
+          </div>
+
+          <div>
+            <span>Criada em</span>
+            <strong>
+              ${requestEscape(
+                requestDate(request.created_at)
+              )}
+            </strong>
+          </div>
+
+          <div>
+            <span>Atualizada em</span>
+            <strong>
+              ${requestEscape(
+                requestDate(request.updated_at)
+              )}
+            </strong>
+          </div>
+
+          <div>
+            <span>Status atual</span>
+            <strong>
+              ${requestEscape(
+                requestStatusLabel(
+                  request.status
+                )
+              )}
+            </strong>
+          </div>
+
+        </div>
+
+        <div class="request-details-content">
+
+          <strong>
+            Detalhes enviados
+          </strong>
+
+          <pre>${requestEscape(details)}</pre>
+
+        </div>
+      `;
+
+      el.statusEdit.value =
+        request.status || "pending";
+
+      el.formError.hidden = true;
+
+      el.modal.hidden = false;
+
+      document.body.classList.add(
+        "request-modal-open"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "RESGATA REQUEST DETAIL:",
+        error
+      );
+
+      alert(
+        error.message ||
+        "Não foi possível abrir a solicitação."
+      );
+    }
+  }
+
+  function closeRequestModal() {
+
+    const el = requestElements();
+
+    if (!el.modal) return;
+
+    el.modal.hidden = true;
+
+    document.body.classList.remove(
+      "request-modal-open"
+    );
+
+    selectedRequestId = null;
+  }
+
+  async function saveRequestStatus() {
+
+    const el = requestElements();
+
+    if (
+      !selectedRequestId ||
+      !el.statusEdit
+    ) {
+      return;
+    }
+
+    el.saveStatus.disabled = true;
+    el.saveStatus.textContent =
+      "Salvando...";
+
+    try {
+
+      await requestApi(
+        `/${encodeURIComponent(
+          selectedRequestId
+        )}/status`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            status:
+              el.statusEdit.value
+          })
+        }
+      );
+
+      closeRequestModal();
+
+      await loadRealRequestsAdmin();
+
+    } catch (error) {
+
+      console.error(
+        "RESGATA REQUEST STATUS:",
+        error
+      );
+
+      el.formError.textContent =
+        error.message ||
+        "Não foi possível atualizar o status.";
+
+      el.formError.hidden = false;
+
+    } finally {
+
+      el.saveStatus.disabled = false;
+      el.saveStatus.textContent =
+        "Salvar status";
+    }
+  }
+
+  function bindRequestEvents() {
+
+    const el = requestElements();
+
+    if (
+      !el.page ||
+      el.page.dataset.requestsBound === "1"
+    ) {
+      return;
+    }
+
+    el.page.dataset.requestsBound = "1";
+
+    el.search?.addEventListener(
+      "input",
+      renderRequests
+    );
+
+    el.status?.addEventListener(
+      "change",
+      renderRequests
+    );
+
+    el.service?.addEventListener(
+      "change",
+      renderRequests
+    );
+
+    document
+      .getElementById(
+        "requestRefreshButton"
+      )
+      ?.addEventListener(
+        "click",
+        loadRealRequestsAdmin
+      );
+
+    el.saveStatus?.addEventListener(
+      "click",
+      saveRequestStatus
+    );
+
+    el.page.addEventListener(
+      "click",
+      async event => {
+
+        const close =
+          event.target.closest(
+            "[data-request-modal-close]"
+          );
+
+        if (close) {
+          closeRequestModal();
+          return;
+        }
+
+        const button =
+          event.target.closest(
+            "[data-request-action]"
+          );
+
+        if (!button) return;
+
+        if (
+          button.dataset.requestAction ===
+          "details"
+        ) {
+
+          await openRequestDetails(
+            button.dataset.requestId
+          );
+        }
+
+      }
+    );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        const modal =
+          document.getElementById(
+            "requestModal"
+          );
+
+        if (
+          event.key === "Escape" &&
+          modal &&
+          !modal.hidden
+        ) {
+          closeRequestModal();
+        }
+
+      }
+    );
+  }
+
+  function startRequestsAdmin() {
+
+    bindRequestEvents();
+
+    const el = requestElements();
+
+    if (
+      el.page &&
+      el.page.classList.contains("active")
+    ) {
+      loadRealRequestsAdmin();
+    }
+  }
+
+  window.loadRealRequestsAdmin =
+    loadRealRequestsAdmin;
+
+  if (
+    document.readyState === "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      startRequestsAdmin
+    );
+
+  } else {
+
+    startRequestsAdmin();
+
+  }
+
+})();
+
+
+// === RESGATA+ INTEGRACAO USUARIOS E DISPOSITIVOS ===
+
+if (typeof window.escapeHtml !== "function") {
+  window.escapeHtml = function(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  };
+}
+
+
+// === RESGATA+ INTEGRACAO USUARIOS E DISPOSITIVOS ===
+
+function bettingMoney(value) {
+  const number = Number(value || 0);
+  return number.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+}
+
+function bettingDate(value) {
+  if (!value) return "—";
+
+  try {
+    return new Date(value).toLocaleString("pt-BR");
+  } catch {
+    return String(value);
+  }
+}
+
+function bettingProtectionBadge(level) {
+  const value = String(level || "normal").toLowerCase();
+
+  const labels = {
+    normal: "Normal",
+    strong: "Forte",
+    maximum: "Máxima",
+    max: "Máxima",
+    sair_de_vez: "Sair de Vez"
+  };
+
+  return labels[value] || level || "Normal";
+}
+
+function bettingStatusBadge(enabled) {
+  return Number(enabled) === 1 || enabled === true
+    ? '<span class="status-badge status-active">Ativo</span>'
+    : '<span class="status-badge status-inactive">Inativo</span>';
+}
+
+
+/*
+ * ============================================================
+ * USUÁRIOS + PROTEÇÃO
+ * ============================================================
+ */
+
+async function loadUsersWithBettingProtection() {
+  const container =
+    document.getElementById("usersList") ||
+    document.getElementById("usuariosList") ||
+    document.getElementById("usersTableBody");
+
+  if (!container) {
+    console.warn("Container de usuários não encontrado.");
+    return;
+  }
+
+  try {
+    const result = await api("/api/admin/users");
+
+    const users =
+      result?.users ||
+      result?.data?.users ||
+      result?.data ||
+      [];
+
+    if (!Array.isArray(users) || users.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <strong>Nenhum usuário encontrado.</strong>
+          <p>Os usuários aparecerão aqui quando houver cadastro.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = users.map(user => {
+      const id = user.id ?? "—";
+      const name =
+        user.name ||
+        user.nome ||
+        user.email ||
+        `Usuário ${id}`;
+
+      const email = user.email || "—";
+
+      return `
+        <div class="admin-list-item user-protection-item">
+          <div>
+            <strong>${escapeHtml(String(name))}</strong>
+            <small>${escapeHtml(String(email))}</small>
+          </div>
+
+          <div class="user-protection-info">
+            <span>ID: ${escapeHtml(String(id))}</span>
+            ${bettingStatusBadge(user.betting_enabled ?? user.protection_enabled)}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+  } catch (error) {
+    console.error("ERRO AO CARREGAR USUARIOS:", error);
+
+    container.innerHTML = `
+      <div class="empty-state error">
+        Não foi possível carregar os usuários.
+      </div>
+    `;
+  }
+}
+
+
+/*
+ * ============================================================
+ * DISPOSITIVOS + PROTEÇÃO CONTRA APOSTAS
+ * ============================================================
+ */
+
+async function loadBettingProtectedDevices() {
+  const container =
+    document.getElementById("bettingDevicesList");
+
+  if (!container) {
+    console.warn("bettingDevicesList não encontrado.");
+    return;
+  }
+
+  try {
+    const result =
+      await api("/api/admin/betting-protection/devices");
+
+    const devices =
+      result?.devices ||
+      result?.data?.devices ||
+      result?.data ||
+      [];
+
+    if (!Array.isArray(devices) || devices.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <strong>Nenhum dispositivo protegido encontrado.</strong>
+          <p>
+            Os dispositivos aparecerão aqui quando forem vinculados
+            à proteção contra apostas.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = devices.map(device => {
+      const deviceId =
+        device.device_id ??
+        device.id ??
+        "—";
+
+      const userId =
+        device.user_id ??
+        "—";
+
+      const name =
+        device.device_name ||
+        device.name ||
+        device.device_type ||
+        device.platform ||
+        "Dispositivo";
+
+      const level =
+        device.protection_level ||
+        "normal";
+
+      const enabled =
+        device.enabled ??
+        device.active ??
+        0;
+
+      const lastSync =
+        device.last_sync_at ||
+        device.updated_at ||
+        device.created_at;
+
+      return `
+        <div class="admin-list-item betting-device-item">
+
+          <div>
+            <strong>${escapeHtml(String(name))}</strong>
+
+            <small>
+              Dispositivo: ${escapeHtml(String(deviceId))}
+            </small>
+
+            <small>
+              Usuário: ${escapeHtml(String(userId))}
+            </small>
+          </div>
+
+          <div class="betting-device-status">
+
+            <span class="protection-level-badge">
+              ${escapeHtml(bettingProtectionBadge(level))}
+            </span>
+
+            ${bettingStatusBadge(enabled)}
+
+            <small>
+              Sincronizado:
+              ${escapeHtml(bettingDate(lastSync))}
+            </small>
+
+          </div>
+
+        </div>
+      `;
+    }).join("");
+
+  } catch (error) {
+    console.error("ERRO AO CARREGAR DISPOSITIVOS PROTEGIDOS:", error);
+
+    container.innerHTML = `
+      <div class="empty-state error">
+        Não foi possível carregar os dispositivos protegidos.
+      </div>
+    `;
+  }
+}
+
+
+/*
+ * ============================================================
+ * INTEGRAÇÃO USUÁRIO → PROTEÇÃO
+ * ============================================================
+ */
+
+async function loadUserProtectionSummary(userId) {
+  if (!userId) return null;
+
+  try {
+    const [attempts, relapses, financial, missions] =
+      await Promise.all([
+        api(`/api/admin/betting-protection/attempts?user_id=${encodeURIComponent(userId)}`),
+        api(`/api/admin/betting-protection/relapses?user_id=${encodeURIComponent(userId)}`),
+        api(`/api/admin/betting-protection/financial?user_id=${encodeURIComponent(userId)}`),
+        api(`/api/admin/betting-protection/missions?user_id=${encodeURIComponent(userId)}`)
+      ]);
+
+    return {
+      attempts:
+        attempts?.attempts ||
+        attempts?.data?.attempts ||
+        [],
+
+      relapses:
+        relapses?.relapses ||
+        relapses?.data?.relapses ||
+        [],
+
+      financial:
+        financial?.financial ||
+        financial?.data ||
+        financial ||
+        {},
+
+      missions:
+        missions?.missions ||
+        missions?.data?.missions ||
+        []
+    };
+
+  } catch (error) {
+    console.error(
+      "ERRO AO CARREGAR PROTECAO DO USUARIO:",
+      error
+    );
+
+    return null;
+  }
+}
+
+
+/*
+ * ============================================================
+ * CARREGAMENTO GERAL
+ * ============================================================
+ */
+
+async function loadUsersAndDevicesProtection() {
+  await Promise.all([
+    loadUsersWithBettingProtection(),
+    loadBettingProtectedDevices()
+  ]);
+}
+
+
+/*
+ * ============================================================
+ * HOOK DO ADMIN
+ * ============================================================
+ */
+
+(function integrateUsersDevicesProtection() {
+
+  const originalOpenPage =
+    window.openPage;
+
+  if (typeof originalOpenPage !== "function") {
+    console.warn(
+      "openPage ainda não está disponível para integração."
+    );
+    return;
+  }
+
+  window.openPage = async function(page, ...args) {
+
+    const result =
+      await originalOpenPage.apply(this, [page, ...args]);
+
+    if (
+      page === "protection" ||
+      page === "users" ||
+      page === "devices"
+    ) {
+      await loadUsersAndDevicesProtection();
+    }
+
+    return result;
+  };
+
+})();
+
+
+
+// === RESGATA+ DINHEIRO PROTEGIDO E MISSOES ===
+
+
+
+/*
+ * ============================================================
+ * DINHEIRO PROTEGIDO
+ * ============================================================
+ */
+
+async function loadBettingFinancial() {
+  try {
+    const result = await api(
+      "/api/admin/betting-protection/financial"
+    );
+
+    const financial =
+      result?.financial ||
+      result?.data?.financial ||
+      result?.data ||
+      result ||
+      {};
+
+    /*
+     * O valor protegido é sempre tratado separadamente
+     * dos valores imaginados e dos resultados históricos.
+     */
+
+    const protectedMoney =
+      Number(
+        financial.protectedMoney ??
+        financial.totalProtected ??
+        financial.valorProtegido ??
+        financial.total_protected ??
+        0
+      );
+
+    const financialRecords =
+      Number(
+        financial.records ??
+        financial.totalRecords ??
+        financial.total_registros ??
+        financial.count ??
+        0
+      );
+
+    const protectedElement =
+      document.getElementById("bettingProtectedMoney");
+
+    const recordsElement =
+      document.getElementById("bettingFinancialRecords");
+
+    if (protectedElement) {
+      protectedElement.textContent =
+        bettingMoney(protectedMoney);
+    }
+
+    if (recordsElement) {
+      recordsElement.textContent =
+        String(financialRecords);
+    }
+
+    /*
+     * Se existir uma área específica para detalhes financeiros,
+     * preenchemos automaticamente.
+     */
+
+    const detailContainer =
+      document.getElementById("bettingFinancialList");
+
+    if (detailContainer) {
+
+      const records =
+        financial.recordsList ||
+        financial.records_data ||
+        financial.items ||
+        financial.history ||
+        [];
+
+      if (Array.isArray(records) && records.length) {
+
+        detailContainer.innerHTML =
+          records.map(record => {
+
+            const value =
+              Number(
+                record.valor ??
+                record.value ??
+                record.valor_protegido ??
+                record.protected_value ??
+                0
+              );
+
+            const date =
+              record.data ||
+              record.date ||
+              record.created_at ||
+              record.criado_em;
+
+            const account =
+              record.conta ||
+              record.nome_conta ||
+              record.account_name ||
+              "Sem conta associada";
+
+            return `
+              <div class="admin-list-item financial-item">
+
+                <div>
+                  <strong>
+                    ${escapeHtml(bettingMoney(value))}
+                  </strong>
+
+                  <small>
+                    ${escapeHtml(String(account))}
+                  </small>
+                </div>
+
+                <small>
+                  ${escapeHtml(bettingDate(date))}
+                </small>
+
+              </div>
+            `;
+          }).join("");
+
+      } else {
+
+        detailContainer.innerHTML = `
+          <div class="empty-state">
+            Nenhum registro financeiro encontrado.
+          </div>
+        `;
+      }
+    }
+
+    /*
+     * Elementos opcionais para mostrar os resultados históricos.
+     */
+
+    const imaginedGain =
+      Number(
+        financial.imaginedGain ??
+        financial.totalImaginedGain ??
+        financial.valorGanhoImaginado ??
+        0
+      );
+
+    const imaginedWithdrawal =
+      Number(
+        financial.imaginedWithdrawal ??
+        financial.totalImaginedWithdrawal ??
+        financial.valorSaqueImaginado ??
+        0
+      );
+
+    const reportedGain =
+      Number(
+        financial.reportedGain ??
+        financial.totalReportedGain ??
+        financial.valorGanhoInformado ??
+        0
+      );
+
+    const reportedLoss =
+      Number(
+        financial.reportedLoss ??
+        financial.totalReportedLoss ??
+        financial.valorPerdidoInformado ??
+        0
+      );
+
+    const elementMap = {
+      bettingImaginedGain: imaginedGain,
+      bettingImaginedWithdrawal: imaginedWithdrawal,
+      bettingReportedGain: reportedGain,
+      bettingReportedLoss: reportedLoss
+    };
+
+    Object.entries(elementMap).forEach(
+      ([elementId, value]) => {
+
+        const element =
+          document.getElementById(elementId);
+
+        if (element) {
+          element.textContent =
+            bettingMoney(value);
+        }
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "ERRO AO CARREGAR DINHEIRO PROTEGIDO:",
+      error
+    );
+
+    const protectedElement =
+      document.getElementById("bettingProtectedMoney");
+
+    if (protectedElement) {
+      protectedElement.textContent = "—";
+    }
+
+    const recordsElement =
+      document.getElementById("bettingFinancialRecords");
+
+    if (recordsElement) {
+      recordsElement.textContent = "—";
+    }
+  }
+}
+
+
+/*
+ * ============================================================
+ * MISSÕES DIÁRIAS
+ * ============================================================
+ */
+
+async function loadBettingMissions() {
+
+  try {
+
+    const result =
+      await api(
+        "/api/admin/betting-protection/missions"
+      );
+
+    const missions =
+      result?.missions ||
+      result?.data?.missions ||
+      result?.data ||
+      [];
+
+    const list =
+      Array.isArray(missions)
+        ? missions
+        : [];
+
+    /*
+     * Total de missões concluídas
+     */
+
+    const completed =
+      list.filter(mission =>
+        Number(
+          mission.concluida ??
+          mission.completed ??
+          mission.completed_flag ??
+          0
+        ) === 1
+      ).length;
+
+    const completedElement =
+      document.getElementById(
+        "bettingCompletedMissions"
+      );
+
+    if (completedElement) {
+      completedElement.textContent =
+        String(completed);
+    }
+
+    /*
+     * Lista detalhada
+     */
+
+    const container =
+      document.getElementById(
+        "bettingMissionsList"
+      );
+
+    if (!container) {
+      return;
+    }
+
+    if (!list.length) {
+
+      container.innerHTML = `
+        <div class="empty-state">
+
+          <strong>
+            Nenhuma missão registrada.
+          </strong>
+
+          <p>
+            As missões diárias aparecerão aqui
+            quando os usuários começarem a registrar
+            sua evolução.
+          </p>
+
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      list.map(mission => {
+
+        const date =
+          mission.data ||
+          mission.date ||
+          mission.created_at ||
+          mission.criado_em;
+
+        const didNotBet =
+          Number(
+            mission.nao_apostou ??
+            mission.did_not_bet ??
+            0
+          ) === 1;
+
+        const hadUrge =
+          Number(
+            mission.teve_vontade ??
+            mission.had_urge ??
+            0
+          ) === 1;
+
+        const value =
+          Number(
+            mission.valor_protegido ??
+            mission.protected_value ??
+            mission.valor ??
+            0
+          );
+
+        const completedMission =
+          Number(
+            mission.concluida ??
+            mission.completed ??
+            0
+          ) === 1;
+
+        const userId =
+          mission.usuario_id ??
+          mission.user_id ??
+          "—";
+
+        return `
+          <div class="admin-list-item mission-item">
+
+            <div>
+
+              <strong>
+                ${escapeHtml(String(date || "Data não informada"))}
+              </strong>
+
+              <small>
+                Usuário:
+                ${escapeHtml(String(userId))}
+              </small>
+
+              <small>
+                ${didNotBet
+                  ? "✓ Não apostou"
+                  : "Não marcado como não apostou"}
+              </small>
+
+              <small>
+                ${hadUrge
+                  ? "⚠ Teve vontade de apostar"
+                  : "Sem vontade registrada"}
+              </small>
+
+            </div>
+
+            <div>
+
+              <strong>
+                ${escapeHtml(bettingMoney(value))}
+              </strong>
+
+              <small>
+                ${completedMission
+                  ? "✓ Missão concluída"
+                  : "Missão não concluída"}
+              </small>
+
+            </div>
+
+          </div>
+        `;
+      }).join("");
+
+  } catch (error) {
+
+    console.error(
+      "ERRO AO CARREGAR MISSOES:",
+      error
+    );
+
+    const completedElement =
+      document.getElementById(
+        "bettingCompletedMissions"
+      );
+
+    if (completedElement) {
+      completedElement.textContent = "—";
+    }
+
+    const container =
+      document.getElementById(
+        "bettingMissionsList"
+      );
+
+    if (container) {
+      container.innerHTML = `
+        <div class="empty-state error">
+          Não foi possível carregar as missões.
+        </div>
+      `;
+    }
+  }
+}
+
+
+/*
+ * ============================================================
+ * CONTAS / NECESSIDADES
+ * ============================================================
+ */
+
+async function loadProtectedAccounts() {
+
+  /*
+   * Esta função usa a mesma API financeira.
+   * Ela não cria dinheiro nem altera contas.
+   * Apenas apresenta os dados existentes.
+   */
+
+  try {
+
+    const result =
+      await api(
+        "/api/admin/betting-protection/financial"
+      );
+
+    const financial =
+      result?.financial ||
+      result?.data?.financial ||
+      result?.data ||
+      result ||
+      {};
+
+    const accounts =
+      financial.accounts ||
+      financial.contas ||
+      financial.bills ||
+      financial.contasResgata ||
+      [];
+
+    const container =
+      document.getElementById(
+        "bettingAccountsList"
+      );
+
+    if (!container) {
+      return;
+    }
+
+    if (!Array.isArray(accounts) || !accounts.length) {
+
+      container.innerHTML = `
+        <div class="empty-state">
+          Nenhuma conta ou necessidade associada.
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      accounts.map(account => {
+
+        const name =
+          account.nome ||
+          account.name ||
+          "Conta";
+
+        const value =
+          Number(
+            account.valor ??
+            account.value ??
+            0
+          );
+
+        const due =
+          account.vencimento ||
+          account.due_date ||
+          "—";
+
+        const status =
+          account.status ||
+          "pendente";
+
+        return `
+          <div class="admin-list-item account-item">
+
+            <div>
+              <strong>
+                ${escapeHtml(String(name))}
+              </strong>
+
+              <small>
+                Vencimento:
+                ${escapeHtml(String(due))}
+              </small>
+            </div>
+
+            <div>
+
+              <strong>
+                ${escapeHtml(bettingMoney(value))}
+              </strong>
+
+              <small>
+                ${escapeHtml(String(status))}
+              </small>
+
+            </div>
+
+          </div>
+        `;
+      }).join("");
+
+  } catch (error) {
+
+    console.error(
+      "ERRO AO CARREGAR CONTAS PROTEGIDAS:",
+      error
+    );
+  }
+}
+
+
+/*
+ * ============================================================
+ * CARREGAMENTO COMPLETO DO MÓDULO FINANCEIRO
+ * ============================================================
+ */
+
+async function loadBettingFinancialAndMissions() {
+
+  await Promise.all([
+    loadBettingFinancial(),
+    loadBettingMissions(),
+    loadProtectedAccounts()
+  ]);
+
+}
+
+
+/*
+ * ============================================================
+ * EXPOR FUNÇÕES PARA O ADMIN
+ * ============================================================
+ */
+
+window.loadBettingFinancial =
+  loadBettingFinancial;
+
+window.loadBettingMissions =
+  loadBettingMissions;
+
+window.loadBettingFinancialAndMissions =
+  loadBettingFinancialAndMissions;
+
+window.loadProtectedAccounts =
+  loadProtectedAccounts;
+
+
+/*
+ * ============================================================
+ * ATUALIZAÇÃO AUTOMÁTICA DA PROTEÇÃO
+ * ============================================================
+ */
+
+(function integrateFinancialMissions() {
+
+  const originalOpenPage =
+    window.openPage;
+
+  if (typeof originalOpenPage !== "function") {
+    console.warn(
+      "openPage não disponível para integração financeira."
+    );
+    return;
+  }
+
+  window.openPage = async function(page, ...args) {
+
+    const result =
+      await originalOpenPage.apply(
+        this,
+        [page, ...args]
+      );
+
+    if (
+      page === "protection" ||
+      page === "reports"
+    ) {
+      await loadBettingFinancialAndMissions();
+    }
+
+    return result;
+  };
+
+})();
+
+
+
+/*
+ * ============================================================
+ * RELATÓRIOS ADMINISTRATIVOS
+ * ============================================================
+ */
+
+(function reportsModule() {
+
+  let reportsPeriod = "30d";
+  let reportsLoading = false;
+
+  function reportsElements() {
+    return {
+      page: document.getElementById("page-reports"),
+      refresh: document.getElementById("reports-refresh"),
+      status: document.getElementById("reports-status"),
+      loading: document.getElementById("reports-loading"),
+      error: document.getElementById("reports-error"),
+      generatedAt: document.getElementById("reports-generated-at"),
+      periodButtons: Array.from(
+        document.querySelectorAll(".reports-period-btn")
+      )
+    };
+  }
+
+  function reportsToken() {
+    if (typeof token === "function") {
+      return token();
+    }
+
+    return (
+      localStorage.getItem("admin_token") ||
+      localStorage.getItem("resgata_admin_token") ||
+      sessionStorage.getItem("admin_token") ||
+      ""
+    );
+  }
+
+  function reportsMoney(value) {
+    const number = Number(value || 0);
+
+    return number.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  }
+
+  function reportsValue(value) {
+    const number = Number(value || 0);
+
+    return number.toLocaleString("pt-BR");
+  }
+
+  function reportsGet(object, path) {
+    return path
+      .split(".")
+      .reduce(
+        (current, key) =>
+          current !== null &&
+          current !== undefined
+            ? current[key]
+            : undefined,
+        object
+      );
+  }
+
+  function setReportValue(path, value) {
+    document
+      .querySelectorAll(
+        `[data-report="${path}"]`
+      )
+      .forEach(element => {
+        element.textContent =
+          value === null ||
+          value === undefined
+            ? "—"
+            : reportsValue(value);
+      });
+  }
+
+  function setReportMoney(path, value) {
+    document
+      .querySelectorAll(
+        `[data-report-money="${path}"]`
+      )
+      .forEach(element => {
+        element.textContent =
+          reportsMoney(value);
+      });
+  }
+
+  function setReportsState(state) {
+
+    const elements =
+      reportsElements();
+
+    if (!elements.page) {
+      return;
+    }
+
+    if (elements.loading) {
+      elements.loading.classList.toggle(
+        "hidden",
+        state !== "loading"
+      );
+    }
+
+    if (elements.error) {
+      elements.error.classList.toggle(
+        "hidden",
+        state !== "error"
+      );
+    }
+
+    if (elements.status) {
+
+      if (state === "loading") {
+        elements.status.textContent =
+          "Carregando...";
+      }
+
+      if (state === "error") {
+        elements.status.textContent =
+          "Erro ao carregar";
+      }
+
+      if (state === "ready") {
+        elements.status.textContent =
+          `Período: ${reportsPeriod}`;
+      }
+    }
+
+    if (elements.refresh) {
+      elements.refresh.disabled =
+        state === "loading";
+
+      elements.refresh.textContent =
+        state === "loading"
+          ? "⏳ Carregando..."
+          : "↻ Atualizar";
+    }
+  }
+
+  function updateReportsPeriodButtons() {
+
+    const elements =
+      reportsElements();
+
+    elements.periodButtons.forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.period === reportsPeriod
+      );
+
+    });
+  }
+
+  function renderReports(data) {
+
+    if (!data || data.ok !== true) {
+      throw new Error(
+        data?.message ||
+        data?.error ||
+        "Relatório inválido."
+      );
+    }
+
+    const summary =
+      data.summary || {};
+
+    const money =
+      data.financial || {};
+
+    const users =
+      data.users || {};
+
+    const devices =
+      data.devices || {};
+
+    const serviceRequests =
+      data.serviceRequests || {};
+
+    const tickets =
+      data.tickets || {};
+
+    const specialists =
+      data.specialists || {};
+
+    const security =
+      data.security || {};
+
+    const protection =
+      data.protection || {};
+
+    const betting =
+      data.betting || {};
+
+    const missions =
+      data.missions || {};
+
+    const activity =
+      data.activity || {};
+
+    /*
+     * RESUMO
+     */
+
+    setReportValue(
+      "users",
+      summary.users
+    );
+
+    setReportValue(
+      "devices",
+      summary.devices
+    );
+
+    setReportValue(
+      "requests",
+      summary.requests
+    );
+
+    setReportValue(
+      "tickets",
+      summary.tickets
+    );
+
+    setReportValue(
+      "protectionReports",
+      summary.protectionReports
+    );
+
+    setReportMoney(
+      "protectedMoney",
+      summary.protectedMoney
+    );
+
+    /*
+     * USUÁRIOS
+     */
+
+    setReportValue(
+      "users.total",
+      users.total
+    );
+
+    setReportValue(
+      "users.active",
+      users.active
+    );
+
+    setReportValue(
+      "users.newInPeriod",
+      users.newInPeriod
+    );
+
+    /*
+     * DISPOSITIVOS
+     */
+
+    setReportValue(
+      "devices.total",
+      devices.total
+    );
+
+    setReportValue(
+      "devices.active",
+      devices.active
+    );
+
+    setReportValue(
+      "devices.addedInPeriod",
+      devices.addedInPeriod
+    );
+
+    /*
+     * SOLICITAÇÕES
+     */
+
+    setReportValue(
+      "serviceRequests.total",
+      serviceRequests.total
+    );
+
+    setReportValue(
+      "serviceRequests.pending",
+      serviceRequests.pending
+    );
+
+    setReportValue(
+      "serviceRequests.completed",
+      serviceRequests.completed
+    );
+
+    /*
+     * TICKETS
+     */
+
+    setReportValue(
+      "tickets.total",
+      tickets.total
+    );
+
+    setReportValue(
+      "tickets.open",
+      tickets.open
+    );
+
+    setReportValue(
+      "tickets.closed",
+      tickets.closed
+    );
+
+    /*
+     * ESPECIALISTAS
+     */
+
+    setReportValue(
+      "specialists.total",
+      specialists.total
+    );
+
+    setReportValue(
+      "specialists.active",
+      specialists.active
+    );
+
+    setReportValue(
+      "specialists.online",
+      specialists.online
+    );
+
+    /*
+     * SEGURANÇA
+     */
+
+    setReportValue(
+      "security.events",
+      security.events
+    );
+
+    setReportValue(
+      "security.unresolved",
+      security.unresolved
+    );
+
+    setReportValue(
+      "security.highRisk",
+      security.highRisk
+    );
+
+    /*
+     * PROTEÇÃO
+     */
+
+    setReportValue(
+      "protection.reports",
+      protection.reports
+    );
+
+    setReportValue(
+      "protection.highRisk",
+      protection.highRisk
+    );
+
+    setReportValue(
+      "protection.confirmed",
+      protection.confirmed
+    );
+
+    setReportValue(
+      "protection.removals",
+      protection.removals
+    );
+
+    setReportValue(
+      "protection.pendingRemovals",
+      protection.pendingRemovals
+    );
+
+    /*
+     * APOSTAS
+     */
+
+    setReportValue(
+      "betting.attempts",
+      betting.attempts
+    );
+
+    setReportValue(
+      "betting.blocked",
+      betting.blocked
+    );
+
+    setReportValue(
+      "betting.relapses",
+      betting.relapses
+    );
+
+    setReportValue(
+      "betting.radarItems",
+      betting.radarItems
+    );
+
+    setReportValue(
+      "betting.radarValidated",
+      betting.radarValidated
+    );
+
+    /*
+     * FINANCEIRO
+     */
+
+    setReportValue(
+      "financial.bettingRecords",
+      money.bettingRecords
+    );
+
+    setReportMoney(
+      "financial.deposits",
+      money.deposits
+    );
+
+    setReportMoney(
+      "financial.reportedGains",
+      money.reportedGains
+    );
+
+    setReportMoney(
+      "financial.reportedLosses",
+      money.reportedLosses
+    );
+
+    setReportMoney(
+      "financial.reportedWithdrawals",
+      money.reportedWithdrawals
+    );
+
+    setReportValue(
+      "financial.accounts",
+      money.accounts
+    );
+
+    setReportMoney(
+      "financial.protectedMoney",
+      money.protectedMoney
+    );
+
+    setReportValue(
+      "financial.dailyMissions",
+      money.dailyMissions
+    );
+
+    /*
+     * MISSÕES
+     */
+
+    setReportValue(
+      "missions.total",
+      missions.total
+    );
+
+    setReportValue(
+      "missions.completed",
+      missions.completed
+    );
+
+    setReportValue(
+      "missions.noBet",
+      missions.noBet
+    );
+
+    setReportValue(
+      "missions.hadUrge",
+      missions.hadUrge
+    );
+
+    setReportMoney(
+      "missions.protectedValue",
+      missions.protectedValue
+    );
+
+    /*
+     * ATIVIDADE
+     */
+
+    setReportValue(
+      "activity.auditLogs",
+      activity.auditLogs
+    );
+
+    setReportValue(
+      "activity.notifications",
+      activity.notifications
+    );
+
+    setReportValue(
+      "activity.updates",
+      activity.updates
+    );
+
+    /*
+     * DATA DE GERAÇÃO
+     */
+
+    const elements =
+      reportsElements();
+
+    if (
+      elements.generatedAt &&
+      data.generatedAt
+    ) {
+
+      const date =
+        new Date(data.generatedAt);
+
+      elements.generatedAt.textContent =
+        `Gerado em ${date.toLocaleString("pt-BR")}`;
+
+    }
+
+    setReportsState("ready");
+  }
+
+  async function loadReports(period = reportsPeriod) {
+
+    if (reportsLoading) {
+      return;
+    }
+
+    reportsLoading = true;
+    reportsPeriod = period;
+
+    updateReportsPeriodButtons();
+    setReportsState("loading");
+
+    try {
+
+      const authToken =
+        reportsToken();
+
+      if (!authToken) {
+        throw new Error(
+          "Sessão administrativa não encontrada."
+        );
+      }
+
+      const response =
+        await fetch(
+          `/api/admin/reports?period=${encodeURIComponent(reportsPeriod)}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization:
+                `Bearer ${authToken}`,
+              Accept:
+                "application/json"
+            }
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+          data?.error ||
+          `HTTP ${response.status}`
+        );
+      }
+
+      renderReports(data);
+
+    } catch (error) {
+
+      console.error(
+        "ERRO AO CARREGAR RELATÓRIOS:",
+        error
+      );
+
+      setReportsState("error");
+
+    } finally {
+
+      reportsLoading = false;
+
+    }
+  }
+
+  function bindReportsEvents() {
+
+    const elements =
+      reportsElements();
+
+    if (!elements.page) {
+      return;
+    }
+
+    elements.periodButtons.forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const period =
+            button.dataset.period;
+
+          if (!period) {
+            return;
+          }
+
+          loadReports(period);
+
+        }
+      );
+
+    });
+
+    if (elements.refresh) {
+
+      elements.refresh.addEventListener(
+        "click",
+        () => {
+          loadReports(reportsPeriod);
+        }
+      );
+
+    }
+
+  }
+
+  /*
+   * Quando a página de relatórios for aberta,
+   * carrega os dados reais.
+   */
+
+  const originalOpenPage =
+    window.openPage;
+
+  if (typeof originalOpenPage === "function") {
+
+    window.openPage =
+      async function(page, ...args) {
+
+        const result =
+          await originalOpenPage.apply(
+            this,
+            [page, ...args]
+          );
+
+        if (page === "reports") {
+          await loadReports(reportsPeriod);
+        }
+
+        return result;
+      };
+
+  }
+
+  /*
+   * Inicialização.
+   */
+
+  if (
+    document.readyState === "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      bindReportsEvents,
+      { once: true }
+    );
+
+  } else {
+
+    bindReportsEvents();
+
+  }
+
+  /*
+   * Disponibiliza para o restante do Admin.
+   */
+
+  window.loadAdminReports =
+    loadReports;
+
+})();
+
+/* ==========================================================
+   RESGATA+ — LOGS DE AUDITORIA
+   ========================================================== */
+
+(function logsModule() {
+  "use strict";
+
+  let logsPeriod = "30d";
+  let logsAction = "";
+  let logsEntity = "";
+  let logsSearch = "";
+  let logsPage = 1;
+  const logsLimit = 50;
+  let logsPages = 1;
+  let logsLoading = false;
+
+  function getLogsToken() {
+    if (typeof token === "function") {
+      const currentToken = token();
+      if (currentToken) {
+        return currentToken;
+      }
+    }
+
+    return (
+      localStorage.getItem("resgata_admin_token") ||
+      sessionStorage.getItem("resgata_admin_token") ||
+      localStorage.getItem("adminToken") ||
+      sessionStorage.getItem("adminToken") ||
+      ""
+    );
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+
+    const raw = String(value);
+
+    let date;
+
+    if (/^\d+$/.test(raw)) {
+      const number = Number(raw);
+
+      date = new Date(
+        number < 100000000000
+          ? number * 1000
+          : number
+      );
+    } else {
+      date = new Date(raw);
+    }
+
+    if (Number.isNaN(date.getTime())) {
+      return raw;
+    }
+
+    return new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "medium"
+    }).format(date);
+  }
+
+  function formatDetails(value) {
+    if (!value) {
+      return "—";
+    }
+
+    try {
+      const parsed =
+        typeof value === "string"
+          ? JSON.parse(value)
+          : value;
+
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      return String(value);
+    }
+  }
+
+  function setLogsStatus(message, type = "") {
+    const element =
+      document.getElementById("logs-status");
+
+    if (!element) return;
+
+    element.textContent = message;
+    element.dataset.status = type;
+  }
+
+  function setLogsLoading(loading) {
+    logsLoading = loading;
+
+    const refresh =
+      document.getElementById("logs-refresh-btn");
+
+    if (refresh) {
+      refresh.disabled = loading;
+      refresh.textContent =
+        loading
+          ? "⟳ Carregando..."
+          : "↻ Atualizar";
+    }
+  }
+
+  function updatePagination() {
+    const info =
+      document.getElementById("logs-page-info");
+
+    const prev =
+      document.getElementById("logs-prev");
+
+    const next =
+      document.getElementById("logs-next");
+
+    if (info) {
+      info.textContent =
+        `Página ${logsPage} de ${logsPages}`;
+    }
+
+    if (prev) {
+      prev.disabled =
+        logsLoading || logsPage <= 1;
+    }
+
+    if (next) {
+      next.disabled =
+        logsLoading || logsPage >= logsPages;
+    }
+  }
+
+  function updateTotal(total) {
+    const element =
+      document.getElementById("logs-total");
+
+    if (!element) return;
+
+    element.textContent =
+      `${Number(total || 0).toLocaleString("pt-BR")} registros`;
+  }
+
+  function renderLogs(logs) {
+    const tbody =
+      document.getElementById("logs-table-body");
+
+    if (!tbody) return;
+
+    if (!Array.isArray(logs) || logs.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="logs-empty">
+            Nenhum registro encontrado.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    tbody.innerHTML = logs.map((log) => {
+      const details =
+        formatDetails(log.details);
+
+      const compactDetails =
+        details.length > 180
+          ? `${details.slice(0, 180)}...`
+          : details;
+
+      return `
+        <tr>
+          <td>
+            ${escapeHtml(formatDate(log.created_at))}
+          </td>
+
+          <td>
+            <span class="logs-action">
+              ${escapeHtml(log.action || "—")}
+            </span>
+          </td>
+
+          <td>
+            ${escapeHtml(log.entity || "—")}
+          </td>
+
+          <td>
+            ${escapeHtml(log.entity_id || "—")}
+          </td>
+
+          <td>
+            ${escapeHtml(log.user_id || "—")}
+          </td>
+
+          <td>
+            ${
+              log.adminName
+                ? `${escapeHtml(log.adminName)}${
+                    log.adminEmail
+                      ? `<br><small>${escapeHtml(log.adminEmail)}</small>`
+                      : ""
+                  }`
+                : "—"
+            }
+          </td>
+
+          <td>
+            <button
+              type="button"
+              class="admin-btn logs-detail-button"
+              data-log-id="${escapeHtml(log.id)}"
+            >
+              Ver detalhes
+            </button>
+
+            <div
+              hidden
+              data-log-details="${escapeHtml(log.id)}"
+            >${escapeHtml(compactDetails)}</div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    tbody
+      .querySelectorAll(".logs-detail-button")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          const id =
+            button.dataset.logId;
+
+          const log =
+            logs.find(
+              item =>
+                String(item.id) === String(id)
+            );
+
+          if (log) {
+            showLogDetails(log);
+          }
+        });
+      });
+  }
+
+  function showLogDetails(log) {
+    const panel =
+      document.getElementById("logs-detail");
+
+    const content =
+      document.getElementById("logs-detail-content");
+
+    if (!panel || !content) return;
+
+    const detail = {
+      id: log.id,
+      data_hora: formatDate(log.created_at),
+      usuario: log.user_id || null,
+      acao: log.action || null,
+      entidade: log.entity || null,
+      entidade_id: log.entity_id || null,
+      detalhes:
+        formatDetails(log.details)
+    };
+
+    content.textContent =
+      JSON.stringify(detail, null, 2);
+
+    panel.hidden = false;
+
+    panel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  function closeLogDetails() {
+    const panel =
+      document.getElementById("logs-detail");
+
+    if (panel) {
+      panel.hidden = true;
+    }
+  }
+
+  function populateFilterOptions(logs) {
+    const actionSelect =
+      document.getElementById("logs-action");
+
+    const entitySelect =
+      document.getElementById("logs-entity");
+
+    if (!Array.isArray(logs)) return;
+
+    const actions = [
+      ...new Set(
+        logs
+          .map(log => log.action)
+          .filter(Boolean)
+      )
+    ].sort();
+
+    const entities = [
+      ...new Set(
+        logs
+          .map(log => log.entity)
+          .filter(Boolean)
+      )
+    ].sort();
+
+    if (actionSelect) {
+      const current = logsAction;
+
+      actionSelect.innerHTML =
+        `<option value="">Todas as ações</option>` +
+        actions
+          .map(
+            value =>
+              `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`
+          )
+          .join("");
+
+      actionSelect.value = current;
+    }
+
+    if (entitySelect) {
+      const current = logsEntity;
+
+      entitySelect.innerHTML =
+        `<option value="">Todas as entidades</option>` +
+        entities
+          .map(
+            value =>
+              `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`
+          )
+          .join("");
+
+      entitySelect.value = current;
+    }
+  }
+
+  async function loadLogs(options = {}) {
+    if (logsLoading) return;
+
+    if (options.resetPage) {
+      logsPage = 1;
+    }
+
+    setLogsLoading(true);
+    setLogsStatus("Carregando registros...");
+
+    try {
+      const token = getLogsToken();
+
+      if (!token) {
+        throw new Error(
+          "Sessão administrativa não encontrada."
+        );
+      }
+
+      const params = new URLSearchParams({
+        period: logsPeriod,
+        action: logsAction,
+        entity: logsEntity,
+        search: logsSearch,
+        page: String(logsPage),
+        limit: String(logsLimit)
+      });
+
+      const response =
+        await fetch(
+          `/api/admin/logs?${params.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization:
+                `Bearer ${token}`
+            }
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(
+          data.error ||
+          "Não foi possível carregar os logs."
+        );
+      }
+
+      logsPages =
+        Math.max(
+          1,
+          Number(data.pages || 1)
+        );
+
+      logsPage =
+        Math.min(
+          Math.max(1, Number(data.page || 1)),
+          logsPages
+        );
+
+      updateTotal(data.total);
+      renderLogs(data.logs || []);
+      populateFilterOptions(data.logs || []);
+      updatePagination();
+
+      setLogsStatus(
+        `${Number(data.total || 0).toLocaleString("pt-BR")} registro(s) encontrado(s).`,
+        "success"
+      );
+
+    } catch (error) {
+      console.error(
+        "RESGATA+ LOGS:",
+        error
+      );
+
+      const tbody =
+        document.getElementById(
+          "logs-table-body"
+        );
+
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="logs-empty">
+              Não foi possível carregar os logs.
+            </td>
+          </tr>
+        `;
+      }
+
+      updateTotal(0);
+      updatePagination();
+
+      setLogsStatus(
+        error?.message ||
+        "Erro ao carregar os logs.",
+        "error"
+      );
+
+    } finally {
+      setLogsLoading(false);
+      updatePagination();
+    }
+  }
+
+  function setupLogsEvents() {
+    const period =
+      document.getElementById("logs-period");
+
+    const action =
+      document.getElementById("logs-action");
+
+    const entity =
+      document.getElementById("logs-entity");
+
+    const search =
+      document.getElementById("logs-search");
+
+    const refresh =
+      document.getElementById("logs-refresh-btn");
+
+    const clear =
+      document.getElementById("logs-clear-filters");
+
+    const prev =
+      document.getElementById("logs-prev");
+
+    const next =
+      document.getElementById("logs-next");
+
+    const close =
+      document.getElementById("logs-detail-close");
+
+    if (period) {
+      period.addEventListener(
+        "change",
+        () => {
+          logsPeriod = period.value;
+          loadLogs({
+            resetPage: true
+          });
+        }
+      );
+    }
+
+    if (action) {
+      action.addEventListener(
+        "change",
+        () => {
+          logsAction = action.value;
+          loadLogs({
+            resetPage: true
+          });
+        }
+      );
+    }
+
+    if (entity) {
+      entity.addEventListener(
+        "change",
+        () => {
+          logsEntity = entity.value;
+          loadLogs({
+            resetPage: true
+          });
+        }
+      );
+    }
+
+    if (search) {
+      let timer;
+
+      search.addEventListener(
+        "input",
+        () => {
+          clearTimeout(timer);
+
+          timer = setTimeout(() => {
+            logsSearch =
+              search.value.trim();
+
+            loadLogs({
+              resetPage: true
+            });
+          }, 350);
+        }
+      );
+    }
+
+    if (refresh) {
+      refresh.addEventListener(
+        "click",
+        () => {
+          loadLogs();
+        }
+      );
+    }
+
+    if (clear) {
+      clear.addEventListener(
+        "click",
+        () => {
+          logsPeriod = "30d";
+          logsAction = "";
+          logsEntity = "";
+          logsSearch = "";
+          logsPage = 1;
+
+          if (period) {
+            period.value = "30d";
+          }
+
+          if (action) {
+            action.value = "";
+          }
+
+          if (entity) {
+            entity.value = "";
+          }
+
+          if (search) {
+            search.value = "";
+          }
+
+          loadLogs({
+            resetPage: true
+          });
+        }
+      );
+    }
+
+    if (prev) {
+      prev.addEventListener(
+        "click",
+        () => {
+          if (
+            logsPage <= 1 ||
+            logsLoading
+          ) {
+            return;
+          }
+
+          logsPage -= 1;
+          loadLogs();
+        }
+      );
+    }
+
+    if (next) {
+      next.addEventListener(
+        "click",
+        () => {
+          if (
+            logsPage >= logsPages ||
+            logsLoading
+          ) {
+            return;
+          }
+
+          logsPage += 1;
+          loadLogs();
+        }
+      );
+    }
+
+    if (close) {
+      close.addEventListener(
+        "click",
+        closeLogDetails
+      );
+    }
+  }
+
+  const originalOpenPage =
+    window.openPage;
+
+  if (
+    typeof originalOpenPage === "function"
+  ) {
+    window.openPage =
+      async function(page, ...args) {
+        const result =
+          await originalOpenPage.apply(
+            this,
+            [page, ...args]
+          );
+
+        if (page === "logs") {
+          await loadLogs();
+        }
+
+        return result;
+      };
+  }
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+      setupLogsEvents();
+    }
+  );
+
+  window.loadAdminLogs = loadLogs;
+
+})();

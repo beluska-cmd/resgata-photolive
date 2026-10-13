@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Serviços — PhotoLive Magic</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.pl-page{max-width:1120px;margin:0 auto;padding:48px 20px 80px}
+.pl-page h1{font-size:clamp(2rem,4vw,3.4rem);margin:8px 0 12px}.pl-page>p{max-width:720px;color:#64748b}
+.pl-products{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:32px}
+.pl-product{background:#fff;border:1px solid #e2e8f0;border-radius:22px;padding:24px;box-shadow:0 10px 30px rgba(30,41,59,.06)}
+.pl-product h2{margin:10px 0}.pl-product p{color:#64748b;min-height:55px}.pl-price{font-size:1.05rem;font-weight:800;margin:18px 0}.pl-plans{display:grid;gap:9px}.pl-plan{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;border:1px solid #e2e8f0;border-radius:12px}.pl-plan strong{color:#4f46e5}.pl-btn{width:100%;margin-top:14px}
+.pl-top{display:flex;justify-content:space-between;gap:15px;align-items:center}.pl-back{color:#4f46e5;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">✨</div><div><strong>PhotoLive Magic</strong><span>Dê vida às suas fotos.</span></div></div>
+  <div class="topbar-right"><nav><a href="index.html#inicio">Início</a><a href="servicos.html">Serviços</a><a href="index.html#como-funciona">Como funciona</a></nav><div class="photolive-account-bar"><a class="photolive-header-account" href="conta/minha-conta.html">Minha conta</a></div></div>
+</header>
+<main class="pl-page">
+  <div class="pl-top"><div><span class="eyebrow">SERVIÇOS</span><h1>Escolha o que você precisa.</h1><p>Você pode contratar somente o serviço que quiser. O pagamento e a ativação acontecem separadamente.</p></div><a class="pl-back" href="index.html">← Voltar</a></div>
+  <div class="pl-products" id="products"></div>
+</main>
+<script>
+const CATALOG = [
+["editor-fotos","✨","Editor de Fotos"],["editor-videos","🎬","Editor de Vídeos"],["recuperar","♻️","Recuperar"],["diagnostico","🔎","Diagnóstico"],["pacote-essencial","📦","Pacote Essencial"],["pacote-completo","🚀","Pacote Completo"],["premium","👑","Premium"]
+];
+const prices={ "editor-fotos":[5.90,9.90,99], "editor-videos":[7.90,12.90,129], "recuperar":[14.90,19.90,199], "diagnostico":[5.90,7.90,79], "pacote-essencial":[12.90,14.90,149], "pacote-completo":[24.90,29.90,299], "premium":[34.90,34.90,349] };
+const labels=["Avulso","Mensal","Anual"];
+const el=document.getElementById("products");
+for(const [slug,icon,name] of CATALOG){
+ const p=prices[slug]; const card=document.createElement("article"); card.className="pl-product";
+ card.innerHTML=`<div style="font-size:2rem">${icon}</div><h2>${name}</h2><p>Conheça o serviço e escolha a forma de contratação.</p><div class="pl-plans">${p.map((v,i)=>`<div class="pl-plan"><span>${labels[i]}</span><strong>R$ ${v.toFixed(2).replace(".",",")}</strong></div>`).join("")}</div><a class="primary-btn pl-btn" href="pagamentos/pagamento.html?produto=${encodeURIComponent(slug)}">Escolher plano</a>`;
+ el.appendChild(card);
+}
+</script>
+</body></html>

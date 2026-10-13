@@ -1,0 +1,3 @@
+cd /workspaces/resgata-photolive-magic/arruma-fotos/site/cloudflare-site || exit 1
+
+python3 -m http.server 8080

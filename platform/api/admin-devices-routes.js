@@ -1,0 +1,440 @@
+import express from "express";
+import crypto from "node:crypto";
+import { db } from "./database.js";
+
+const router = express.Router();
+
+function now() {
+  return Date.now().toString();
+}
+
+function audit(req, action, entityId, details = {}) {
+  db.prepare(`
+    INSERT INTO audit_logs (
+      action,
+      entity,
+      entity_id,
+      details,
+      created_at
+    )
+    VALUES (?, ?, ?, ?, ?)
+  `).run(
+    action,
+    "device",
+    entityId || null,
+    JSON.stringify({
+      adminId: req.admin?.id || null,
+      ...details
+    }),
+    now()
+  );
+}
+
+function normalizeStatus(status) {
+  const value = String(status || "").trim().toLowerCase();
+
+  if (!value) return null;
+
+  const allowed = [
+    "active",
+    "inactive",
+    "blocked",
+    "offline",
+    "unknown"
+  ];
+
+  return allowed.includes(value) ? value : null;
+}
+
+/*
+ * GET /api/admin/devices
+ *
+ * Lista dispositivos com usuário vinculado.
+ */
+router.get("/", (req, res) => {
+  try {
+    const search = String(req.query.search || "").trim();
+    const status = normalizeStatus(req.query.status);
+    const limitRaw = Number(req.query.limit || 100);
+
+    const limit = Math.min(
+      Math.max(Number.isFinite(limitRaw) ? Math.floor(limitRaw) : 100, 1),
+      500
+    );
+
+    const where = [];
+    const params = [];
+
+    if (search) {
+      where.push(`
+        (
+          d.id LIKE ?
+          OR d.name LIKE ?
+          OR d.model LIKE ?
+          OR d.android_version LIKE ?
+          OR d.app_version LIKE ?
+          OR u.name LIKE ?
+          OR u.email LIKE ?
+        )
+      `);
+
+      const term = `%${search}%`;
+
+      params.push(
+        term,
+        term,
+        term,
+        term,
+        term,
+        term,
+        term
+      );
+    }
+
+    if (status) {
+      where.push("d.status = ?");
+      params.push(status);
+    }
+
+    const whereSql = where.length
+      ? `WHERE ${where.join(" AND ")}`
+      : "";
+
+    const devices = db.prepare(`
+      SELECT
+        d.id,
+        d.user_id,
+        d.name,
+        d.model,
+        d.android_version,
+        d.app_version,
+        d.last_seen,
+        d.status,
+        d.created_at,
+        u.name AS user_name,
+        u.email AS user_email,
+        u.plan AS user_plan,
+        u.status AS user_status
+      FROM devices d
+      LEFT JOIN users u
+        ON u.id = d.user_id
+      ${whereSql}
+      ORDER BY
+        CASE
+          WHEN d.last_seen IS NULL THEN 1
+          ELSE 0
+        END,
+        d.last_seen DESC,
+        d.created_at DESC
+      LIMIT ?
+    `).all(...params, limit);
+
+    const totalRow = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM devices d
+      LEFT JOIN users u
+        ON u.id = d.user_id
+      ${whereSql}
+    `).get(...params);
+
+    return res.json({
+      ok: true,
+      devices,
+      total: Number(totalRow?.total || 0)
+    });
+  } catch (error) {
+    console.error("ADMIN DEVICES LIST ERROR:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "ADMIN_DEVICES_LIST_ERROR"
+    });
+  }
+});
+
+/*
+ * GET /api/admin/devices/summary
+ */
+router.get("/summary", (req, res) => {
+  try {
+    const total = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM devices
+    `).get();
+
+    const active = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM devices
+      WHERE status = 'active'
+    `).get();
+
+    const inactive = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM devices
+      WHERE status = 'inactive'
+    `).get();
+
+    const blocked = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM devices
+      WHERE status = 'blocked'
+    `).get();
+
+    const offline = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM devices
+      WHERE status = 'offline'
+    `).get();
+
+    const androidVersions = db.prepare(`
+      SELECT
+        COALESCE(android_version, 'Desconhecido') AS android_version,
+        COUNT(*) AS total
+      FROM devices
+      GROUP BY android_version
+      ORDER BY total DESC
+      LIMIT 20
+    `).all();
+
+    const appVersions = db.prepare(`
+      SELECT
+        COALESCE(app_version, 'Desconhecida') AS app_version,
+        COUNT(*) AS total
+      FROM devices
+      GROUP BY app_version
+      ORDER BY total DESC
+      LIMIT 20
+    `).all();
+
+    return res.json({
+      ok: true,
+      summary: {
+        total: Number(total?.total || 0),
+        active: Number(active?.total || 0),
+        inactive: Number(inactive?.total || 0),
+        blocked: Number(blocked?.total || 0),
+        offline: Number(offline?.total || 0)
+      },
+      androidVersions,
+      appVersions
+    });
+  } catch (error) {
+    console.error("ADMIN DEVICES SUMMARY ERROR:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "ADMIN_DEVICES_SUMMARY_ERROR"
+    });
+  }
+});
+
+/*
+ * GET /api/admin/devices/:id
+ */
+router.get("/:id", (req, res) => {
+  try {
+    const deviceId = String(req.params.id || "").trim();
+
+    if (!deviceId) {
+      return res.status(400).json({
+        ok: false,
+        error: "DEVICE_ID_REQUIRED"
+      });
+    }
+
+    const device = db.prepare(`
+      SELECT
+        d.id,
+        d.user_id,
+        d.name,
+        d.model,
+        d.android_version,
+        d.app_version,
+        d.last_seen,
+        d.status,
+        d.created_at,
+        u.name AS user_name,
+        u.email AS user_email,
+        u.plan AS user_plan,
+        u.status AS user_status
+      FROM devices d
+      LEFT JOIN users u
+        ON u.id = d.user_id
+      WHERE d.id = ?
+    `).get(deviceId);
+
+    if (!device) {
+      return res.status(404).json({
+        ok: false,
+        error: "DEVICE_NOT_FOUND"
+      });
+    }
+
+    const diagnostics = db.prepare(`
+      SELECT *
+      FROM diagnostics
+      WHERE device_id = ?
+      ORDER BY created_at DESC
+      LIMIT 50
+    `).all(deviceId);
+
+    const requests = db.prepare(`
+      SELECT *
+      FROM service_requests
+      WHERE device_id = ?
+      ORDER BY created_at DESC
+      LIMIT 50
+    `).all(deviceId);
+
+    const audit = db.prepare(`
+      SELECT
+        id,
+        action,
+        entity,
+        entity_id,
+        details,
+        created_at
+      FROM audit_logs
+      WHERE entity = 'device'
+        AND entity_id = ?
+      ORDER BY created_at DESC
+      LIMIT 50
+    `).all(deviceId);
+
+    return res.json({
+      ok: true,
+      device,
+      diagnostics,
+      requests,
+      audit
+    });
+  } catch (error) {
+    console.error("ADMIN DEVICE DETAIL ERROR:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "ADMIN_DEVICE_DETAIL_ERROR"
+    });
+  }
+});
+
+/*
+ * PATCH /api/admin/devices/:id/status
+ */
+router.patch("/:id/status", (req, res) => {
+  try {
+    const deviceId = String(req.params.id || "").trim();
+    const status = normalizeStatus(req.body?.status);
+
+    if (!deviceId) {
+      return res.status(400).json({
+        ok: false,
+        error: "DEVICE_ID_REQUIRED"
+      });
+    }
+
+    if (!status) {
+      return res.status(400).json({
+        ok: false,
+        error: "INVALID_DEVICE_STATUS"
+      });
+    }
+
+    const device = db.prepare(`
+      SELECT id, status
+      FROM devices
+      WHERE id = ?
+    `).get(deviceId);
+
+    if (!device) {
+      return res.status(404).json({
+        ok: false,
+        error: "DEVICE_NOT_FOUND"
+      });
+    }
+
+    db.prepare(`
+      UPDATE devices
+      SET status = ?
+      WHERE id = ?
+    `).run(status, deviceId);
+
+    audit(
+      req,
+      "device.status_update",
+      deviceId,
+      {
+        previousStatus: device.status,
+        newStatus: status
+      }
+    );
+
+    const updated = db.prepare(`
+      SELECT *
+      FROM devices
+      WHERE id = ?
+    `).get(deviceId);
+
+    return res.json({
+      ok: true,
+      device: updated
+    });
+  } catch (error) {
+    console.error("ADMIN DEVICE STATUS ERROR:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "ADMIN_DEVICE_STATUS_ERROR"
+    });
+  }
+});
+
+/*
+ * POST /api/admin/devices/:id/refresh
+ *
+ * Marca uma ação administrativa de atualização.
+ * Não finge que o aparelho foi atualizado remotamente.
+ */
+router.post("/:id/refresh", (req, res) => {
+  try {
+    const deviceId = String(req.params.id || "").trim();
+
+    const device = db.prepare(`
+      SELECT id, status, last_seen
+      FROM devices
+      WHERE id = ?
+    `).get(deviceId);
+
+    if (!device) {
+      return res.status(404).json({
+        ok: false,
+        error: "DEVICE_NOT_FOUND"
+      });
+    }
+
+    audit(
+      req,
+      "device.refresh_requested",
+      deviceId,
+      {
+        previousStatus: device.status,
+        lastSeen: device.last_seen
+      }
+    );
+
+    return res.json({
+      ok: true,
+      requested: true,
+      message: "Solicitação registrada. A atualização real depende do aplicativo Android estar conectado e autorizado."
+    });
+  } catch (error) {
+    console.error("ADMIN DEVICE REFRESH ERROR:", error);
+
+    return res.status(500).json({
+      ok: false,
+      error: "ADMIN_DEVICE_REFRESH_ERROR"
+    });
+  }
+});
+
+export default router;

@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Conta — PhotoLive Magic</title>
+
+  <style>
+    :root{
+      --dark:#062b4a;
+      --dark2:#084c68;
+      --turq:#08c6c8;
+      --blue:#2879ff;
+      --purple:#8b5cf6;
+      --green:#42d66f;
+      --yellow:#ffd84d;
+      --red:#ff5263;
+      --ice:#f5fbfd;
+      --text:#073b52;
+      --muted:#557282;
+      --white:#fff;
+      --border:rgba(8,198,200,.18);
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 15% 15%,rgba(66,214,111,.22),transparent 28%),
+        radial-gradient(circle at 85% 10%,rgba(139,92,246,.25),transparent 30%),
+        radial-gradient(circle at 50% 100%,rgba(8,198,200,.28),transparent 38%),
+        linear-gradient(135deg,#062b4a,#07566b 45%,#2879ff);
+    }
+
+    body{
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:-20%;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 25% 35%,rgba(255,216,77,.16),transparent 18%),
+        radial-gradient(circle at 75% 65%,rgba(255,82,99,.14),transparent 20%);
+      filter:blur(30px);
+      animation:aurora 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes aurora{
+      from{transform:translate3d(-2%,0,0) scale(1)}
+      to{transform:translate3d(2%,-2%,0) scale(1.08)}
+    }
+
+    a{
+      color:inherit;
+    }
+
+    .page{
+      position:relative;
+      z-index:1;
+      width:min(1100px,calc(100% - 32px));
+      margin:0 auto;
+      padding:20px 0 40px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 18px;
+      border-radius:18px;
+      background:rgba(255,255,255,.96);
+      box-shadow:0 15px 45px rgba(3,30,55,.22);
+      margin-bottom:24px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .topbar::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:4px;
+      background:linear-gradient(90deg,var(--yellow),var(--green),var(--turq),var(--blue),var(--purple),var(--red));
+    }
+
+    .brand{
+      font-weight:900;
+      color:var(--dark);
+      text-decoration:none;
+      font-size:18px;
+    }
+
+    .nav{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .nav a{
+      text-decoration:none;
+      font-weight:800;
+      font-size:14px;
+      padding:9px 13px;
+      border-radius:11px;
+      color:var(--dark);
+    }
+
+    .nav a:hover{
+      background:#e8f8fa;
+    }
+
+    .hero{
+      text-align:center;
+      color:white;
+      padding:20px 10px 26px;
+    }
+
+    .hero .badge{
+      display:inline-flex;
+      padding:7px 13px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.3);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      backdrop-filter:blur(8px);
+    }
+
+    .hero h1{
+      margin:12px 0 8px;
+      font-size:clamp(28px,5vw,48px);
+      line-height:1.05;
+    }
+
+    .hero p{
+      margin:0 auto;
+      max-width:680px;
+      color:rgba(255,255,255,.88);
+      line-height:1.6;
+    }
+
+    .account-card{
+      background:rgba(255,255,255,.97);
+      border-radius:26px;
+      padding:28px;
+      box-shadow:0 25px 65px rgba(3,30,55,.25);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .account-card::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:6px;
+      background:linear-gradient(90deg,var(--turq),var(--blue),var(--purple),var(--red),var(--yellow));
+    }
+
+    .profile{
+      display:grid;
+      grid-template-columns:110px minmax(0,1fr);
+      gap:22px;
+      align-items:center;
+      padding-bottom:24px;
+      border-bottom:1px solid var(--border);
+    }
+
+    .avatar{
+      width:100px;
+      height:100px;
+      border-radius:28px;
+      display:grid;
+      place-items:center;
+      font-size:42px;
+      background:linear-gradient(135deg,#dffcff,#e8e2ff);
+      box-shadow:inset 0 0 0 1px rgba(8,198,200,.16);
+    }
+
+    .profile h2{
+      margin:0 0 6px;
+      font-size:25px;
+    }
+
+    .email{
+      color:var(--muted);
+      word-break:break-word;
+    }
+
+    .status{
+      display:inline-flex;
+      margin-top:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#e9fff0;
+      color:#16833c;
+      font-weight:800;
+      font-size:12px;
+    }
+
+    .sections{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+      margin-top:22px;
+    }
+
+    .section{
+      padding:20px;
+      border-radius:18px;
+      background:var(--ice);
+      border:1px solid var(--border);
+    }
+
+    .section h3{
+      margin:0 0 7px;
+      font-size:17px;
+    }
+
+    .section p{
+      margin:0 0 14px;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+    }
+
+    .section a,
+    .section button{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:42px;
+      padding:9px 13px;
+      border:0;
+      border-radius:11px;
+      background:linear-gradient(135deg,var(--turq),var(--blue));
+      color:white;
+      text-decoration:none;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .section button.logout{
+      background:linear-gradient(135deg,#ff5263,#8b5cf6);
+    }
+
+    .footer-actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:10px;
+      margin-top:22px;
+    }
+
+    .footer-actions a{
+      text-decoration:none;
+      font-weight:800;
+      padding:11px 15px;
+      border-radius:12px;
+      background:#eaf8fb;
+      color:var(--dark);
+    }
+
+    @media(max-width:700px){
+      .page{
+        width:min(100% - 20px,600px);
+        padding-top:10px;
+      }
+
+      .topbar{
+        align-items:stretch;
+        flex-direction:column;
+      }
+
+      .nav{
+        justify-content:stretch;
+      }
+
+      .nav a{
+        flex:1;
+        text-align:center;
+      }
+
+      .account-card{
+        padding:20px;
+        border-radius:20px;
+      }
+
+      .profile{
+        grid-template-columns:1fr;
+        text-align:center;
+      }
+
+      .avatar{
+        margin:auto;
+      }
+
+      .sections{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:360px){
+      .page{
+        width:calc(100% - 14px);
+      }
+
+      .nav{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .hero h1{
+        font-size:28px;
+      }
+
+      .account-card{
+        padding:16px;
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      *,
+      *::before,
+      *::after{
+        animation:none !important;
+        transition:none !important;
+      }
+    }
+  </style>
+
+<style id="photolive-minha-conta-visual-v2">
+
+/* ===== VISUAL V2 ===== */
+
+.account-card{
+  background:rgba(255,255,255,.985) !important;
+  border:1px solid rgba(255,255,255,.75);
+  box-shadow:
+    0 30px 80px rgba(3,30,55,.28),
+    0 8px 25px rgba(8,198,200,.10) !important;
+}
+
+.profile{
+  position:relative;
+  padding:8px 8px 26px !important;
+}
+
+.profile::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:2px;
+  background:linear-gradient(
+    90deg,
+    #ffd84d,
+    #42d66f,
+    #08c6c8,
+    #2879ff,
+    #8b5cf6,
+    #ff5263
+  );
+}
+
+.avatar{
+  background:
+    radial-gradient(circle at 30% 25%,#fff 0 8%,transparent 9%),
+    linear-gradient(135deg,#08c6c8,#2879ff 48%,#8b5cf6) !important;
+  color:#fff;
+  box-shadow:
+    0 12px 30px rgba(40,121,255,.25),
+    inset 0 0 0 2px rgba(255,255,255,.5) !important;
+}
+
+.profile h2{
+  font-size:28px !important;
+  font-weight:900;
+  color:#062b4a;
+}
+
+.email{
+  font-size:15px;
+  font-weight:700;
+}
+
+.status{
+  box-shadow:0 5px 15px rgba(66,214,111,.12);
+}
+
+.sections{
+  gap:18px !important;
+}
+
+.section{
+  position:relative;
+  overflow:hidden;
+  min-height:190px;
+  padding:22px !important;
+  background:
+    linear-gradient(145deg,#fff,#f3fbfd) !important;
+  border:1px solid rgba(8,198,200,.16) !important;
+  box-shadow:0 8px 25px rgba(7,59,82,.07);
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.section::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:4px;
+  background:linear-gradient(
+    90deg,
+    #08c6c8,
+    #2879ff,
+    #8b5cf6
+  );
+}
+
+.section:hover{
+  transform:translateY(-3px);
+  border-color:rgba(8,198,200,.35) !important;
+  box-shadow:0 15px 35px rgba(7,59,82,.12);
+}
+
+.section h3{
+  color:#062b4a;
+  font-size:18px !important;
+  margin-top:5px !important;
+}
+
+.section p{
+  min-height:48px;
+}
+
+.section a{
+  background:linear-gradient(
+    135deg,
+    #08c6c8,
+    #2879ff
+  ) !important;
+  box-shadow:0 7px 18px rgba(40,121,255,.18);
+}
+
+.section a:hover{
+  transform:translateY(-1px);
+}
+.data-heading{
+  margin-bottom:20px;
+}
+
+.data-heading h2{
+  font-weight:900;
+  color:#062b4a;
+}
+
+.data-grid{
+  gap:14px !important;
+}
+
+.data-item{
+  transition:transform .2s ease,box-shadow .2s ease;
+  box-shadow:0 5px 15px rgba(7,59,82,.04);
+}
+
+.data-item:hover{
+  transform:translateY(-2px);
+  box-shadow:0 9px 20px rgba(7,59,82,.08);
+}
+.footer-actions{
+  padding-top:5px;
+}
+
+.footer-actions a,
+.footer-actions button{
+  min-height:44px;
+}
+
+.footer-actions a:first-child{
+  background:linear-gradient(135deg,#08c6c8,#2879ff);
+  color:#fff;
+}
+
+@media(max-width:700px){
+
+  .account-card{
+    padding:20px !important;
+  }
+
+  .section{
+    min-height:0;
+  }
+
+  .extra-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:360px){
+
+  .account-card{
+    padding:15px !important;
+  }
+
+  .section{
+    padding:18px !important;
+  }
+
+  .account-data-box,
+  .account-extra-box{
+    padding:18px;
+  }
+
+}
+
+</style>
+
+
+<style id="photolive-minha-conta-cards-final">
+
+/* CARDS PRINCIPAIS DA MINHA CONTA */
+
+.sections{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px !important;
+  margin-top:26px !important;
+}
+
+.section{
+  position:relative;
+  overflow:hidden;
+  min-height:190px;
+  padding:23px !important;
+  border-radius:20px !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.99),
+      rgba(242,250,253,.98)
+    ) !important;
+
+  border:1px solid rgba(8,198,200,.16) !important;
+
+  box-shadow:
+    0 8px 18px rgba(6,43,74,.07),
+    0 18px 38px rgba(8,198,200,.08) !important;
+
+  transition:
+    transform .22s ease,
+    box-shadow .22s ease,
+    border-color .22s ease;
+}
+
+.section::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:4px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ffd84d,
+      #42d66f,
+      #08c6c8,
+      #2879ff,
+      #8b5cf6,
+      #ff5263
+    );
+}
+
+.section::after{
+  content:"";
+  position:absolute;
+  width:120px;
+  height:120px;
+  right:-65px;
+  bottom:-70px;
+  border-radius:50%;
+  background:rgba(8,198,200,.08);
+  pointer-events:none;
+}
+
+.section:hover{
+  transform:translateY(-4px);
+
+  border-color:rgba(8,198,200,.32) !important;
+
+  box-shadow:
+    0 12px 22px rgba(6,43,74,.10),
+    0 24px 48px rgba(8,198,200,.15) !important;
+}
+
+.section h3{
+  position:relative;
+  z-index:1;
+  margin:3px 0 8px !important;
+  color:#062b4a !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+}
+
+.section p{
+  position:relative;
+  z-index:1;
+  min-height:48px;
+  color:#557282 !important;
+  line-height:1.55 !important;
+}
+
+.section a{
+  position:relative;
+  z-index:2;
+
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+
+  min-height:43px;
+  padding:10px 15px !important;
+
+  border-radius:12px !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #08c6c8,
+      #2879ff
+    ) !important;
+
+  color:#fff !important;
+  font-weight:900 !important;
+  text-decoration:none !important;
+
+  box-shadow:
+    0 7px 16px rgba(40,121,255,.18);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.section a:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 10px 22px rgba(40,121,255,.26);
+}
+
+/* CORES DIFERENTES PARA OS CARDS */
+
+.section:nth-child(1)::before{
+  background:linear-gradient(90deg,#08c6c8,#2879ff);
+}
+
+.section:nth-child(2)::before{
+  background:linear-gradient(90deg,#42d66f,#08c6c8);
+}
+
+.section:nth-child(3)::before{
+  background:linear-gradient(90deg,#2879ff,#8b5cf6);
+}
+
+.section:nth-child(4)::before{
+  background:linear-gradient(90deg,#ffd84d,#ff5263);
+}
+
+.section:nth-child(5)::before{
+  background:linear-gradient(90deg,#8b5cf6,#2879ff);
+}
+
+.section:nth-child(6)::before{
+  background:linear-gradient(90deg,#ff5263,#8b5cf6);
+}
+
+@media(max-width:700px){
+
+  .sections{
+    grid-template-columns:1fr !important;
+    gap:14px !important;
+  }
+
+  .section{
+    min-height:0;
+  }
+
+}
+
+@media(max-width:360px){
+
+  .section{
+    padding:19px !important;
+    border-radius:17px !important;
+  }
+
+  .section a{
+    width:100%;
+  }
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  .section,
+  .section a{
+    transition:none !important;
+  }
+
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+<style id="photolive-header-final-style">
+.topbar{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+}
+
+.topnav{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.photolive-header-account-title{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:9px 15px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#08c6c8,#2879ff);
+  color:#fff;
+  font-weight:800;
+  white-space:nowrap;
+  box-shadow:0 6px 18px rgba(8,198,200,.22);
+}
+
+.photolive-header-logout{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:9px 15px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ff5263,#e83d55);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+  box-shadow:0 6px 18px rgba(255,82,99,.22);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+
+.photolive-header-logout:hover{
+  transform:translateY(-1px);
+  box-shadow:0 9px 24px rgba(255,82,99,.30);
+}
+
+@media(max-width:700px){
+  .topbar{
+    justify-content:center;
+  }
+
+  .brand{
+    width:100%;
+    text-align:center;
+  }
+
+  .topnav{
+    width:100%;
+  }
+}
+
+@media(max-width:420px){
+  .topnav{
+    gap:6px;
+  }
+
+  .topnav a,
+  .photolive-header-account-title,
+  .photolive-header-logout{
+    padding:8px 10px;
+    font-size:13px;
+  }
+}
+</style>
+
+
+
+
+</head>
+
+<body>
+  <main class="page">
+
+    <header class="topbar">
+      <a class="brand" href="minha-conta.html">✨ PhotoLive Magic</a>
+
+      <nav class="topnav" aria-label="Navegação da conta">
+        <a href="minha-conta.html" class="photolive-header-account-title photolive-header-inicio">🏠 Início</a>
+        <span class="photolive-header-account-title">👤 Minha Conta</span>
+
+        <button type="button" class="photolive-header-logout" id="headerLogoutBtn">🚪 Sair</button>
+      </nav>
+    </header>
+
+    
+
+    <section class="account-card">
+
+      <div class="profile" id="dados">
+        <div class="avatar">👤</div>
+
+        <div>
+          <h2>Olá! 👋</h2>
+          <div class="email" id="userEmail">Carregando sua conta...</div>
+          <span class="status">● Conta conectada</span>
+        </div>
+      </div>
+<div class="sections">
+    <article class="section">
+      <h3>🆘 Atendimento</h3>
+      <p>
+        Precisa de ajuda, quer enviar uma sugestão ou relatar um problema?
+      </p>
+      <a href="atendimento.html">Abrir Atendimento →</a>
+    </article>
+
+        
+
+
+        <article class="section">
+          <h3>👤 Meus dados</h3>
+          <p>
+            Consulte as informações básicas da sua conta.
+          </p>
+          <a href="meus-dados.html" class="photolive-ver-dados-btn">Ver dados</a>
+        </article>
+
+        <article class="section">
+          <h3>📦 Meus serviços</h3>
+          <p>
+            Acesse os serviços e recursos disponíveis para sua conta.
+          </p>
+          <a href="meu-espaco.html">Abrir Meu Espaço</a>
+        </article>
+
+        <article class="section">
+          <h3>📋 Meus pedidos</h3>
+          <p>
+            Consulte seus pedidos e serviços contratados.
+          </p>
+          <a href="meus-pedidos.html">Ver pedidos</a>
+        </article>
+
+        <article class="section">
+          <h3>💳 Pagamentos</h3>
+          <p>
+            Consulte informações relacionadas aos seus pagamentos.
+          </p>
+          <a href="pagamentos.html">Ver pagamentos</a>
+        </article>
+
+        <article class="section">
+          <h3>👑 Meu plano</h3>
+          <p>
+            Veja o plano e os recursos disponíveis na sua conta.
+          </p>
+          <a href="meu-plano.html">Ver plano</a>
+        </article>
+
+      </div>
+
+      
+
+    </section>
+  
+
+
+</main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../acesso/auth-config.js"></script>
+
+  <script>
+    (async function(){
+
+      const emailEl = document.getElementById("userEmail");
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      try{
+
+        if(!window.supabase || !window.PHOTOLIVE_SUPABASE){
+          emailEl.textContent = "Não foi possível conectar à conta.";
+          return;
+        }
+
+        const client = window.supabase.createClient(
+          window.PHOTOLIVE_SUPABASE.url,
+          window.PHOTOLIVE_SUPABASE.anonKey
+        );
+
+        const { data, error } = await client.auth.getSession();
+
+        if(error){
+          console.error("Erro ao recuperar sessão:", error);
+          emailEl.textContent = "Não foi possível carregar a conta.";
+          return;
+        }
+
+        if(data && data.session && data.session.user){
+
+          const user = data.session.user;
+
+          emailEl.textContent =
+            user.email ||
+            user.user_metadata?.email ||
+            "Conta PhotoLive";
+
+        }else{
+          emailEl.textContent = "Sessão não identificada";
+        }
+
+        if(logoutBtn){
+          logoutBtn.addEventListener("click",async function(){
+
+            logoutBtn.disabled = true;
+            logoutBtn.textContent = "Saindo...";
+
+            try{
+              await client.auth.signOut();
+            }catch(error){
+              console.warn("Erro ao sair:",error);
+            }
+
+            window.location.href="../acesso/acesso.html";
+          });
+        }
+
+      }catch(error){
+
+        console.error("Erro na Minha Conta:",error);
+        emailEl.textContent = "Não foi possível carregar a conta.";
+
+      }
+
+    })();
+  </script>
+
+<script id="photolive-header-logout-script">
+(function(){
+  const headerLogout = document.getElementById("headerLogoutBtn");
+  const existingLogout = document.getElementById("logoutBtn");
+
+  if(!headerLogout) return;
+
+  headerLogout.addEventListener("click", function(){
+    if(existingLogout){
+      existingLogout.click();
+    }else{
+      window.location.href = "../acesso/acesso.html";
+    }
+  });
+})();
+</script>
+
+
+
+
+</body>
+</html>
+
+<style id="photolive-minha-conta-visual-premium">
+
+/* =========================================================
+   PHOTOLIVE MAGIC — VISUAL FOTOGRÁFICO DA MINHA CONTA
+   ========================================================= */
+
+body{
+  position:relative;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255,216,77,.32), transparent 24%),
+    radial-gradient(circle at 92% 18%, rgba(8,198,200,.24), transparent 26%),
+    radial-gradient(circle at 15% 82%, rgba(139,92,246,.18), transparent 28%),
+    radial-gradient(circle at 88% 82%, rgba(255,82,99,.16), transparent 26%),
+    linear-gradient(135deg,#eefbff 0%,#ffffff 48%,#eef8ff 100%) !important;
+}
+
+/* Luzes decorativas no espaço vazio */
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  pointer-events:none;
+  z-index:0;
+  border-radius:50%;
+  filter:blur(45px);
+  opacity:.45;
+}
+
+body::before{
+  width:260px;
+  height:260px;
+  left:-100px;
+  top:180px;
+  background:linear-gradient(
+    135deg,
+    #ffd84d,
+    #42d66f,
+    #08c6c8
+  );
+}
+
+body::after{
+  width:300px;
+  height:300px;
+  right:-120px;
+  bottom:80px;
+  background:linear-gradient(
+    135deg,
+    #2879ff,
+    #8b5cf6,
+    #ff5263
+  );
+}
+
+/* Conteúdo acima das decorações */
+.topbar,
+main,
+footer{
+  position:relative;
+  z-index:2;
+}
+
+/* =========================================================
+   ÁREA PRINCIPAL
+   ========================================================= */
+
+main{
+  position:relative;
+}
+
+/* brilho fotográfico discreto atrás do conteúdo */
+main::before{
+  content:"";
+  position:absolute;
+  width:420px;
+  height:420px;
+  left:50%;
+  top:30px;
+  transform:translateX(-50%);
+  background:
+    radial-gradient(
+      circle,
+      rgba(40,121,255,.10),
+      rgba(8,198,200,.06) 45%,
+      transparent 72%
+    );
+  filter:blur(8px);
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* =========================================================
+   HERO / CABEÇALHO
+   ========================================================= */
+
+.hero,
+.account-hero{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(
+      135deg,
+      #063b52 0%,
+      #07566b 45%,
+      #0b8798 100%
+    ) !important;
+  border-radius:28px !important;
+  color:#fff !important;
+  box-shadow:
+    0 20px 55px rgba(6,59,82,.20),
+    0 4px 18px rgba(8,198,200,.12) !important;
+}
+
+/* brilho no hero */
+.hero::before,
+.account-hero::before{
+  content:"";
+  position:absolute;
+  width:260px;
+  height:260px;
+  right:-70px;
+  top:-110px;
+  border-radius:50%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,216,77,.55),
+      rgba(255,216,77,.12) 45%,
+      transparent 70%
+    );
+  filter:blur(5px);
+}
+
+.hero::after,
+.account-hero::after{
+  content:"";
+  position:absolute;
+  width:190px;
+  height:190px;
+  left:-80px;
+  bottom:-100px;
+  border-radius:50%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(139,92,246,.42),
+      transparent 70%
+    );
+}
+
+/* =========================================================
+   PERFIL / AVATAR
+   ========================================================= */
+
+.profile-avatar,
+.avatar{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(
+      135deg,
+      #2879ff,
+      #08c6c8 45%,
+      #8b5cf6
+    ) !important;
+  border:4px solid rgba(255,255,255,.85) !important;
+  box-shadow:
+    0 12px 30px rgba(40,121,255,.28),
+    0 0 0 8px rgba(8,198,200,.08) !important;
+}
+
+/* brilho passando pelo avatar */
+.profile-avatar::after,
+.avatar::after{
+  content:"";
+  position:absolute;
+  width:55%;
+  height:160%;
+  left:-80%;
+  top:-30%;
+  transform:rotate(25deg);
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.55),
+    transparent
+  );
+  animation:photoliveAvatarLight 4s ease-in-out infinite;
+}
+
+@keyframes photoliveAvatarLight{
+  0%,55%{left:-90%}
+  75%,100%{left:150%}
+}
+
+/* =========================================================
+   CARDS DA MINHA CONTA
+   ========================================================= */
+
+.card,
+.account-card,
+.service-card,
+.data-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(8,135,152,.12) !important;
+  background:rgba(255,255,255,.90) !important;
+  box-shadow:
+    0 12px 30px rgba(6,59,82,.08) !important;
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease,
+    border-color .25s ease !important;
+}
+
+/* faixa colorida no topo dos cards */
+.card::before,
+.account-card::before,
+.service-card::before,
+.data-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:5px;
+  background:
+    linear-gradient(
+      90deg,
+      #ffd84d,
+      #42d66f,
+      #08c6c8,
+      #2879ff,
+      #8b5cf6,
+      #ff5263
+    );
+}
+
+/* manchas fotográficas nos espaços vazios */
+.card::after,
+.account-card::after,
+.service-card::after,
+.data-card::after{
+  content:"";
+  position:absolute;
+  width:110px;
+  height:110px;
+  right:-45px;
+  bottom:-55px;
+  border-radius:50%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(40,121,255,.14),
+      rgba(8,198,200,.08),
+      transparent 70%
+    );
+  pointer-events:none;
+}
+
+.card:hover,
+.account-card:hover,
+.service-card:hover,
+.data-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(8,135,152,.28) !important;
+  box-shadow:
+    0 20px 42px rgba(6,59,82,.13),
+    0 5px 18px rgba(8,198,200,.10) !important;
+}
+
+/* =========================================================
+   ÍCONES DOS CARDS
+   ========================================================= */
+
+.card h3,
+.account-card h3,
+.service-card h3,
+.data-card h3{
+  position:relative;
+  z-index:2;
+}
+
+.card-icon,
+.service-icon,
+.account-card .icon,
+.data-icon{
+  position:relative;
+  z-index:2;
+  border-radius:18px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(40,121,255,.12),
+      rgba(8,198,200,.16)
+    );
+}
+
+/* =========================================================
+   BOTÕES
+   ========================================================= */
+
+a,
+button{
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    filter .2s ease !important;
+}
+
+a:hover,
+button:hover{
+  filter:saturate(1.08);
+}
+
+.card a,
+.account-card a,
+.service-card a,
+.data-card a{
+  position:relative;
+  z-index:5;
+}
+
+/* =========================================================
+   ESPAÇOS BRANCOS — EFEITO DE FOTO
+   ========================================================= */
+
+section{
+  position:relative;
+}
+
+/* pequenas luzes decorativas nas áreas vazias */
+section:not(.hero):not(.account-hero)::before{
+  pointer-events:none;
+}
+
+/* =========================================================
+   STATUS DA CONTA
+   ========================================================= */
+
+.account-status,
+.status,
+.badge{
+  border-radius:999px !important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(66,214,111,.14),
+      rgba(8,198,200,.12)
+    ) !important;
+  border:1px solid rgba(66,214,111,.25) !important;
+}
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media(max-width:900px){
+
+  body::before{
+    width:190px;
+    height:190px;
+  }
+
+  body::after{
+    width:210px;
+    height:210px;
+  }
+
+  .hero,
+  .account-hero{
+    border-radius:22px !important;
+  }
+
+}
+
+@media(max-width:600px){
+
+  body::before,
+  body::after{
+    opacity:.28;
+    filter:blur(35px);
+  }
+
+  .hero,
+  .account-hero{
+    border-radius:18px !important;
+  }
+
+  .card:hover,
+  .account-card:hover,
+  .service-card:hover,
+  .data-card:hover{
+    transform:none;
+  }
+
+}
+
+@media(max-width:360px){
+
+  body::before,
+  body::after{
+    opacity:.18;
+  }
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *::before,
+  *::after{
+    animation:none !important;
+    transition:none !important;
+  }
+
+}
+
+</style>
+

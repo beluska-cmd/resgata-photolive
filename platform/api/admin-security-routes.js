@@ -1,0 +1,239 @@
+import express from "express";
+import crypto from "crypto";
+import db from "./database.js";
+
+const router = express.Router();
+
+function audit(req, action, entityId, details = {}) {
+  db.prepare(`
+    INSERT INTO audit_logs
+    (user_id, action, entity, entity_id, details)
+    VALUES (NULL, ?, ?, ?, ?)
+  `).run(
+    action,
+    "security",
+    String(entityId || ""),
+    JSON.stringify({
+      adminId: req.admin?.id || null,
+      ...details
+    })
+  );
+}
+
+router.get("/events", (req, res) => {
+  try {
+    const {
+      status = "",
+      severity = "",
+      type = ""
+    } = req.query;
+
+    let sql = `
+      SELECT *
+      FROM security_events
+      WHERE 1=1
+    `;
+
+    const params = {};
+
+    if (status) {
+      sql += ` AND status = @status`;
+      params.status = status;
+    }
+
+    if (severity) {
+      sql += ` AND severity = @severity`;
+      params.severity = severity;
+    }
+
+    if (type) {
+      sql += ` AND type = @type`;
+      params.type = type;
+    }
+
+    sql += `
+      ORDER BY created_at DESC
+      LIMIT 500
+    `;
+
+    const events = db.prepare(sql).all(params);
+
+    res.json({
+      ok: true,
+      events
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: "SECURITY_EVENTS_ERROR",
+      message: error.message
+    });
+  }
+});
+
+router.get("/events/summary", async (req, res) => {
+  try {
+    const total = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM security_events
+    `).get().total;
+
+    const resolved = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM security_events
+      WHERE resolved = 1
+    `).get().total;
+
+    const pending = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM security_events
+      WHERE resolved = 0
+    `).get().total;
+
+    const bySeverity = db.prepare(`
+      SELECT severity, COUNT(*) AS total
+      FROM security_events
+      GROUP BY severity
+      ORDER BY severity
+    `).all();
+
+    const byType = db.prepare(`
+      SELECT type, COUNT(*) AS total
+      FROM security_events
+      GROUP BY type
+      ORDER BY type
+    `).all();
+
+    res.json({
+      ok: true,
+      summary: {
+        total,
+        resolved,
+        pending,
+        bySeverity,
+        byType
+      }
+    });
+  } catch (error) {
+    console.error("SECURITY_SUMMARY_ERROR:", error);
+    res.status(500).json({
+      ok: false,
+      error: "SECURITY_SUMMARY_ERROR",
+      detail: error.message
+    });
+  }
+});
+
+router.post("/events", (req, res) => {
+  try {
+    const {
+      type = "other",
+      severity = "medium",
+      source = "",
+      description = "",
+      userId = null,
+      deviceId = null,
+      metadata = {}
+    } = req.body || {};
+
+    const id = crypto.randomUUID();
+
+    db.prepare(`
+      INSERT INTO security_events
+      (
+        id,
+        type,
+        severity,
+        source,
+        description,
+        status,
+        user_id,
+        device_id,
+        metadata,
+        created_at,
+        updated_at
+      )
+      VALUES (?, ?, ?, ?, ?, 'open', ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `).run(
+      id,
+      String(type),
+      String(severity),
+      String(source),
+      String(description),
+      userId,
+      deviceId,
+      JSON.stringify(metadata || {})
+    );
+
+    audit(
+      req,
+      "admin.security.event_created",
+      id,
+      {
+        type,
+        severity
+      }
+    );
+
+    res.status(201).json({
+      ok: true,
+      id
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: "SECURITY_EVENT_CREATE_ERROR",
+      message: error.message
+    });
+  }
+});
+
+router.patch("/events/:id", (req, res) => {
+  const allowed = [
+    "open",
+    "investigating",
+    "resolved",
+    "dismissed"
+  ];
+
+  if (!allowed.includes(req.body?.status)) {
+    return res.status(400).json({
+      ok: false,
+      error: "INVALID_STATUS"
+    });
+  }
+
+  const result = db.prepare(`
+    UPDATE security_events
+    SET
+      status = ?,
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(
+    req.body.status,
+    req.params.id
+  );
+
+  if (!result.changes) {
+    return res.status(404).json({
+      ok: false,
+      error: "SECURITY_EVENT_NOT_FOUND"
+    });
+  }
+
+  audit(
+    req,
+    "admin.security.event_status_updated",
+    req.params.id,
+    {
+      status: req.body.status
+    }
+  );
+
+  res.json({
+    ok: true,
+    status: req.body.status
+  });
+});
+
+export default router;

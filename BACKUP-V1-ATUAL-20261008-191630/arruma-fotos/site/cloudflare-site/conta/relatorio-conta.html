@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório da Conta — PhotoLive Magic</title>
+
+<style>
+:root{
+  --dark:#063b52;
+  --dark2:#075d73;
+  --blue:#2879ff;
+  --turq:#08b8c6;
+  --green:#32c96b;
+  --purple:#8b5cf6;
+  --yellow:#ffd84d;
+  --orange:#ff9d42;
+  --ice:#f3fbfe;
+  --text:#073b52;
+  --muted:#587483;
+  --border:#d8edf3;
+  --white:#fff;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 5% 5%,rgba(8,184,198,.16),transparent 25%),
+    radial-gradient(circle at 95% 8%,rgba(40,121,255,.14),transparent 25%),
+    linear-gradient(135deg,#eefaff,#f9fdff 48%,#edf8fc);
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+.page{
+  width:min(1240px,calc(100% - 32px));
+  margin:auto;
+  padding:20px 0 50px;
+}
+
+/* TOPO */
+
+.topbar{
+  min-height:70px;
+  padding:12px 18px 12px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--border);
+  border-radius:20px;
+  box-shadow:0 12px 35px rgba(6,59,82,.09);
+  margin-bottom:24px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-weight:950;
+  color:var(--dark);
+  white-space:nowrap;
+}
+
+.brand-mark{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:linear-gradient(135deg,#2879ff,#08b8c6);
+  color:#fff;
+  box-shadow:0 7px 18px rgba(40,121,255,.2);
+}
+
+.topnav{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.topnav a{
+  min-height:42px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:9px 14px;
+  border-radius:12px;
+  font-size:.86rem;
+  font-weight:800;
+  color:#315d70;
+}
+
+.topnav a:hover{
+  background:#eef9fc;
+}
+
+.topnav .central{
+  color:#fff;
+  background:linear-gradient(135deg,#063b52,#087f93);
+  box-shadow:0 7px 18px rgba(6,59,82,.16);
+}
+
+/* CABEÇALHO */
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:32px;
+  margin-bottom:22px;
+  color:#fff;
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 88% 18%,rgba(8,198,200,.40),transparent 28%),
+    radial-gradient(circle at 12% 100%,rgba(139,92,246,.32),transparent 30%),
+    linear-gradient(135deg,#063b52,#075b72 58%,#0b758a);
+  box-shadow:0 20px 50px rgba(6,59,82,.18);
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  width:210px;
+  height:210px;
+  right:-70px;
+  bottom:-105px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:50%;
+}
+
+.eyebrow{
+  font-size:.74rem;
+  font-weight:900;
+  letter-spacing:.15em;
+  opacity:.76;
+}
+
+.hero h1{
+  margin:7px 0 8px;
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  line-height:1.08;
+}
+
+.hero p{
+  max-width:780px;
+  margin:0;
+  color:rgba(255,255,255,.84);
+  line-height:1.65;
+}
+
+/* RESUMO */
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;
+  margin-bottom:22px;
+}
+
+.card{
+  position:relative;
+  min-height:166px;
+  padding:20px;
+  background:linear-gradient(145deg,#fff,#eefaff);
+  border:1px solid var(--border);
+  border-radius:21px;
+  box-shadow:0 11px 30px rgba(6,59,82,.07);
+  overflow:hidden;
+}
+
+.card::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:4px;
+}
+
+.card:nth-child(1)::after{
+  background:linear-gradient(90deg,#2879ff,#08b8c6);
+}
+
+.card:nth-child(2)::after{
+  background:linear-gradient(90deg,#32c96b,#08b8a4);
+}
+
+.card:nth-child(3)::after{
+  background:linear-gradient(90deg,#8b5cf6,#2879ff);
+}
+
+.card:nth-child(4)::after{
+  background:linear-gradient(90deg,#ffd84d,#ff9d42);
+}
+
+.icon{
+  width:45px;
+  height:45px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:#eaf7ff;
+  font-size:1.3rem;
+}
+
+.label{
+  margin-top:13px;
+  color:var(--muted);
+  font-size:.69rem;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.value{
+  margin-top:3px;
+  color:var(--dark);
+  font-size:1.6rem;
+  font-weight:950;
+}
+
+.help{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:.8rem;
+}
+
+/* CONTEÚDO */
+
+.grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);
+  gap:20px;
+}
+
+.section{
+  padding:24px;
+  background:rgba(255,255,255,.96);
+  border:1px solid var(--border);
+  border-radius:23px;
+  box-shadow:0 11px 30px rgba(6,59,82,.07);
+}
+
+.section + .section{
+  margin-top:20px;
+}
+
+.section-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:1.12rem;
+}
+
+.section-title p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:.84rem;
+  line-height:1.5;
+}
+
+.badge{
+  padding:7px 10px;
+  border-radius:999px;
+  background:#edf9f2;
+  color:#19844a;
+  font-size:.69rem;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.empty{
+  min-height:190px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:25px;
+  border:1px dashed #abd9e7;
+  border-radius:18px;
+  background:linear-gradient(135deg,#f1fbff,#e6f7ff);
+}
+
+.empty-icon{
+  width:62px;
+  height:62px;
+  display:grid;
+  place-items:center;
+  margin-bottom:11px;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 7px 18px rgba(6,59,82,.08);
+  font-size:1.65rem;
+}
+
+.empty strong{
+  font-size:1rem;
+}
+
+.empty span{
+  max-width:520px;
+  margin-top:7px;
+  color:var(--muted);
+  font-size:.84rem;
+  line-height:1.55;
+}
+
+/* FINANCEIRO */
+
+.finance{
+  display:grid;
+  gap:10px;
+}
+
+.finance-row{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:12px 14px;
+  border:1px solid #e0eff4;
+  border-radius:14px;
+  background:#f7fcfe;
+}
+
+.finance-row span{
+  color:var(--muted);
+  font-size:.84rem;
+}
+
+.finance-row strong{
+  color:var(--dark);
+  font-size:.92rem;
+}
+
+.security{
+  margin-top:17px;
+  padding:15px;
+  border-radius:15px;
+  background:#f3faff;
+  border:1px solid #d9edf4;
+  color:var(--muted);
+  font-size:.78rem;
+  line-height:1.55;
+}
+
+/* HISTÓRICO */
+
+.history-empty{
+  min-height:115px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  color:var(--muted);
+  background:#f8fcff;
+  border:1px solid #e1f0f5;
+  border-radius:17px;
+  font-size:.88rem;
+}
+
+/* RODAPÉ */
+
+.bottom-central{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:22px;
+}
+
+.bottom-central a{
+  min-height:48px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:11px 19px;
+  border-radius:14px;
+  color:#fff;
+  font-weight:900;
+  background:linear-gradient(135deg,#063b52,#087f93);
+  box-shadow:0 9px 22px rgba(6,59,82,.17);
+}
+
+/* RESPONSIVO */
+
+@media(max-width:1050px){
+  .summary{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:700px){
+  .page{
+    width:calc(100% - 18px);
+    padding-top:10px;
+  }
+
+  .topbar{
+    padding:13px;
+    align-items:flex-start;
+    flex-direction:column;
+    border-radius:18px;
+  }
+
+  .topnav{
+    width:100%;
+    justify-content:stretch;
+  }
+
+  .topnav a{
+    flex:1 1 auto;
+  }
+
+  .hero{
+    padding:23px;
+    border-radius:21px;
+  }
+
+  .summary{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    min-height:145px;
+  }
+
+  .section{
+    padding:19px;
+    border-radius:19px;
+  }
+
+  .section-title{
+    flex-direction:column;
+  }
+
+  .badge{
+    align-self:flex-start;
+  }
+
+  .bottom-central{
+    justify-content:stretch;
+  }
+
+  .bottom-central a{
+    width:100%;
+  }
+}
+
+@media(max-width:390px){
+  .topnav{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .topnav a{
+    width:100%;
+  }
+
+  .hero h1{
+    font-size:1.65rem;
+  }
+
+  .hero p{
+    font-size:.88rem;
+  }
+
+  .section{
+    padding:16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+  <header class="topbar">
+
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">✨</span>
+      <span>PhotoLive Magic</span>
+    </a>
+
+    <nav class="topnav" aria-label="Navegação do relatório">
+      <a href="../index.html">🏠 Início</a>
+      <a href="minha-conta-usuario.html">👤 Minha Conta</a>
+      <a class="central" href="minha-conta.html">☰ Central PhotoLive</a>
+    </nav>
+
+  </header>
+
+  <section class="hero">
+
+    <div class="eyebrow">VISÃO GERAL DA CONTA</div>
+
+    <h1>📊 Relatório da conta</h1>
+
+    <p>
+      Acompanhe pedidos, serviços ativos, histórico e movimentações
+      financeiras do seu PhotoLive Magic em uma visão organizada.
+    </p>
+
+  </section>
+
+  <section class="summary" aria-label="Resumo da conta">
+
+    <article class="card">
+      <div class="icon">📋</div>
+      <div class="label">PEDIDOS</div>
+      <div class="value" id="reportTotalOrders">0</div>
+      <div class="help">Total de pedidos registrados</div>
+    </article>
+
+    <article class="card">
+      <div class="icon">🟢</div>
+      <div class="label">SERVIÇOS ATIVOS</div>
+      <div class="value" id="reportActiveOrders">0</div>
+      <div class="help">Serviços atualmente disponíveis</div>
+    </article>
+
+    <article class="card">
+      <div class="icon">✅</div>
+      <div class="label">CONCLUÍDOS</div>
+      <div class="value" id="reportCompletedOrders">0</div>
+      <div class="help">Pedidos finalizados</div>
+    </article>
+
+    <article class="card">
+      <div class="icon">💰</div>
+      <div class="label">TOTAL PAGO</div>
+      <div class="value" id="reportTotalPaid">R$ 0,00</div>
+      <div class="help">Valor registrado na conta</div>
+    </article>
+
+  </section>
+
+  <div class="grid">
+
+    <div>
+
+      <section class="section">
+
+        <div class="section-title">
+          <div>
+            <h2>📈 Atividade da conta</h2>
+            <p>Resumo das atividades registradas no PhotoLive Magic.</p>
+          </div>
+
+          <span class="badge">● ATUALIZADO</span>
+        </div>
+
+        <div class="empty">
+          <div class="empty-icon">📊</div>
+          <strong>Ainda não há atividades registradas</strong>
+          <span>
+            Quando houver pedidos, contratações ou outras movimentações,
+            elas aparecerão automaticamente neste relatório.
+          </span>
+        </div>
+
+      </section>
+
+      <section class="section">
+
+        <div class="section-title">
+          <div>
+            <h2>📋 Histórico de pedidos</h2>
+            <p>Pedidos e serviços registrados na sua conta.</p>
+          </div>
+        </div>
+
+        <div class="history-empty">
+          Nenhum pedido foi registrado até o momento.
+        </div>
+
+      </section>
+
+    </div>
+
+    <aside>
+
+      <section class="section">
+
+        <div class="section-title">
+          <div>
+            <h2>💳 Resumo financeiro</h2>
+            <p>Informações financeiras registradas.</p>
+          </div>
+        </div>
+
+        <div class="finance">
+
+          <div class="finance-row">
+            <span>Total de pedidos</span>
+            <strong id="financialOrders">0</strong>
+          </div>
+
+          <div class="finance-row">
+            <span>Pedidos pagos</span>
+            <strong id="financialPaidOrders">0</strong>
+          </div>
+
+          <div class="finance-row">
+            <span>Total pago</span>
+            <strong id="financialTotal">R$ 0,00</strong>
+          </div>
+
+        </div>
+
+        <div class="security">
+          🔒 <strong>Privacidade:</strong>
+          este relatório apresenta somente informações relacionadas
+          à própria conta.
+        </div>
+
+      </section>
+
+    </aside>
+
+  </div>
+
+
+
+</main>
+
+<script>
+(function(){
+
+  const money = value =>
+    new Intl.NumberFormat("pt-BR",{
+      style:"currency",
+      currency:"BRL"
+    }).format(Number(value)||0);
+
+  const totalOrders =
+    document.getElementById("reportTotalOrders");
+
+  const activeOrders =
+    document.getElementById("reportActiveOrders");
+
+  const completedOrders =
+    document.getElementById("reportCompletedOrders");
+
+  const totalPaid =
+    document.getElementById("reportTotalPaid");
+
+  const financialOrders =
+    document.getElementById("financialOrders");
+
+  const financialPaidOrders =
+    document.getElementById("financialPaidOrders");
+
+  const financialTotal =
+    document.getElementById("financialTotal");
+
+  let orders=[];
+
+  try{
+
+    const saved=localStorage.getItem("photoliveOrders");
+
+    if(saved){
+
+      const parsed=JSON.parse(saved);
+
+      if(Array.isArray(parsed)){
+        orders=parsed;
+      }
+
+    }
+
+  }catch(error){
+    orders=[];
+  }
+
+  const total=orders.length;
+
+  const active=orders.filter(order=>{
+
+    const status=String(order.status||"").toLowerCase();
+
+    return [
+      "ativo",
+      "ativa",
+      "active",
+      "em andamento",
+      "pendente"
+    ].includes(status);
+
+  }).length;
+
+  const completed=orders.filter(order=>{
+
+    const status=String(order.status||"").toLowerCase();
+
+    return [
+      "concluído",
+      "concluída",
+      "concluido",
+      "concluida",
+      "completed",
+      "finalizado",
+      "finalizada",
+      "pago",
+      "paid"
+    ].includes(status);
+
+  }).length;
+
+  const paidOrders=orders.filter(order=>{
+
+    const status=String(order.status||"").toLowerCase();
+
+    return [
+      "pago",
+      "paid",
+      "concluído",
+      "concluída",
+      "concluido",
+      "concluida",
+      "finalizado",
+      "finalizada"
+    ].includes(status);
+
+  }).length;
+
+  const paid=orders.reduce((sum,order)=>{
+
+    const value=
+      Number(order.amount)||
+      Number(order.value)||
+      Number(order.total)||
+      0;
+
+    return sum+value;
+
+  },0);
+
+  totalOrders.textContent=total;
+  activeOrders.textContent=active;
+  completedOrders.textContent=completed;
+  totalPaid.textContent=money(paid);
+
+  financialOrders.textContent=total;
+  financialPaidOrders.textContent=paidOrders;
+  financialTotal.textContent=money(paid);
+
+})();
+</script>
+
+</body>
+</html>

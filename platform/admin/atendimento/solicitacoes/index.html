@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Solicitações — Resgata+</title>
+
+  <link rel="stylesheet" href="/admin/style.css">
+
+  <style>
+    .requests-page {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .requests-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .requests-header h1 {
+      margin: 0 0 8px;
+    }
+
+    .requests-header p {
+      margin: 0;
+      opacity: .75;
+    }
+
+    .requests-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .requests-summary {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .request-summary-card {
+      background: var(--card-bg, #fff);
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 14px;
+      padding: 18px;
+      min-height: 90px;
+    }
+
+    .request-summary-label {
+      font-size: 13px;
+      opacity: .7;
+      margin-bottom: 8px;
+    }
+
+    .request-summary-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .requests-toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 190px 220px auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .requests-toolbar input,
+    .requests-toolbar select,
+    .request-detail-panel select,
+    .request-detail-panel textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid rgba(0,0,0,.14);
+      border-radius: 10px;
+      padding: 11px 12px;
+      background: inherit;
+      color: inherit;
+    }
+
+    .requests-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .request-card {
+      border: 1px solid rgba(0,0,0,.09);
+      border-radius: 14px;
+      padding: 18px;
+      background: var(--card-bg, #fff);
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .request-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    .request-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .request-card-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .request-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      font-size: 13px;
+      opacity: .75;
+    }
+
+    .request-card-details {
+      margin-top: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      opacity: .9;
+    }
+
+    .request-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .request-status-pending {
+      background: rgba(234,179,8,.14);
+    }
+
+    .request-status-received {
+      background: rgba(59,130,246,.14);
+    }
+
+    .request-status-in_progress {
+      background: rgba(124,58,237,.14);
+    }
+
+    .request-status-waiting_user,
+    .request-status-waiting_specialist {
+      background: rgba(249,115,22,.14);
+    }
+
+    .request-status-resolved {
+      background: rgba(34,197,94,.14);
+    }
+
+    .request-status-cancelled,
+    .request-status-rejected {
+      background: rgba(239,68,68,.14);
+    }
+
+    .request-empty,
+    .request-loading,
+    .request-error {
+      border: 1px dashed rgba(0,0,0,.15);
+      border-radius: 14px;
+      padding: 42px 20px;
+      text-align: center;
+      opacity: .8;
+    }
+
+    .request-detail-panel {
+      margin-top: 20px;
+      border: 1px solid rgba(0,0,0,.09);
+      border-radius: 16px;
+      padding: 22px;
+      background: var(--card-bg, #fff);
+    }
+
+    .request-detail-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .request-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .request-detail-item {
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .request-detail-item small {
+      display: block;
+      opacity: .6;
+      margin-bottom: 5px;
+    }
+
+    .request-detail-item strong {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .request-detail-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .request-detail-section {
+      margin-top: 24px;
+    }
+
+    .request-detail-section h3 {
+      margin-bottom: 12px;
+    }
+
+    .request-audit {
+      display: grid;
+      gap: 10px;
+    }
+
+    .request-audit-item {
+      border-left: 3px solid rgba(59,130,246,.5);
+      padding: 10px 12px;
+      background: rgba(0,0,0,.025);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .request-audit-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .request-close {
+      cursor: pointer;
+    }
+
+    @media (max-width: 1000px) {
+      .requests-summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .requests-toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .requests-page {
+        padding: 18px;
+      }
+
+      .requests-header,
+      .request-card-top,
+      .request-detail-head {
+        flex-direction: column;
+      }
+
+      .requests-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .requests-toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .request-detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="requests-page">
+
+    <header class="requests-header">
+      <div>
+        <h1>📨 Solicitações</h1>
+        <p>
+          Central operacional das solicitações recebidas pelo Resgata+.
+        </p>
+      </div>
+
+      <a
+        class="requests-back"
+        href="/admin/atendimento/"
+      >
+        ← Voltar ao Atendimento
+      </a>
+    </header>
+
+    <section
+      class="requests-summary"
+      aria-label="Resumo das solicitações"
+    >
+      <article class="request-summary-card">
+        <div class="request-summary-label">Total</div>
+        <div
+          id="summary-total"
+          class="request-summary-value"
+        >—</div>
+      </article>
+
+      <article class="request-summary-card">
+        <div class="request-summary-label">Pendentes</div>
+        <div
+          id="summary-pending"
+          class="request-summary-value"
+        >—</div>
+      </article>
+
+      <article class="request-summary-card">
+        <div class="request-summary-label">Em análise</div>
+        <div
+          id="summary-progress"
+          class="request-summary-value"
+        >—</div>
+      </article>
+
+      <article class="request-summary-card">
+        <div class="request-summary-label">Aguardando</div>
+        <div
+          id="summary-waiting"
+          class="request-summary-value"
+        >—</div>
+      </article>
+
+      <article class="request-summary-card">
+        <div class="request-summary-label">Resolvidas</div>
+        <div
+          id="summary-resolved"
+          class="request-summary-value"
+        >—</div>
+      </article>
+    </section>
+
+    <section class="requests-toolbar">
+      <input
+        id="request-search"
+        type="search"
+        placeholder="Buscar por cliente, e-mail, serviço ou ID..."
+        autocomplete="off"
+      >
+
+      <select id="request-status">
+        <option value="">Todos os status</option>
+        <option value="pending">Pendente</option>
+        <option value="received">Recebida</option>
+        <option value="in_progress">Em andamento</option>
+        <option value="waiting_user">Aguardando cliente</option>
+        <option value="waiting_specialist">Aguardando especialista</option>
+        <option value="resolved">Resolvida</option>
+        <option value="cancelled">Cancelada</option>
+        <option value="rejected">Rejeitada</option>
+      </select>
+
+      <select id="request-service">
+        <option value="">Todos os serviços</option>
+      </select>
+
+      <button
+        id="request-refresh"
+        type="button"
+      >
+        Atualizar
+      </button>
+    </section>
+
+    <section
+      id="requests-list"
+      class="requests-list"
+      aria-live="polite"
+    >
+      <div class="request-loading">
+        Carregando solicitações...
+      </div>
+    </section>
+
+    <section
+      id="request-detail"
+      class="request-detail-panel"
+      hidden
+    ></section>
+
+  </main>
+
+  <script src="/admin/atendimento/solicitacoes/solicitacoes-page.js"></script>
+</body>
+</html>

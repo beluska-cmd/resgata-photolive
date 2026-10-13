@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Pedidos — PhotoLive Magic</title>
+
+  
+
+<style id="photolive-meus-pedidos-profissional">
+
+:root{
+  --plm-dark:#063b52;
+  --plm-dark-2:#07566b;
+  --plm-turquoise:#08c6c8;
+  --plm-blue:#2879ff;
+  --plm-green:#42d66f;
+  --plm-yellow:#ffd84d;
+  --plm-purple:#8b5cf6;
+  --plm-red:#ff5263;
+  --plm-ice:#f4fbfd;
+  --plm-text:#073b52;
+  --plm-muted:#607985;
+  --plm-border:#dcecf1;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--plm-text);
+  background:
+    radial-gradient(circle at 8% 8%,rgba(255,216,77,.30),transparent 23%),
+    radial-gradient(circle at 92% 12%,rgba(139,92,246,.28),transparent 25%),
+    radial-gradient(circle at 8% 90%,rgba(66,214,111,.20),transparent 27%),
+    radial-gradient(circle at 95% 90%,rgba(255,82,99,.18),transparent 25%),
+    linear-gradient(135deg,#052f45 0%,#07566b 42%,#087e91 68%,#2879ff 100%);
+  background-attachment:fixed;
+}
+
+a{
+  color:inherit;
+}
+
+.page{
+  width:min(1180px,calc(100% - 34px));
+  margin:0 auto;
+  padding:20px 0 50px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.topbar{
+  min-height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:10px 13px 10px 20px;
+  margin-bottom:28px;
+
+  color:#fff;
+  background:rgba(5,43,61,.72);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:18px;
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.20),
+    inset 0 1px 0 rgba(255,255,255,.10);
+
+  backdrop-filter:blur(16px);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#fff;
+  text-decoration:none;
+  font-size:1.08rem;
+  font-weight:950;
+  white-space:nowrap;
+}
+
+.topnav{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.topnav a,
+.topnav button{
+  min-height:42px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:9px 14px;
+
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:11px;
+
+  color:#fff;
+  background:rgba(255,255,255,.08);
+
+  text-decoration:none;
+  font-weight:850;
+  cursor:pointer;
+
+  transition:
+    transform .2s ease,
+    background .2s ease,
+    box-shadow .2s ease;
+}
+
+.topnav a:hover,
+.topnav button:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.17);
+  box-shadow:0 7px 18px rgba(0,0,0,.16);
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+  color:#fff;
+  margin:0 0 22px;
+  padding:6px 4px;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 11px;
+
+  border:1px solid rgba(255,255,255,.23);
+  border-radius:999px;
+
+  background:rgba(255,255,255,.12);
+  color:rgba(255,255,255,.94);
+
+  font-size:.72rem;
+  font-weight:950;
+  letter-spacing:.10em;
+}
+
+.hero h1{
+  margin:12px 0 8px;
+  font-size:clamp(2rem,4vw,3.2rem);
+  line-height:1.02;
+  letter-spacing:-.035em;
+}
+
+.hero p{
+  max-width:760px;
+  margin:0;
+  color:rgba(255,255,255,.82);
+  font-size:1rem;
+  line-height:1.65;
+}
+
+/* =========================
+   MAIN PANEL
+========================= */
+
+.panel{
+  position:relative;
+  overflow:hidden;
+
+  padding:28px;
+
+  background:rgba(248,253,254,.98);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:28px;
+
+  box-shadow:
+    0 28px 65px rgba(3,39,56,.25),
+    0 8px 20px rgba(3,39,56,.12);
+}
+
+.panel::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  right:0;
+  height:5px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--plm-yellow),
+      var(--plm-green),
+      var(--plm-turquoise),
+      var(--plm-blue),
+      var(--plm-purple),
+      var(--plm-red)
+    );
+}
+
+/* =========================
+   ACCOUNT OVERVIEW
+========================= */
+
+.account-overview{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+
+  margin-bottom:25px;
+  padding:18px 20px;
+
+  border:1px solid var(--plm-border);
+  border-radius:19px;
+
+  background:
+    linear-gradient(135deg,#ffffff,#edfaff);
+
+  box-shadow:
+    0 8px 22px rgba(6,59,82,.07);
+}
+
+.account-overview-main{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  min-width:0;
+}
+
+.account-avatar{
+  width:50px;
+  height:50px;
+  flex:0 0 50px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:15px;
+
+  color:#fff;
+  background:
+    linear-gradient(135deg,var(--plm-turquoise),var(--plm-blue));
+
+  font-weight:950;
+  box-shadow:
+    0 8px 20px rgba(8,198,200,.25);
+}
+
+.account-overview strong{
+  display:block;
+  font-size:1rem;
+}
+
+.account-overview small{
+  display:block;
+  margin-top:3px;
+  color:var(--plm-muted);
+}
+
+.account-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+
+  padding:7px 10px;
+
+  border-radius:999px;
+
+  background:#e9faef;
+  color:#16723a;
+
+  font-size:.76rem;
+  font-weight:900;
+}
+
+
+/* =========================
+   SUMMARY CARDS — FINAL
+========================= */
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+  margin-bottom:30px;
+}
+
+.summary-card{
+  position:relative;
+  overflow:hidden;
+  min-width:0;
+
+  min-height:174px;
+  padding:20px;
+
+  border:1px solid rgba(220,236,241,.95);
+  border-radius:21px;
+
+  background:
+    linear-gradient(145deg,#ffffff 0%,#f8fcfd 100%);
+
+  box-shadow:
+    0 8px 20px rgba(6,59,82,.07),
+    0 18px 35px rgba(6,59,82,.045);
+
+  transition:
+    transform .22s ease,
+    box-shadow .22s ease;
+}
+
+.summary-card:hover{
+  transform:translateY(-4px);
+  box-shadow:
+    0 13px 26px rgba(6,59,82,.11),
+    0 24px 42px rgba(6,59,82,.07);
+}
+
+/* faixa inferior */
+
+.summary-card::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:4px;
+}
+
+.summary-orders::after{
+  background:linear-gradient(90deg,#2879ff,#08c6c8);
+}
+
+.summary-active::after{
+  background:linear-gradient(90deg,#42d66f,#08c6c8);
+}
+
+.summary-completed::after{
+  background:linear-gradient(90deg,#8b5cf6,#2879ff);
+}
+
+.summary-paid::after{
+  background:linear-gradient(90deg,#ffd84d,#ff9d2e);
+}
+
+/* topo */
+
+.summary-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:17px;
+}
+
+.summary-icon{
+  width:45px;
+  height:45px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:14px;
+
+  font-size:1.25rem;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.7);
+}
+
+.summary-orders .summary-icon{
+  background:#eaf3ff;
+}
+
+.summary-active .summary-icon{
+  background:#eafbef;
+}
+
+.summary-completed .summary-icon{
+  background:#f1ebff;
+}
+
+.summary-paid .summary-icon{
+  background:#fff8df;
+}
+
+.summary-mini{
+  color:#78909b;
+  font-size:.64rem;
+  font-weight:950;
+  letter-spacing:.08em;
+}
+
+/* textos */
+
+.summary-label{
+  color:#59727e;
+  font-size:.82rem;
+  font-weight:850;
+}
+
+.summary-value{
+  margin-top:3px;
+
+  color:#063b52;
+
+  font-size:2rem;
+  line-height:1.1;
+  font-weight:950;
+  letter-spacing:-.045em;
+}
+
+.summary-description{
+  margin-top:7px;
+
+  color:#7a8e97;
+
+  font-size:.72rem;
+  line-height:1.4;
+}
+
+/* destaque individual */
+
+.summary-orders .summary-value{
+  color:#2879ff;
+}
+
+.summary-active .summary-value{
+  color:#23a957;
+}
+
+.summary-completed .summary-value{
+  color:#7650d9;
+}
+
+.summary-paid .summary-value{
+  color:#c28b00;
+}
+
+@media(max-width:1000px){
+  .summary{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:600px){
+  .summary{
+    grid-template-columns:1fr 1fr;
+    gap:11px;
+  }
+
+  .summary-card{
+    min-height:160px;
+    padding:16px;
+  }
+
+  .summary-value{
+    font-size:1.65rem;
+  }
+
+  .summary-description{
+    font-size:.68rem;
+  }
+}
+
+@media(max-width:390px){
+  .summary{
+    grid-template-columns:1fr;
+  }
+
+  .summary-card{
+    min-height:auto;
+  }
+}
+
+
+
+/* =========================
+   HISTÓRICO DE PEDIDOS
+========================= */
+
+.orders-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  margin:2px 0 15px;
+}
+
+.orders-section-label{
+  display:inline-block;
+  margin-bottom:5px;
+  color:#2879ff;
+  font-size:.65rem;
+  font-weight:950;
+  letter-spacing:.10em;
+}
+
+.orders-head h2{
+  margin:0;
+  color:#063b52;
+  font-size:1.38rem;
+  letter-spacing:-.025em;
+}
+
+.orders-head p{
+  margin:5px 0 0;
+  color:#657d88;
+  font-size:.86rem;
+}
+
+.orders-count{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+
+  padding:8px 11px;
+
+  border:1px solid #cfe8f5;
+  border-radius:999px;
+
+  color:#17628a;
+  background:#eaf7ff;
+
+  font-size:.74rem;
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.orders-count span{
+  font-weight:950;
+}
+
+/* Estado sem pedidos */
+
+.orders-empty{
+  display:flex;
+  align-items:center;
+  gap:22px;
+
+  min-height:190px;
+  padding:25px;
+
+  border:1px solid #bfe1f2;
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eaf7ff 0%,
+      #dff3ff 48%,
+      #edfaff 100%
+    );
+
+  box-shadow:
+    0 8px 22px rgba(40,121,255,.07),
+    inset 0 1px 0 rgba(255,255,255,.8);
+
+  position:relative;
+  overflow:hidden;
+}
+
+.orders-empty::after{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-60px;
+  top:-80px;
+
+  border-radius:50%;
+
+  background:rgba(40,121,255,.08);
+}
+
+.empty-icon{
+  position:relative;
+  z-index:1;
+
+  width:72px;
+  height:72px;
+  flex:0 0 72px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:21px;
+
+  background:#fff;
+  border:1px solid #cfe8f5;
+
+  font-size:1.9rem;
+
+  box-shadow:
+    0 9px 22px rgba(40,121,255,.10);
+}
+
+.empty-content{
+  position:relative;
+  z-index:1;
+  min-width:0;
+}
+
+.empty-content h3{
+  margin:0;
+  color:#07566b;
+  font-size:1.05rem;
+}
+
+.empty-content p{
+  max-width:620px;
+  margin:6px 0 12px;
+
+  color:#607985;
+  font-size:.85rem;
+  line-height:1.55;
+}
+
+.empty-features{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-bottom:15px;
+}
+
+.empty-features span{
+  padding:6px 9px;
+
+  border:1px solid #cfe8f5;
+  border-radius:9px;
+
+  color:#17628a;
+  background:rgba(255,255,255,.75);
+
+  font-size:.7rem;
+  font-weight:800;
+}
+
+.empty-action{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  min-height:42px;
+  padding:9px 14px;
+
+  border-radius:11px;
+
+  color:#fff;
+  background:
+    linear-gradient(135deg,#08c6c8,#2879ff);
+
+  text-decoration:none;
+  font-size:.8rem;
+  font-weight:900;
+
+  box-shadow:
+    0 7px 17px rgba(40,121,255,.18);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.empty-action:hover{
+  transform:translateY(-1px);
+  box-shadow:
+    0 10px 22px rgba(40,121,255,.25);
+}
+
+/* Pedidos reais */
+
+.orders-list{
+  display:grid;
+  gap:12px;
+}
+
+.order{
+  display:grid;
+
+  grid-template-columns:
+    minmax(210px,1.6fr)
+    minmax(100px,.7fr)
+    minmax(110px,.7fr)
+    minmax(130px,.8fr)
+    auto;
+
+  align-items:center;
+  gap:17px;
+
+  padding:18px;
+
+  border:1px solid #dcecf1;
+  border-radius:18px;
+
+  background:#fff;
+
+  box-shadow:
+    0 7px 20px rgba(6,59,82,.055);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.order:hover{
+  transform:translateY(-1px);
+  box-shadow:
+    0 12px 28px rgba(6,59,82,.10);
+}
+
+.order-service{
+  min-width:0;
+}
+
+.order-service strong{
+  display:block;
+  color:#063b52;
+  font-size:.98rem;
+}
+
+.order-service small{
+  display:block;
+  margin-top:5px;
+  color:#607985;
+  line-height:1.45;
+}
+
+.order-info span{
+  display:block;
+  color:#78909b;
+  font-size:.67rem;
+  font-weight:900;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.order-info strong{
+  display:block;
+  margin-top:5px;
+  color:#063b52;
+  font-size:.88rem;
+}
+
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+
+  width:max-content;
+  padding:6px 10px;
+
+  border-radius:999px;
+
+  background:#e9faef;
+  color:#17723b;
+
+  font-size:.72rem;
+  font-weight:900;
+}
+
+.status.pending{
+  background:#fff7d8;
+  color:#7d6200;
+}
+
+.status.processing{
+  background:#e6f5ff;
+  color:#12628a;
+}
+
+/* Botão Detalhes */
+
+.details{
+  min-height:42px;
+
+  border:1px solid #9ed5f0;
+  border-radius:11px;
+
+  padding:9px 15px;
+
+  color:#12618a;
+
+  background:
+    linear-gradient(
+      135deg,
+      #dff4ff,
+      #c7ebff
+    );
+
+  font-weight:900;
+  cursor:pointer;
+
+  box-shadow:
+    0 5px 13px rgba(40,121,255,.10);
+
+  transition:
+    transform .2s ease,
+    background .2s ease,
+    box-shadow .2s ease;
+}
+
+.details:hover:not(:disabled){
+  transform:translateY(-1px);
+
+  background:
+    linear-gradient(
+      135deg,
+      #c8ecff,
+      #b4e4ff
+    );
+
+  box-shadow:
+    0 8px 18px rgba(40,121,255,.17);
+}
+
+.details:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+/* Painel de detalhes */
+
+.order-details-panel{
+  margin-top:18px;
+  padding:20px;
+
+  border:1px solid #cfe8f5;
+  border-radius:19px;
+
+  background:
+    linear-gradient(135deg,#f1faff,#ffffff);
+
+  box-shadow:
+    0 8px 22px rgba(6,59,82,.07);
+}
+
+.details-panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+
+  padding-bottom:14px;
+  margin-bottom:15px;
+
+  border-bottom:1px solid #dcecf1;
+}
+
+.details-panel-head h3{
+  margin:0;
+  color:#063b52;
+}
+
+.close-details{
+  min-height:38px;
+  padding:8px 12px;
+
+  border:1px solid #dcecf1;
+  border-radius:10px;
+
+  background:#fff;
+  color:#07566b;
+
+  font-weight:850;
+  cursor:pointer;
+}
+
+.details-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;
+}
+
+.details-grid > div{
+  padding:13px;
+
+  border:1px solid #dcecf1;
+  border-radius:13px;
+
+  background:#fff;
+}
+
+.details-grid span{
+  display:block;
+  color:#78909b;
+  font-size:.67rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.details-grid strong{
+  display:block;
+  margin-top:5px;
+  color:#063b52;
+  font-size:.86rem;
+}
+
+/* Responsivo */
+
+@media(max-width:1000px){
+
+  .order{
+    grid-template-columns:
+      minmax(190px,1.5fr)
+      minmax(100px,.7fr)
+      minmax(110px,.7fr);
+  }
+
+  .order-service{
+    grid-column:1/-1;
+  }
+
+  .details-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+}
+
+@media(max-width:700px){
+
+  .orders-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .orders-empty{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:20px;
+  }
+
+  .empty-icon{
+    width:58px;
+    height:58px;
+    flex-basis:58px;
+  }
+
+  .empty-action{
+    width:100%;
+  }
+
+  .order{
+    grid-template-columns:1fr;
+    gap:12px;
+    padding:16px;
+  }
+
+  .order-service{
+    grid-column:auto;
+  }
+
+  .details{
+    width:100%;
+  }
+
+  .details-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:390px){
+
+  .details-grid{
+    grid-template-columns:1fr;
+  }
+
+  .empty-features{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+
+/* =========================
+   REPORT
+========================= */
+
+.report{
+  position:relative;
+  overflow:hidden;
+
+  margin-top:25px;
+  padding:21px;
+
+  border:1px solid var(--plm-border);
+  border-radius:19px;
+
+  background:
+    linear-gradient(135deg,#edfaff,#ffffff);
+}
+
+.report::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:
+    linear-gradient(
+      180deg,
+      var(--plm-turquoise),
+      var(--plm-blue),
+      var(--plm-purple)
+    );
+}
+
+.report-head{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  margin-bottom:8px;
+}
+
+.report-icon{
+  width:40px;
+  height:40px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:12px;
+
+  background:#fff;
+  border:1px solid var(--plm-border);
+
+  font-size:1.2rem;
+}
+
+.report h3{
+  margin:0;
+  color:var(--plm-dark);
+  font-size:1.05rem;
+}
+
+.report p{
+  margin:0;
+  color:var(--plm-muted);
+  line-height:1.6;
+  font-size:.88rem;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:23px;
+}
+
+.action{
+  min-height:44px;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:10px 16px;
+
+  border:1px solid var(--plm-border);
+  border-radius:12px;
+
+  background:#fff;
+  color:var(--plm-dark);
+
+  text-decoration:none;
+  font-weight:900;
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.action:hover{
+  transform:translateY(-1px);
+  box-shadow:0 7px 18px rgba(6,59,82,.09);
+}
+
+.action.primary{
+  border:0;
+  color:#fff;
+  background:
+    linear-gradient(135deg,var(--plm-turquoise),var(--plm-blue));
+
+  box-shadow:
+    0 7px 18px rgba(8,198,200,.18);
+}
+
+.privacy{
+  margin-top:18px;
+  padding-top:15px;
+
+  border-top:1px solid var(--plm-border);
+
+  color:#708792;
+  font-size:.76rem;
+  line-height:1.55;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1000px){
+
+  .summary{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .order{
+    grid-template-columns:
+      minmax(190px,1.5fr)
+      minmax(100px,.7fr)
+      minmax(110px,.7fr);
+  }
+
+  .order-service{
+    grid-column:1/-1;
+  }
+
+}
+
+@media(max-width:700px){
+
+  .page{
+    width:min(100% - 20px,1180px);
+    padding-top:10px;
+  }
+
+  .topbar{
+    align-items:stretch;
+    flex-direction:column;
+    padding:13px;
+  }
+
+  .brand{
+    justify-content:center;
+  }
+
+  .topnav{
+    width:100%;
+  }
+
+  .topnav a,
+  .topnav button{
+    flex:1 1 0;
+    min-width:0;
+    text-align:center;
+  }
+
+  .panel{
+    padding:18px;
+    border-radius:21px;
+  }
+
+  .account-overview{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .account-badge{
+    align-self:flex-start;
+  }
+
+  .summary{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .summary-card{
+    padding:15px;
+  }
+
+  .summary-value{
+    font-size:1.4rem;
+  }
+
+  .order{
+    grid-template-columns:1fr;
+    gap:12px;
+    padding:16px;
+  }
+
+  .order-service{
+    grid-column:auto;
+  }
+
+  .details{
+    width:100%;
+  }
+
+  .orders-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .actions{
+    flex-direction:column;
+  }
+
+  .action{
+    width:100%;
+  }
+
+}
+
+@media(max-width:360px){
+
+  .summary{
+    grid-template-columns:1fr;
+  }
+
+  .hero h1{
+    font-size:1.8rem;
+  }
+
+  .topnav{
+    flex-direction:column;
+  }
+
+  .topnav a,
+  .topnav button{
+    width:100%;
+  }
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *::before,
+  *::after{
+    scroll-behavior:auto !important;
+    transition:none !important;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+  <main class="page">
+
+    <header class="topbar">
+      <a class="brand" href="meu-espaco.html">✨ PhotoLive Magic</a>
+
+      <nav class="topnav" aria-label="Navegação">
+        <a href="meu-espaco.html">Início</a>
+        <a href="minha-conta-usuario.html">👤 Minha Conta</a>
+        <button type="button" id="logoutBtn">🚪 Sair</button>
+      </nav>
+    </header>
+
+    <section class="hero">
+<h1>📋 Meus pedidos</h1>
+      <p>
+        Consulte seus pedidos, serviços contratados, valores, datas,
+        status e informações importantes da sua conta.
+      </p>
+    </section>
+
+    <section class="panel">
+
+      
+<div class="account-overview">
+  <div class="account-overview-main">
+    <div class="account-avatar">AA</div>
+    <div>
+      <strong>Minha área de pedidos</strong>
+      <small>Histórico e acompanhamento dos seus serviços.</small>
+    </div>
+  </div>
+
+  <div class="account-badge">
+    <span>●</span>
+    Conta ativa
+  </div>
+</div>
+
+
+<div class="summary">
+
+  <article class="summary-card summary-orders">
+    <div class="summary-top">
+      <div class="summary-icon">📋</div>
+      <span class="summary-mini">HISTÓRICO</span>
+    </div>
+
+    <div class="summary-label">Pedidos</div>
+    <div class="summary-value" id="totalOrders">0</div>
+    <div class="summary-description">
+      Total de pedidos da sua conta
+    </div>
+  </article>
+
+  <article class="summary-card summary-active">
+    <div class="summary-top">
+      <div class="summary-icon">🟢</div>
+      <span class="summary-mini">ATIVOS</span>
+    </div>
+
+    <div class="summary-label">Serviços ativos</div>
+    <div class="summary-value" id="activeOrders">0</div>
+    <div class="summary-description">
+      Serviços atualmente disponíveis
+    </div>
+  </article>
+
+  <article class="summary-card summary-completed">
+    <div class="summary-top">
+      <div class="summary-icon">✅</div>
+      <span class="summary-mini">FINALIZADOS</span>
+    </div>
+
+    <div class="summary-label">Concluídos</div>
+    <div class="summary-value" id="completedOrders">0</div>
+    <div class="summary-description">
+      Pedidos concluídos com sucesso
+    </div>
+  </article>
+
+  <article class="summary-card summary-paid">
+    <div class="summary-top">
+      <div class="summary-icon">💰</div>
+      <span class="summary-mini">FINANCEIRO</span>
+    </div>
+
+    <div class="summary-label">Total pago</div>
+    <div class="summary-value" id="totalPaid">R$ 0,00</div>
+    <div class="summary-description">
+      Valor total dos pedidos pagos
+    </div>
+  </article>
+
+</div>
+
+
+<div class="orders-head">
+  <div>
+    <span class="orders-section-label">HISTÓRICO</span>
+    <h2>Histórico de pedidos</h2>
+    <p>Acompanhe seus serviços, pedidos e respectivos status.</p>
+  </div>
+
+  <div class="orders-count">
+    <span id="ordersCount">0</span>
+    pedidos
+  </div>
+</div>
+
+<div class="orders-empty" id="ordersEmpty">
+
+  <div class="empty-icon">
+    📋
+  </div>
+
+  <div class="empty-content">
+    <h3>Nenhum pedido realizado ainda</h3>
+
+    <p>
+      Quando você contratar um serviço do PhotoLive Magic,
+      o pedido aparecerá aqui com todas as informações.
+    </p>
+
+    <div class="empty-features">
+      <span>📅 Data</span>
+      <span>💰 Valor</span>
+      <span>📦 Serviço</span>
+      <span>📊 Status</span>
+    </div>
+
+    <a href="meu-espaco.html" class="empty-action">
+      ✨ Ver serviços disponíveis
+    </a>
+  </div>
+
+</div>
+
+<div class="orders-list" id="ordersList" hidden></div>
+
+<div class="order-details-panel" id="orderDetailsPanel" hidden>
+  <div class="details-panel-head">
+    <div>
+      <span class="orders-section-label">DETALHES DO PEDIDO</span>
+      <h3 id="detailsTitle">Pedido</h3>
+    </div>
+
+    <button type="button" class="close-details" id="closeDetailsBtn">
+      Fechar
+    </button>
+  </div>
+
+  <div class="details-grid">
+    <div>
+      <span>Pedido</span>
+      <strong id="detailsOrder">—</strong>
+    </div>
+
+    <div>
+      <span>Serviço</span>
+      <strong id="detailsService">—</strong>
+    </div>
+
+    <div>
+      <span>Data</span>
+      <strong id="detailsDate">—</strong>
+    </div>
+
+    <div>
+      <span>Valor</span>
+      <strong id="detailsValue">—</strong>
+    </div>
+
+    <div>
+      <span>Status</span>
+      <strong id="detailsStatus">—</strong>
+    </div>
+  </div>
+</div>
+
+<div class="report">
+  <div class="report-head">
+
+
+<section class="orders-final-navigation" id="ordersFinalNavigation">
+
+  <div class="orders-final-report">
+    <div class="orders-final-report-icon">📊</div>
+
+    <div class="orders-final-report-content">
+      <span>VISÃO DA CONTA</span>
+      <h2>Relatório da conta</h2>
+      <p>
+        Consulte um resumo completo dos seus pedidos, serviços,
+        pagamentos e atividades da conta.
+      </p>
+    </div>
+
+    <a href="relatorio-conta.html" class="orders-report-button">
+      📊 Ver relatório
+    </a>
+  </div>
+
+  <div class="orders-central-wrapper">
+    <a href="minha-conta.html" class="orders-central-button">
+      ☰ Central PhotoLive
+    </a>
+  </div>
+
+</section>
+
+<style id="orders-final-navigation-style">
+
+.orders-final-navigation{
+  width:100%;
+  max-width:1180px;
+  margin:28px auto 10px;
+  padding:0 22px 36px;
+  box-sizing:border-box;
+}
+
+.orders-final-report{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:22px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#f4fbfd,#e7f7fb);
+  border:1px solid #cfe8ef;
+  box-shadow:0 12px 28px rgba(5,67,100,.07);
+}
+
+.orders-final-report-icon{
+  width:58px;
+  height:58px;
+  flex:0 0 58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:17px;
+  background:linear-gradient(135deg,#dff4ff,#c7ebff);
+  border:1px solid #a8d9ed;
+  font-size:1.6rem;
+}
+
+.orders-final-report-content{
+  flex:1;
+  min-width:0;
+}
+
+.orders-final-report-content span{
+  display:block;
+  margin-bottom:4px;
+  color:#1284a3;
+  font-size:.7rem;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+
+.orders-final-report-content h2{
+  margin:0;
+  color:#073b52;
+  font-size:1.2rem;
+}
+
+.orders-final-report-content p{
+  margin:5px 0 0;
+  color:#66818d;
+  font-size:.82rem;
+  line-height:1.5;
+}
+
+.orders-report-button{
+  min-height:44px;
+  padding:10px 17px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  box-sizing:border-box;
+  border-radius:12px;
+  text-decoration:none;
+  color:#12618a;
+  background:linear-gradient(135deg,#dff4ff,#c7ebff);
+  border:1px solid #9ed5f0;
+  font-size:.82rem;
+  font-weight:800;
+}
+
+.orders-central-wrapper{
+  display:flex;
+  justify-content:center;
+  margin-top:18px;
+}
+
+.orders-central-button{
+  min-height:48px;
+  padding:12px 23px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  text-decoration:none;
+  color:#fff;
+  background:linear-gradient(135deg,#087b96,#0aa7b5);
+  box-shadow:0 10px 24px rgba(8,123,150,.2);
+  font-weight:800;
+}
+
+@media (max-width:600px){
+
+  .orders-final-navigation{
+    padding:0 14px 28px;
+  }
+
+  .orders-final-report{
+    flex-direction:column;
+    align-items:stretch;
+    text-align:center;
+    padding:20px;
+  }
+
+  .orders-final-report-icon{
+    margin:0 auto;
+  }
+
+  .orders-report-button{
+    width:100%;
+  }
+
+  .orders-central-button{
+    width:100%;
+  }
+}
+
+</style>
+
+</main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../acesso/auth-config.js"></script>
+
+  <script>
+    (async function(){
+
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      try{
+        if(window.supabase && window.PHOTOLIVE_SUPABASE){
+
+          const client = window.supabase.createClient(
+            window.PHOTOLIVE_SUPABASE.url,
+            window.PHOTOLIVE_SUPABASE.anonKey
+          );
+
+          const { data } = await client.auth.getSession();
+
+          if(!data || !data.session){
+            window.location.href = "../acesso/acesso.html";
+            return;
+          }
+
+          if(logoutBtn){
+            logoutBtn.addEventListener("click", async function(){
+
+              logoutBtn.disabled = true;
+              logoutBtn.textContent = "Saindo...";
+
+              await client.auth.signOut();
+
+              window.location.href = "../acesso/acesso.html";
+            });
+          }
+        }
+
+      }catch(error){
+        console.error("Erro ao carregar pedidos:",error);
+      }
+
+    })();
+  </script>
+
+<script id="photolive-orders-details">
+(function(){
+
+  const closeBtn = document.getElementById("closeDetailsBtn");
+  const panel = document.getElementById("orderDetailsPanel");
+
+  if(closeBtn && panel){
+    closeBtn.addEventListener("click", function(){
+      panel.hidden = true;
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>
+<style id="photolive-orders-empty-large">
+
+.orders-empty{
+  min-height:270px !important;
+  padding:34px 38px !important;
+  gap:30px !important;
+  border-radius:24px !important;
+}
+
+.empty-icon{
+  width:92px !important;
+  height:92px !important;
+  flex:0 0 92px !important;
+  border-radius:25px !important;
+  font-size:2.5rem !important;
+  box-shadow:
+    0 12px 28px rgba(40,121,255,.14) !important;
+}
+
+.empty-content{
+  max-width:760px !important;
+}
+
+.empty-content h3{
+  margin-bottom:9px !important;
+  font-size:1.45rem !important;
+  line-height:1.2 !important;
+}
+
+.empty-content p{
+  max-width:720px !important;
+  margin:8px 0 19px !important;
+  font-size:1rem !important;
+  line-height:1.65 !important;
+}
+
+.empty-features{
+  gap:10px !important;
+  margin-bottom:20px !important;
+}
+
+.empty-features span{
+  min-height:42px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  padding:9px 14px !important;
+  border-radius:11px !important;
+  font-size:.84rem !important;
+  font-weight:850 !important;
+}
+
+.empty-action{
+  min-height:48px !important;
+  padding:11px 19px !important;
+  border-radius:13px !important;
+  font-size:.88rem !important;
+}
+
+@media(max-width:700px){
+
+  .orders-empty{
+    min-height:0 !important;
+    padding:27px 22px !important;
+    gap:20px !important;
+  }
+
+  .empty-icon{
+    width:76px !important;
+    height:76px !important;
+    flex-basis:76px !important;
+    font-size:2rem !important;
+  }
+
+  .empty-content h3{
+    font-size:1.25rem !important;
+  }
+
+  .empty-content p{
+    font-size:.92rem !important;
+  }
+
+  .empty-features{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    width:100% !important;
+  }
+
+  .empty-features span{
+    justify-content:center !important;
+    text-align:center !important;
+  }
+
+  .empty-action{
+    width:100% !important;
+  }
+}
+
+@media(max-width:390px){
+
+  .orders-empty{
+    padding:23px 17px !important;
+  }
+
+  .empty-features{
+    grid-template-columns:1fr !important;
+  }
+
+}
+
+</style>
+
+<style id="orders-buttons-right">
+
+.orders-final-report{
+  align-items:center;
+}
+
+.orders-report-button{
+  margin-left:auto;
+}
+
+.orders-central-wrapper{
+  justify-content:flex-end;
+}
+
+@media (max-width:600px){
+  .orders-final-report{
+    align-items:stretch;
+  }
+
+  .orders-report-button{
+    margin-left:0;
+  }
+
+  .orders-central-wrapper{
+    justify-content:stretch;
+  }
+}
+
+</style>
+
+<style id="orders-all-buttons-right">
+
+/* Botão Ver serviços disponíveis */
+.orders-empty .empty-action,
+.orders-empty a[href*="meu-espaco"]{
+  display:flex;
+  width:fit-content;
+  margin-left:auto;
+  margin-right:0;
+}
+
+/* Botão Ver relatório */
+.orders-report-button{
+  margin-left:auto;
+}
+
+/* Botão Central PhotoLive */
+.orders-central-wrapper{
+  justify-content:flex-end;
+}
+
+@media (max-width:600px){
+
+  .orders-empty .empty-action,
+  .orders-empty a[href*="meu-espaco"]{
+    width:100%;
+    margin-left:0;
+    margin-right:0;
+  }
+
+  .orders-report-button{
+    margin-left:0;
+  }
+
+  .orders-central-wrapper{
+    justify-content:stretch;
+  }
+
+}
+
+</style>

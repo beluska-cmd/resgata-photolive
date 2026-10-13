@@ -1,0 +1,796 @@
+const API = "";
+
+const TOKEN_KEY = "resgata_admin_token";
+
+let admin = null;
+let dashboard = null;
+
+const pageTitles = {
+  dashboard: "Dashboard",
+  users: "Usuários",
+  devices: "Dispositivos",
+  services: "Serviços",
+  requests: "Solicitações",
+  tickets: "Atendimento",
+  specialists: "Especialistas",
+  updates: "Atualizações",
+  plans: "Planos",
+  security: "Segurança",
+  protection: "Limpeza e Proteção",
+  reports: "Relatórios",
+  logs: "Logs",
+  settings: "Configurações",
+  admins: "Administradores"
+};
+
+function token() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function showToast(message, type = "info") {
+  const toast = document.getElementById("toast");
+
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.className = `toast show ${type}`;
+
+  setTimeout(() => {
+    toast.className = "toast";
+  }, 3500);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+async function api(path, options = {}) {
+
+  const headers = new Headers(
+    options.headers || {}
+  );
+
+  headers.set(
+    "Authorization",
+    `Bearer ${token()}`
+  );
+
+  if (
+    options.body &&
+    typeof options.body !== "string"
+  ) {
+    headers.set(
+      "Content-Type",
+      "application/json"
+    );
+
+    options.body = JSON.stringify(
+      options.body
+    );
+  }
+
+  const response = await fetch(
+    `${API}${path}`,
+    {
+      ...options,
+      headers
+    }
+  );
+
+  let data = {};
+
+  try {
+    data = await response.json();
+  } catch {
+    data = {};
+  }
+
+  if (response.status === 401) {
+
+    localStorage.removeItem(TOKEN_KEY);
+
+    location.href =
+      "/admin/login.html";
+
+    throw new Error(
+      "Sessão administrativa expirada."
+    );
+  }
+
+  if (!response.ok) {
+
+    throw new Error(
+      data.error ||
+      `Erro HTTP ${response.status}`
+    );
+  }
+
+  return data;
+}
+
+
+// ============================================================
+// LOGIN ADMIN
+// ============================================================
+
+async function loadAdmin() {
+
+  if (!token()) {
+
+    location.href =
+      "/admin/login.html";
+
+    return null;
+  }
+
+  try {
+
+    const data =
+      await api("/api/admin/me");
+
+    admin = data.admin;
+
+    document.getElementById(
+      "sidebarAdminName"
+    ).textContent =
+      admin.name || "Administrador";
+
+    document.getElementById(
+      "sidebarAdminRole"
+    ).textContent =
+      admin.role || "admin";
+
+    return admin;
+
+  } catch (error) {
+
+    showToast(
+      error.message,
+      "error"
+    );
+
+    return null;
+  }
+}
+
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+
+function openPage(page) {
+
+  if (!pageTitles[page]) {
+    page = "dashboard";
+  }
+
+  document.querySelectorAll(
+    ".page"
+  ).forEach(element => {
+
+    element.classList.remove(
+      "active"
+    );
+
+  });
+
+  const selected =
+    document.getElementById(
+      `page-${page}`
+    );
+
+  if (selected) {
+    selected.classList.add(
+      "active"
+    );
+  }
+
+  document.querySelectorAll(
+    ".nav-item"
+  ).forEach(button => {
+
+    button.classList.toggle(
+      "active",
+      button.dataset.page === page
+    );
+
+  });
+
+  document.getElementById(
+    "pageTitle"
+  ).textContent =
+    pageTitles[page];
+
+  if (page === "dashboard") {
+    loadDashboard();
+  }
+
+  if (window.innerWidth < 900) {
+    document
+      .querySelector(".sidebar")
+      ?.classList.remove("mobile-open");
+  }
+}
+
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+
+async function loadDashboard() {
+
+  try {
+
+    const [
+      dashboardData,
+      coreSummary,
+      services,
+      specialists,
+      security
+    ] = await Promise.all([
+      api("/api/admin/dashboard"),
+      api("/api/admin/core-summary"),
+      api("/api/admin/services"),
+      api("/api/admin/specialists"),
+      api("/api/admin/security/events?limit=20")
+    ]);
+
+    dashboard = dashboardData;
+
+    renderMetrics(
+      dashboardData,
+      coreSummary
+    );
+
+    renderServices(
+      services.services || []
+    );
+
+    renderSpecialists(
+      specialists.specialists || []
+    );
+
+    renderSecurityAlerts(
+      security.events || []
+    );
+
+    renderActivity(
+      dashboardData
+    );
+
+    renderProtection(
+      coreSummary.summary || {}
+    );
+
+    document.getElementById(
+      "lastUpdate"
+    ).textContent =
+      `Atualizado às ${new Date().toLocaleTimeString("pt-BR")}`;
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      `Erro no dashboard: ${error.message}`,
+      "error"
+    );
+  }
+}
+
+
+// ============================================================
+// MÉTRICAS
+// ============================================================
+
+function renderMetrics(data, core) {
+
+  const users =
+    data.users || {};
+
+  const devices =
+    data.devices || {};
+
+  const requests =
+    data.requests || {};
+
+  const tickets =
+    data.tickets || {};
+
+  const summary =
+    core.summary || {};
+
+  document.getElementById(
+    "metricUsers"
+  ).textContent =
+    users.total || 0;
+
+  document.getElementById(
+    "metricUsersActive"
+  ).textContent =
+    `${users.active || 0} ativos`;
+
+  document.getElementById(
+    "metricDevices"
+  ).textContent =
+    devices.total || 0;
+
+  document.getElementById(
+    "metricRequests"
+  ).textContent =
+    requests.total || 0;
+
+  document.getElementById(
+    "metricTickets"
+  ).textContent =
+    tickets.total || 0;
+
+  document.getElementById(
+    "metricSecurity"
+  ).textContent =
+    summary.unresolvedSecurityEvents || 0;
+
+  document.getElementById(
+    "metricProtection"
+  ).textContent =
+    summary.protectionReports || 0;
+}
+
+
+// ============================================================
+// SERVIÇOS
+// ============================================================
+
+function renderServices(services) {
+
+  const box =
+    document.getElementById(
+      "servicesOverview"
+    );
+
+  if (!services.length) {
+
+    box.innerHTML = `
+      <div class="empty-state">
+        Nenhum serviço cadastrado.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    services.map(service => {
+
+      const enabled =
+        service.enabled !== false;
+
+      return `
+        <div class="service-row">
+
+          <div class="service-row-icon">
+            🧩
+          </div>
+
+          <div class="service-row-info">
+
+            <strong>
+              ${escapeHtml(service.name)}
+            </strong>
+
+            <span>
+              ${escapeHtml(
+                service.category || ""
+              )}
+            </span>
+
+          </div>
+
+          <span class="
+            status-badge
+            ${enabled
+              ? "success"
+              : "disabled"}
+          ">
+            ${enabled
+              ? "Ativo"
+              : "Desativado"}
+          </span>
+
+        </div>
+      `;
+
+    }).join("");
+}
+
+
+// ============================================================
+// ESPECIALISTAS
+// ============================================================
+
+function renderSpecialists(
+  specialists
+) {
+
+  const box =
+    document.getElementById(
+      "specialistsOverview"
+    );
+
+  if (!specialists.length) {
+
+    box.innerHTML = `
+      <div class="empty-state">
+        Nenhum especialista cadastrado.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    specialists
+      .slice(0, 6)
+      .map(specialist => {
+
+        const online =
+          specialist.availability ===
+          "online";
+
+        return `
+          <div class="specialist-row">
+
+            <div class="specialist-avatar">
+              ${escapeHtml(
+                (specialist.name || "A")
+                  .charAt(0)
+                  .toUpperCase()
+              )}
+            </div>
+
+            <div class="specialist-info">
+
+              <strong>
+                ${escapeHtml(
+                  specialist.name
+                )}
+              </strong>
+
+              <span>
+                ${escapeHtml(
+                  specialist.specialty ||
+                  "Especialista"
+                )}
+              </span>
+
+            </div>
+
+            <span class="
+              status-badge
+              ${online
+                ? "success"
+                : "neutral"}
+            ">
+              ${online
+                ? "Online"
+                : "Offline"}
+            </span>
+
+          </div>
+        `;
+
+      }).join("");
+}
+
+
+// ============================================================
+// SEGURANÇA
+// ============================================================
+
+function renderSecurityAlerts(events) {
+
+  const box =
+    document.getElementById(
+      "alertsList"
+    );
+
+  const unresolved =
+    events.filter(
+      event =>
+        Number(event.resolved) === 0
+    );
+
+  if (!unresolved.length) {
+
+    box.innerHTML = `
+      <div class="no-alert">
+        <span>✓</span>
+        <div>
+          <strong>
+            Nenhum alerta pendente
+          </strong>
+          <p>
+            Não há eventos de segurança pendentes.
+          </p>
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    unresolved
+      .slice(0, 6)
+      .map(event => {
+
+        return `
+          <div class="
+            alert-row
+            ${escapeHtml(
+              event.severity || "info"
+            )}
+          ">
+
+            <div class="alert-icon">
+              ${event.severity === "high"
+                ? "🔴"
+                : event.severity === "medium"
+                  ? "🟠"
+                  : "🔵"}
+            </div>
+
+            <div>
+
+              <strong>
+                ${escapeHtml(
+                  event.title ||
+                  "Evento de segurança"
+                )}
+              </strong>
+
+              <p>
+                ${escapeHtml(
+                  event.description || ""
+                )}
+              </p>
+
+            </div>
+
+          </div>
+        `;
+
+      }).join("");
+}
+
+
+// ============================================================
+// ATIVIDADE
+// ============================================================
+
+function renderActivity(data) {
+
+  const box =
+    document.getElementById(
+      "recentActivity"
+    );
+
+  const activity =
+    data.audit?.recent ||
+    data.audit?.logs ||
+    data.activity ||
+    [];
+
+  if (!Array.isArray(activity) ||
+      !activity.length) {
+
+    box.innerHTML = `
+      <div class="empty-state">
+        Nenhuma atividade recente encontrada.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    activity
+      .slice(0, 8)
+      .map(item => {
+
+        return `
+          <div class="activity-row">
+
+            <div class="activity-icon">
+              📝
+            </div>
+
+            <div class="activity-info">
+
+              <strong>
+                ${escapeHtml(
+                  item.action ||
+                  "Atividade"
+                )}
+              </strong>
+
+              <span>
+                ${escapeHtml(
+                  item.entity ||
+                  ""
+                )}
+              </span>
+
+            </div>
+
+            <time>
+              ${escapeHtml(
+                item.created_at ||
+                item.createdAt ||
+                ""
+              )}
+            </time>
+
+          </div>
+        `;
+
+      }).join("");
+}
+
+
+// ============================================================
+// PROTEÇÃO
+// ============================================================
+
+function renderProtection(summary) {
+
+  document.getElementById(
+    "protectionReports"
+  ).textContent =
+    summary.protectionReports || 0;
+
+  document.getElementById(
+    "removalRequests"
+  ).textContent =
+    summary.removalRequests || 0;
+
+  document.getElementById(
+    "pendingRemovalRequests"
+  ).textContent =
+    summary.pendingRemovalRequests || 0;
+
+  document.getElementById(
+    "unresolvedSecurity"
+  ).textContent =
+    summary.unresolvedSecurityEvents || 0;
+}
+
+
+// ============================================================
+// LOGOUT
+// ============================================================
+
+async function logout() {
+
+  try {
+
+    await api(
+      "/api/admin/logout",
+      {
+        method: "POST"
+      }
+    );
+
+  } catch {}
+
+  localStorage.removeItem(
+    TOKEN_KEY
+  );
+
+  location.href =
+    "/admin/login.html";
+}
+
+
+// ============================================================
+// EVENTOS
+// ============================================================
+
+document.querySelectorAll(
+  ".nav-item"
+).forEach(button => {
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      openPage(
+        button.dataset.page
+      );
+
+    }
+  );
+
+});
+
+
+document.querySelectorAll(
+  "[data-page-link]"
+).forEach(button => {
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      openPage(
+        button.dataset.pageLink
+      );
+
+    }
+  );
+
+});
+
+
+document.getElementById(
+  "refreshButton"
+)?.addEventListener(
+  "click",
+  async () => {
+
+    await loadDashboard();
+
+    showToast(
+      "Dashboard atualizado.",
+      "success"
+    );
+
+  }
+);
+
+
+document.getElementById(
+  "logoutButton"
+)?.addEventListener(
+  "click",
+  logout
+);
+
+
+document.getElementById(
+  "mobileMenu"
+)?.addEventListener(
+  "click",
+  () => {
+
+    document
+      .querySelector(".sidebar")
+      ?.classList.toggle(
+        "mobile-open"
+      );
+
+  }
+);
+
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+
+(async () => {
+
+  const currentAdmin =
+    await loadAdmin();
+
+  if (!currentAdmin) {
+    return;
+  }
+
+  await loadDashboard();
+
+})();

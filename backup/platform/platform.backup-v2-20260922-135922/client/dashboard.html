@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Central | Resgata+</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/">RESGATA+</a>
+
+  <nav>
+    <a href="/services.html">Serviços</a>
+    <a href="/devices.html">Dispositivos</a>
+    <a href="/support.html">Suporte</a>
+    <button onclick="logout()">Sair</button>
+  </nav>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <span class="tag">MINHA CENTRAL</span>
+    <h1 id="welcome">Carregando...</h1>
+    <p id="plan"></p>
+  </section>
+
+  <section class="dashboard-grid">
+
+    <a href="/services.html" class="dashboard-card">
+      <strong>🛠️</strong>
+      <h2>Serviços</h2>
+      <p>Acesse os recursos disponíveis para você.</p>
+    </a>
+
+    <a href="/devices.html" class="dashboard-card">
+      <strong>📱</strong>
+      <h2>Dispositivos</h2>
+      <p>Veja os dispositivos vinculados.</p>
+    </a>
+
+    <a href="/support.html" class="dashboard-card">
+      <strong>🆘</strong>
+      <h2>Suporte</h2>
+      <p>Solicite ou acompanhe atendimento.</p>
+    </a>
+
+    <a href="/updates.html" class="dashboard-card">
+      <strong>🔄</strong>
+      <h2>Atualizações</h2>
+      <p>Confira novidades e versões.</p>
+    </a>
+
+  </section>
+
+</main>
+
+<script>
+async function loadAccount() {
+  const response = await fetch("/api/account", {
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("resgata_token")
+    }
+  });
+  const data = await response.json();
+
+  if (!data.ok || data.account.status === "guest") {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  document.getElementById("welcome").textContent =
+    `Olá, ${data.account.name}!`;
+
+  document.getElementById("plan").textContent =
+    `Plano: ${data.account.plan}`;
+}
+
+async function logout() {
+  await fetch("/api/auth/logout", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("resgata_token")
+    }
+  });
+
+  localStorage.removeItem("resgata_token");
+  window.location.href = "/";
+}
+
+loadAccount();
+</script>
+</body>
+</html>

@@ -1,0 +1,1791 @@
+(() => {
+  "use strict";
+
+  const API_BASE = "/api/admin";
+
+  const STATUS_LABELS = {
+    open: "Aberto",
+    in_progress: "Em atendimento",
+    waiting_user: "Aguardando usuário",
+    waiting_specialist: "Aguardando especialista",
+    resolved: "Resolvido",
+    closed: "Fechado",
+    cancelled: "Cancelado"
+  };
+
+  const PRIORITY_LABELS = {
+    low: "Baixa",
+    normal: "Normal",
+    high: "Alta",
+    urgent: "Urgente"
+  };
+
+  const SPECIALIST_STATUS = {
+    active: "Ativo",
+    inactive: "Inativo",
+    blocked: "Bloqueado"
+  };
+
+  const state = {
+    currentTicketId: null,
+    specialists: [],
+    loading: false,
+    messages: [],
+    messagesLoading: false,
+    messagePolling: null
+  };
+
+  function token() {
+    return localStorage.getItem("resgata_admin_token") || "";
+  }
+
+  async function api(path, options = {}) {
+    const headers = {
+      Accept: "application/json",
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {})
+    };
+
+    if (token()) {
+      headers.Authorization = `Bearer ${token()}`;
+    }
+
+    const response = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers
+    });
+
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok || data.ok === false) {
+      const error = new Error(
+        data.error ||
+        data.message ||
+        `HTTP_${response.status}`
+      );
+
+      error.status = response.status;
+      error.data = data;
+
+      throw error;
+    }
+
+    return data;
+  }
+
+  function escape(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function escapeJs(value) {
+    return String(value ?? "")
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'")
+      .replace(/\r/g, "\\r")
+      .replace(/\n/g, "\\n");
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return escape(value);
+    }
+
+    return date.toLocaleString("pt-BR");
+  }
+
+  function statusLabel(value) {
+    return STATUS_LABELS[value] || value || "—";
+  }
+
+  function priorityLabel(value) {
+    return PRIORITY_LABELS[value] || value || "—";
+  }
+
+  function specialistLabel(specialist) {
+    if (!specialist) return "Sem especialista";
+
+    const name = specialist.name || "Especialista";
+
+    if (specialist.specialty) {
+      return `${name} — ${specialist.specialty}`;
+    }
+
+    return name;
+  }
+
+  function notify(message, type = "success") {
+    let container = document.getElementById(
+      "resgata-ticket-notifications"
+    );
+
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "resgata-ticket-notifications";
+
+      Object.assign(container.style, {
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        zIndex: "99999",
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        maxWidth: "380px"
+      });
+
+      document.body.appendChild(container);
+    }
+
+    const item = document.createElement("div");
+
+    item.textContent = message;
+
+    Object.assign(item.style, {
+      padding: "12px 16px",
+      borderRadius: "10px",
+      background: type === "error"
+        ? "#7f1d1d"
+        : type === "warning"
+          ? "#78350f"
+          : "#166534",
+      color: "#fff",
+      boxShadow: "0 8px 30px rgba(0,0,0,.25)",
+      fontSize: "14px",
+      lineHeight: "1.4"
+    });
+
+    container.appendChild(item);
+
+    setTimeout(() => {
+      item.remove();
+    }, 4000);
+  }
+
+  function confirmAction(message) {
+    return window.confirm(message);
+  }
+
+  function getPage() {
+    return document.getElementById("page-tickets");
+  }
+
+  function renderLoading(target, message = "Carregando...") {
+    if (!target) return;
+
+    target.innerHTML = `
+      <div class="module-placeholder">
+        <span>⏳</span>
+        <h3>${escape(message)}</h3>
+        <p>Aguarde enquanto buscamos os dados.</p>
+      </div>
+    `;
+  }
+
+  function renderError(target, message) {
+    if (!target) return;
+
+    target.innerHTML = `
+      <div class="module-placeholder">
+        <span>⚠️</span>
+        <h3>Não foi possível carregar</h3>
+        <p>${escape(message)}</p>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-ticket-action="retry"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    `;
+  }
+
+  async function load() {
+    const page = getPage();
+
+    if (!page) return;
+
+    if (state.loading) return;
+
+    state.loading = true;
+
+    page.innerHTML = `
+      <div class="module-header">
+        <div>
+          <div class="module-kicker">RESGATA+</div>
+          <h2>🎧 Atendimento</h2>
+          <p>
+            Gerencie solicitações, especialistas, prioridades e histórico.
+          </p>
+        </div>
+
+        <div class="module-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-ticket-action="refresh"
+          >
+            ↻ Atualizar
+          </button>
+        </div>
+      </div>
+
+      <section id="tickets-summary" class="tickets-summary">
+        <div class="module-placeholder">
+          <span>⏳</span>
+          <p>Carregando resumo...</p>
+        </div>
+      </section>
+
+      <section class="tickets-toolbar">
+        <div class="tickets-search">
+          <input
+            id="ticket-search"
+            type="search"
+            placeholder="Buscar por ID, usuário, e-mail, assunto ou mensagem..."
+            autocomplete="off"
+          >
+        </div>
+
+        <select id="ticket-status">
+          <option value="">Todos os status</option>
+          <option value="open">Aberto</option>
+          <option value="in_progress">Em atendimento</option>
+          <option value="waiting_user">Aguardando usuário</option>
+          <option value="waiting_specialist">Aguardando especialista</option>
+          <option value="resolved">Resolvido</option>
+          <option value="closed">Fechado</option>
+          <option value="cancelled">Cancelado</option>
+        </select>
+
+        <select id="ticket-priority">
+          <option value="">Todas as prioridades</option>
+          <option value="low">Baixa</option>
+          <option value="normal">Normal</option>
+          <option value="high">Alta</option>
+          <option value="urgent">Urgente</option>
+        </select>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-ticket-action="filter"
+        >
+          Filtrar
+        </button>
+      </section>
+
+      <section class="tickets-layout">
+        <div id="tickets-list" class="tickets-list"></div>
+        <aside id="ticket-detail" class="ticket-detail">
+          <div class="module-placeholder">
+            <span>🎧</span>
+            <h3>Nenhum atendimento selecionado</h3>
+            <p>Escolha um atendimento na lista para visualizar os detalhes.</p>
+          </div>
+        </aside>
+      </section>
+    `;
+
+    bindEvents();
+
+    try {
+      await loadSpecialists();
+      await Promise.all([
+        summary(),
+        list()
+      ]);
+    } catch (error) {
+      console.error("RESGATA TICKETS LOAD ERROR:", error);
+
+      const listTarget = document.getElementById("tickets-list");
+
+      renderError(
+        listTarget,
+        "Não foi possível carregar os atendimentos."
+      );
+    } finally {
+      state.loading = false;
+    }
+  }
+
+
+  function bindTicketCardNavigation() {
+    const target = document.getElementById("tickets-list");
+
+    if (!target || target.dataset.cardNavigationBound === "1") {
+      return;
+    }
+
+    target.dataset.cardNavigationBound = "1";
+
+    target.addEventListener("click", async (event) => {
+      if (event.target.closest("[data-ticket-action]")) {
+        return;
+      }
+
+      const card = event.target.closest(".ticket-card-clickable");
+
+      if (!card) {
+        return;
+      }
+
+      const id = card.dataset.ticketId;
+
+      if (!id) {
+        return;
+      }
+
+      await detail(id);
+    });
+
+    target.addEventListener("keydown", async (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+
+      const card = event.target.closest(".ticket-card-clickable");
+
+      if (!card) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const id = card.dataset.ticketId;
+
+      if (!id) {
+        return;
+      }
+
+      await detail(id);
+    });
+  }
+
+  function bindEvents() {
+    const page = getPage();
+
+    if (!page) return;
+
+    page.onclick = async event => {
+      const button = event.target.closest(
+        "[data-ticket-action]"
+      );
+
+      if (!button) return;
+
+      const action = button.dataset.ticketAction;
+      const ticketId = button.dataset.ticketId;
+
+      try {
+        if (action === "refresh") {
+          await refresh();
+          return;
+        }
+
+        if (action === "retry") {
+          await load();
+          return;
+        }
+
+        if (action === "filter") {
+          await list();
+          return;
+        }
+
+        if (action === "open") {
+          await detail(ticketId);
+          return;
+        }
+
+        if (action === "save-status") {
+          await updateStatus(ticketId);
+          return;
+        }
+
+        if (action === "save-priority") {
+          await updatePriority(ticketId);
+          return;
+        }
+
+        if (action === "assign") {
+          await assignSpecialist(ticketId);
+          return;
+        }
+
+        if (action === "unassign") {
+          await unassignSpecialist(ticketId);
+          return;
+        }
+
+        if (action === "send-message") {
+          await sendMessage(ticketId);
+          return;
+        }
+
+        if (action === "refresh-messages") {
+          await loadMessages(ticketId);
+          return;
+        }
+      } catch (error) {
+        console.error("RESGATA TICKET ACTION ERROR:", error);
+
+        notify(
+          error.data?.error ||
+          "Não foi possível concluir a ação.",
+          "error"
+        );
+      }
+    };
+
+    const search = document.getElementById("ticket-search");
+
+    if (search) {
+      search.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          list();
+        }
+      });
+    }
+  }
+
+  async function refresh() {
+    state.currentTicketId = null;
+
+    await load();
+  }
+
+  async function summary() {
+    const target = document.getElementById("tickets-summary");
+
+    if (!target) return;
+
+    try {
+      const data = await api("/tickets/summary");
+
+      const summaryData = data.summary || {};
+
+      const byStatus = Object.fromEntries(
+        (summaryData.byStatus || []).map(row => [
+          row.status,
+          Number(row.total || 0)
+        ])
+      );
+
+      const byPriority = Object.fromEntries(
+        (summaryData.byPriority || []).map(row => [
+          row.priority,
+          Number(row.total || 0)
+        ])
+      );
+
+      const cards = [
+        ["Total", Number(summaryData.total || 0), "🎧"],
+        ["Abertos", byStatus.open || 0, "🆕"],
+        ["Em atendimento", byStatus.in_progress || 0, "💬"],
+        ["Aguardando usuário", byStatus.waiting_user || 0, "👤"],
+        ["Aguardando especialista", byStatus.waiting_specialist || 0, "🧑‍💼"],
+        ["Resolvidos", byStatus.resolved || 0, "✅"],
+        ["Fechados", byStatus.closed || 0, "📁"],
+        ["Urgentes", byPriority.urgent || 0, "🚨"]
+      ];
+
+      target.innerHTML = cards.map(card => `
+        <div class="ticket-summary-card">
+          <span class="ticket-summary-icon">${card[2]}</span>
+          <strong>${card[1]}</strong>
+          <small>${escape(card[0])}</small>
+        </div>
+      `).join("");
+    } catch (error) {
+      console.error("RESGATA TICKETS SUMMARY ERROR:", error);
+
+      target.innerHTML = `
+        <div class="module-placeholder">
+          <span>⚠️</span>
+          <p>Não foi possível carregar o resumo.</p>
+        </div>
+      `;
+    }
+  }
+
+  async function list() {
+    const target = document.getElementById("tickets-list");
+
+    if (!target) return;
+
+    renderLoading(target, "Carregando atendimentos...");
+
+    const search = document.getElementById("ticket-search")?.value || "";
+    const status = document.getElementById("ticket-status")?.value || "";
+    const priority = document.getElementById("ticket-priority")?.value || "";
+
+    const params = new URLSearchParams();
+
+    if (search.trim()) {
+      params.set("search", search.trim());
+    }
+
+    if (status) {
+      params.set("status", status);
+    }
+
+    if (priority) {
+      params.set("priority", priority);
+    }
+
+    try {
+      const query = params.toString();
+
+      const data = await api(
+        `/tickets${query ? `?${query}` : ""}`
+      );
+
+      const tickets = Array.isArray(data.tickets)
+        ? data.tickets
+        : [];
+
+      if (!tickets.length) {
+        target.innerHTML = `
+          <div class="module-placeholder">
+            <span>📭</span>
+            <h3>Nenhum atendimento encontrado</h3>
+            <p>
+              Não existem atendimentos para os filtros selecionados.
+            </p>
+          </div>
+        `;
+
+        return;
+      }
+
+      target.innerHTML = tickets.map(ticket => `
+        <article
+          class="ticket-card ticket-card-clickable"
+          data-ticket-id="${escape(ticket.id)}"
+          role="button"
+          tabindex="0"
+        >
+          <div class="ticket-card-top">
+            <strong>
+              ${escape(ticket.subject || "Sem assunto")}
+            </strong>
+
+            <span class="ticket-status-badge status-${escape(ticket.status)}">
+              ${escape(statusLabel(ticket.status))}
+            </span>
+          </div>
+
+          <div class="ticket-card-meta">
+            <span>
+              👤 ${escape(ticket.user_name || "Usuário não identificado")}
+            </span>
+
+            <span>
+              ✉️ ${escape(ticket.user_email || "—")}
+            </span>
+
+            <span>
+              🎯 ${escape(priorityLabel(ticket.priority))}
+            </span>
+          </div>
+
+          <div class="ticket-card-footer">
+            <small>
+              ID: ${escape(ticket.id)}
+              · ${escape(formatDate(ticket.created_at))}
+            </small>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-ticket-action="open"
+              data-ticket-id="${escape(ticket.id)}"
+            >
+              Abrir
+            </button>
+          </div>
+        </article>
+      `).join("");
+
+      bindTicketCardNavigation();
+    } catch (error) {
+      console.error("RESGATA TICKETS LIST ERROR:", error);
+
+      renderError(
+        target,
+        "Não foi possível buscar os atendimentos."
+      );
+    }
+  }
+
+  async function loadSpecialists() {
+    try {
+      const data = await api("/specialists");
+
+      state.specialists = Array.isArray(data.specialists)
+        ? data.specialists
+        : [];
+    } catch (error) {
+      console.error(
+        "RESGATA SPECIALISTS FOR TICKETS ERROR:",
+        error
+      );
+
+      state.specialists = [];
+    }
+  }
+
+  async function detail(id) {
+    if (!id) return;
+
+    state.currentTicketId = id;
+
+    const target = document.getElementById("ticket-detail");
+
+    if (!target) return;
+
+    renderLoading(target, "Carregando atendimento...");
+
+    try {
+      const data = await api(
+        `/tickets/${encodeURIComponent(id)}`
+      );
+
+      const ticket = data.ticket;
+
+      if (!ticket) {
+        throw new Error("TICKET_NOT_FOUND");
+      }
+
+      const assignments = Array.isArray(data.assignments)
+        ? data.assignments
+        : [];
+
+      const auditRows = Array.isArray(data.audit)
+        ? data.audit
+        : [];
+
+      const activeAssignment = assignments.find(
+        assignment => assignment.status === "assigned"
+      );
+
+      target.innerHTML = `
+        <div class="ticket-detail-header">
+          <div>
+            <div class="module-kicker">
+              ATENDIMENTO
+            </div>
+
+            <h3>
+              ${escape(ticket.subject || "Sem assunto")}
+            </h3>
+
+            <small>
+              ID: ${escape(ticket.id)}
+            </small>
+          </div>
+        </div>
+
+
+        <div class="ticket-detail-workspace">
+
+          <aside class="ticket-client-sidebar">
+        <div class="ticket-detail-section">
+          <h4>👤 Usuário</h4>
+
+          <div class="ticket-info-grid">
+            <div>
+              <small>Nome</small>
+              <strong>
+                ${escape(ticket.user_name || "Não identificado")}
+              </strong>
+            </div>
+
+            <div>
+              <small>E-mail</small>
+              <strong>
+                ${escape(ticket.user_email || "—")}
+              </strong>
+            </div>
+
+            <div>
+              <small>Plano</small>
+              <strong>
+                ${escape(ticket.user_plan || "—")}
+              </strong>
+            </div>
+
+            <div>
+              <small>Status</small>
+              <strong>
+                ${escape(ticket.user_status || "—")}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="ticket-detail-section">
+          <h4>⚙️ Controle</h4>
+
+          <div class="ticket-control-row">
+            <label>
+              <span>Status</span>
+
+              <select id="ticket-detail-status">
+                ${Object.entries(STATUS_LABELS).map(
+                  ([value, label]) => `
+                    <option
+                      value="${escape(value)}"
+                      ${ticket.status === value ? "selected" : ""}
+                    >
+                      ${escape(label)}
+                    </option>
+                  `
+                ).join("")}
+              </select>
+            </label>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-ticket-action="save-status"
+              data-ticket-id="${escape(ticket.id)}"
+            >
+              Salvar status
+            </button>
+          </div>
+
+          <div class="ticket-control-row">
+            <label>
+              <span>Prioridade</span>
+
+              <select id="ticket-detail-priority">
+                ${Object.entries(PRIORITY_LABELS).map(
+                  ([value, label]) => `
+                    <option
+                      value="${escape(value)}"
+                      ${ticket.priority === value ? "selected" : ""}
+                    >
+                      ${escape(label)}
+                    </option>
+                  `
+                ).join("")}
+              </select>
+            </label>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-ticket-action="save-priority"
+              data-ticket-id="${escape(ticket.id)}"
+            >
+              Salvar prioridade
+            </button>
+          </div>
+        </div>
+
+        <div class="ticket-detail-section">
+          <h4>🧑‍💼 Especialista</h4>
+
+          ${
+            activeAssignment
+              ? `
+                <div class="ticket-assigned">
+                  <strong>
+                    ${escape(
+                      specialistLabel(
+                        activeAssignment
+                      )
+                    )}
+                  </strong>
+
+                  <small>
+                    Atribuição ativa
+                  </small>
+                </div>
+              `
+              : `
+                <div class="ticket-empty-assignment">
+                  Nenhum especialista atribuído.
+                </div>
+              `
+          }
+
+          <div class="ticket-control-row">
+            <label>
+              <span>
+                ${activeAssignment
+                  ? "Trocar especialista"
+                  : "Atribuir especialista"}
+              </span>
+
+              <select id="ticket-specialist">
+                <option value="">
+                  Selecione um especialista
+                </option>
+
+                ${state.specialists
+                  .map(specialist => `
+                    <option value="${escape(specialist.id)}">
+                      ${escape(
+                        specialist.name
+                        || "Especialista"
+                      )}
+                      ${
+                        specialist.specialty
+                          ? ` — ${escape(specialist.specialty)}`
+                          : ""
+                      }
+                      ${
+                        specialist.status !== "active"
+                          ? ` [${escape(
+                              SPECIALIST_STATUS[
+                                specialist.status
+                              ] || specialist.status
+                            )}]`
+                          : ""
+                      }
+                    </option>
+                  `)
+                  .join("")}
+              </select>
+            </label>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-ticket-action="assign"
+              data-ticket-id="${escape(ticket.id)}"
+            >
+              ${activeAssignment ? "Trocar" : "Atribuir"}
+            </button>
+          </div>
+
+          ${
+            activeAssignment
+              ? `
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  data-ticket-action="unassign"
+                  data-ticket-id="${escape(ticket.id)}"
+                >
+                  Desatribuir especialista
+                </button>
+              `
+              : ""
+          }
+        </div>
+
+
+          </aside>
+
+          <main class="ticket-chat-main">
+        <div class="ticket-detail-section">
+          <h4>📝 Solicitação</h4>
+
+          <div class="ticket-message">
+            ${escape(ticket.message || "Sem mensagem.")}
+          </div>
+
+          <div class="ticket-info-grid">
+            <div>
+              <small>Criado em</small>
+              <strong>${escape(formatDate(ticket.created_at))}</strong>
+            </div>
+
+            <div>
+              <small>Atualizado em</small>
+              <strong>${escape(formatDate(ticket.updated_at))}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="ticket-detail-section ticket-chat-section">
+          <div class="ticket-chat-header">
+            <div>
+              <h4>💬 Conversa com o cliente</h4>
+              <small>
+                Atendimento em tempo real entre Admin e cliente.
+              </small>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-ticket-action="refresh-messages"
+              data-ticket-id="${escape(ticket.id)}"
+            >
+              Atualizar
+            </button>
+          </div>
+
+          <div
+            id="ticket-chat-messages"
+            class="ticket-chat-messages"
+            aria-live="polite"
+          >
+            <div class="ticket-chat-loading">
+              Carregando conversa...
+            </div>
+          </div>
+
+          ${
+            ["closed", "cancelled"].includes(ticket.status)
+              ? `
+                <div class="ticket-chat-closed">
+                  🔒 Este atendimento está ${escape(
+                    statusLabel(ticket.status).toLowerCase()
+                  )}.
+                  Não é possível enviar novas mensagens.
+                </div>
+              `
+              : `
+                <div class="ticket-chat-compose">
+                  <textarea
+                    id="ticket-chat-input"
+                    rows="4"
+                    maxlength="5000"
+                    placeholder="Digite uma mensagem para o cliente..."
+                  ></textarea>
+
+                  <div class="ticket-chat-compose-footer">
+                    <label class="ticket-chat-internal-toggle">
+                      <input
+                        type="checkbox"
+                        id="ticket-chat-internal"
+                      >
+                      <span>Nota interna</span>
+                    </label>
+
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-ticket-action="send-message"
+                      data-ticket-id="${escape(ticket.id)}"
+                    >
+                      Enviar mensagem
+                    </button>
+                  </div>
+                </div>
+              `
+          }
+        </div>
+
+
+          </main>
+
+        </div>
+        <div class="ticket-detail-section">
+          <h4>📜 Histórico</h4>
+
+          ${
+            auditRows.length
+              ? `
+                <div class="ticket-audit-list">
+                  ${auditRows.map(row => `
+                    <div class="ticket-audit-item">
+                      <strong>
+                        ${escape(row.action || "Ação")}
+                      </strong>
+
+                      <small>
+                        ${escape(formatDate(row.created_at))}
+                      </small>
+
+                      ${
+                        row.details
+                          ? `
+                            <pre>${escape(
+                              formatAuditDetails(
+                                row.details
+                              )
+                            )}</pre>
+                          `
+                          : ""
+                      }
+                    </div>
+                  `).join("")}
+                </div>
+              `
+              : `
+                <div class="ticket-empty-history">
+                  Nenhum registro de histórico encontrado.
+                </div>
+              `
+          }
+        </div>
+      `;
+
+      await loadMessages(id);
+      startMessagePolling(id);
+    } catch (error) {
+      console.error("RESGATA TICKET DETAIL ERROR:", error);
+
+      renderError(
+        target,
+        "Não foi possível carregar os detalhes do atendimento."
+      );
+    }
+  }
+
+  function formatAuditDetails(value) {
+    if (!value) return "";
+
+    try {
+      const parsed =
+        typeof value === "string"
+          ? JSON.parse(value)
+          : value;
+
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      return String(value);
+    }
+  }
+
+  async function loadMessages(id) {
+    if (!id) return;
+
+    const target =
+      document.getElementById("ticket-chat-messages");
+
+    if (!target) return;
+
+    if (state.messagesLoading) return;
+
+    state.messagesLoading = true;
+
+    try {
+      const data = await api(
+        `/tickets/${encodeURIComponent(id)}/messages`
+      );
+
+      const messages = Array.isArray(data.messages)
+        ? data.messages
+        : [];
+
+      state.messages = messages;
+
+      renderMessages(messages);
+    } catch (error) {
+      console.error(
+        "RESGATA TICKET MESSAGES LOAD ERROR:",
+        error
+      );
+
+      target.innerHTML = `
+        <div class="ticket-chat-error">
+          Não foi possível carregar a conversa.
+        </div>
+      `;
+    } finally {
+      state.messagesLoading = false;
+    }
+  }
+
+  function renderMessages(messages) {
+    const target =
+      document.getElementById("ticket-chat-messages");
+
+    if (!target) return;
+
+    if (!Array.isArray(messages) || !messages.length) {
+      target.innerHTML = `
+        <div class="ticket-chat-empty">
+          <span>💬</span>
+          <strong>Nenhuma mensagem ainda</strong>
+          <small>
+            A conversa começará quando alguém enviar uma mensagem.
+          </small>
+        </div>
+      `;
+
+      return;
+    }
+
+    target.innerHTML = messages.map(message => {
+      const senderType =
+        message.sender_type || "system";
+
+      const internal =
+        Number(message.internal) === 1 ||
+        message.internal === true;
+
+      const senderLabel = {
+        client: "Cliente",
+        admin: "Admin",
+        specialist: "Especialista",
+        system: "Sistema"
+      }[senderType] || senderType;
+
+      const className =
+        internal
+          ? "internal"
+          : senderType === "client"
+            ? "client"
+            : senderType === "specialist"
+              ? "specialist"
+              : senderType === "admin"
+                ? "admin"
+                : "system";
+
+      return `
+        <div class="ticket-chat-message ${className}">
+          <div class="ticket-chat-message-header">
+            <strong>
+              ${escape(senderLabel)}
+            </strong>
+
+            ${
+              internal
+                ? `<span class="ticket-chat-internal-badge">Nota interna</span>`
+                : ""
+            }
+
+            <small>
+              ${escape(formatDate(message.created_at))}
+            </small>
+          </div>
+
+          <div class="ticket-chat-message-body">
+            ${escape(message.message || "")}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    target.scrollTop = target.scrollHeight;
+  }
+
+  async function sendMessage(id) {
+    if (!id) return;
+
+    const input =
+      document.getElementById("ticket-chat-input");
+
+    const internalCheckbox =
+      document.getElementById("ticket-chat-internal");
+
+    if (!input) return;
+
+    const message = input.value.trim();
+
+    if (!message) {
+      notify(
+        "Digite uma mensagem antes de enviar.",
+        "warning"
+      );
+      input.focus();
+      return;
+    }
+
+    if (message.length > 5000) {
+      notify(
+        "A mensagem não pode ultrapassar 5000 caracteres.",
+        "warning"
+      );
+      return;
+    }
+
+    const internal =
+      Boolean(internalCheckbox?.checked);
+
+    const button =
+      document.querySelector(
+        `[data-ticket-action="send-message"][data-ticket-id="${CSS.escape(id)}"]`
+      );
+
+    if (button) {
+      button.disabled = true;
+      button.dataset.originalText =
+        button.textContent.trim();
+      button.textContent = "Enviando...";
+    }
+
+    try {
+      await api(
+        `/tickets/${encodeURIComponent(id)}/messages`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            message,
+            internal
+          })
+        }
+      );
+
+      input.value = "";
+
+      if (internalCheckbox) {
+        internalCheckbox.checked = false;
+      }
+
+      notify(
+        internal
+          ? "Nota interna adicionada."
+          : "Mensagem enviada ao cliente."
+      );
+
+      await loadMessages(id);
+    } catch (error) {
+      console.error(
+        "RESGATA TICKET MESSAGE SEND ERROR:",
+        error
+      );
+
+      notify(
+        error.data?.error ||
+        "Não foi possível enviar a mensagem.",
+        "error"
+      );
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent =
+          button.dataset.originalText ||
+          "Enviar mensagem";
+      }
+    }
+  }
+
+  function stopMessagePolling() {
+    if (state.messagePolling) {
+      clearInterval(state.messagePolling);
+      state.messagePolling = null;
+    }
+  }
+
+  function startMessagePolling(id) {
+    stopMessagePolling();
+
+    if (!id) return;
+
+    state.messagePolling = setInterval(
+      async () => {
+        if (
+          state.currentTicketId !== id
+        ) {
+          stopMessagePolling();
+          return;
+        }
+
+        const page =
+          document.getElementById("page-tickets");
+
+        if (
+          !page ||
+          !page.classList.contains("active")
+        ) {
+          stopMessagePolling();
+          return;
+        }
+
+        await loadMessages(id);
+      },
+      5000
+    );
+  }
+
+  async function updateStatus(id) {
+    const select =
+      document.getElementById("ticket-detail-status");
+
+    if (!select) return;
+
+    const status = select.value;
+
+    if (!STATUS_LABELS[status]) {
+      notify("Selecione um status válido.", "error");
+      return;
+    }
+
+    if (
+      ["resolved", "closed", "cancelled"].includes(status) &&
+      !confirmAction(
+        `Confirma alterar o atendimento para "${statusLabel(status)}"?`
+      )
+    ) {
+      return;
+    }
+
+    await api(
+      `/tickets/${encodeURIComponent(id)}/status`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ status })
+      }
+    );
+
+    notify("Status atualizado com sucesso.");
+
+    await Promise.all([
+      summary(),
+      list()
+    ]);
+
+    await detail(id);
+  }
+
+  async function updatePriority(id) {
+    const select =
+      document.getElementById("ticket-detail-priority");
+
+    if (!select) return;
+
+    const priority = select.value;
+
+    if (!PRIORITY_LABELS[priority]) {
+      notify("Selecione uma prioridade válida.", "error");
+      return;
+    }
+
+    await api(
+      `/tickets/${encodeURIComponent(id)}/priority`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ priority })
+      }
+    );
+
+    notify("Prioridade atualizada com sucesso.");
+
+    await Promise.all([
+      summary(),
+      list()
+    ]);
+
+    await detail(id);
+  }
+
+  async function assignSpecialist(id) {
+    const select =
+      document.getElementById("ticket-specialist");
+
+    if (!select || !select.value) {
+      notify(
+        "Selecione um especialista antes de continuar.",
+        "warning"
+      );
+      return;
+    }
+
+    const specialistId = select.value;
+
+    const specialist =
+      state.specialists.find(
+        item => item.id === specialistId
+      );
+
+    const specialistName =
+      specialist?.name || "especialista";
+
+    if (
+      !confirmAction(
+        `Confirma atribuir o atendimento a ${specialistName}?`
+      )
+    ) {
+      return;
+    }
+
+    await api(
+      `/tickets/${encodeURIComponent(id)}/assign`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          specialistId
+        })
+      }
+    );
+
+    notify("Especialista atribuído com sucesso.");
+
+    await Promise.all([
+      summary(),
+      list()
+    ]);
+
+    await detail(id);
+  }
+
+  async function unassignSpecialist(id) {
+    if (
+      !confirmAction(
+        "Confirma desatribuir o especialista deste atendimento?"
+      )
+    ) {
+      return;
+    }
+
+    await api(
+      `/tickets/${encodeURIComponent(id)}/unassign`,
+      {
+        method: "POST"
+      }
+    );
+
+    notify("Especialista desatribuído.");
+
+    await Promise.all([
+      summary(),
+      list()
+    ]);
+
+    await detail(id);
+  }
+
+  window.ResgataTickets = {
+    api,
+    load,
+    summary,
+    list,
+    detail,
+    updateStatus,
+    updatePriority,
+    assignSpecialist,
+    unassignSpecialist,
+    loadMessages,
+    sendMessage,
+    stopMessagePolling
+  };
+
+  window.loadTickets = () => {
+    window.ResgataTickets.load();
+  };
+
+  /*
+   * Compatibilidade com o carregamento atual do Admin.
+   * Mantido por enquanto para não quebrar o fluxo existente.
+   */
+  function resgataAutoLoadTickets() {
+    const page = document.getElementById("page-tickets");
+
+    if (
+      page &&
+      (
+        page.classList.contains("active") ||
+        page.style.display !== "none"
+      )
+    ) {
+      window.ResgataTickets.load();
+    }
+  }
+
+  window.resgataAutoLoadTickets = resgataAutoLoadTickets;
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+      setTimeout(
+        resgataAutoLoadTickets,
+        500
+      );
+    }
+  );
+
+  const ticketObserver =
+    new MutationObserver(() => {
+      const page =
+        document.getElementById("page-tickets");
+
+      if (
+        page &&
+        page.classList.contains("active")
+      ) {
+        /*
+         * O carregamento inicial já é feito pelo módulo.
+         * O chat mantém seu próprio polling enquanto ativo.
+         */
+      } else {
+        stopMessagePolling();
+      }
+    });
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+      const page =
+        document.getElementById("page-tickets");
+
+      if (page) {
+        ticketObserver.observe(
+          page,
+          {
+            attributes: true,
+            attributeFilter: ["class"]
+          }
+        );
+      }
+    }
+  );
+})();
+
+
+/* RESGATA_ATENDIMENTO_UI_PRO */
+(() => {
+  if (document.getElementById("resgata-atendimento-ui-pro")) return;
+
+  const style = document.createElement("style");
+  style.id = "resgata-atendimento-ui-pro";
+
+  style.textContent = `
+    /* =========================================================
+       RESGATA+ — CENTRAL DE ATENDIMENTO
+       Camada visual — não altera API/banco
+       ========================================================= */
+
+    #page-tickets {
+      --ra-radius: 16px;
+      --ra-radius-sm: 11px;
+      --ra-border: rgba(148,163,184,.20);
+      --ra-soft: rgba(148,163,184,.08);
+      --ra-shadow: 0 10px 30px rgba(15,23,42,.08);
+      --ra-shadow-hover: 0 16px 36px rgba(15,23,42,.13);
+    }
+
+    /* Cabeçalho */
+    #page-tickets h1,
+    #page-tickets h2,
+    #page-tickets h3,
+    #page-tickets h4 {
+      letter-spacing: -.02em;
+    }
+
+    /* =========================================================
+       CARDS DE RESUMO
+       ========================================================= */
+
+    #page-tickets [class*="summary"],
+    #page-tickets [class*="stats"],
+    #page-tickets [class*="stat-card"] {
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        border-color .18s ease;
+    }
+
+    #page-tickets [class*="summary"]:hover,
+    #page-tickets [class*="stats"]:hover,
+    #page-tickets [class*="stat-card"]:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--ra-shadow-hover);
+    }
+
+    /* Botões */
+    #page-tickets button {
+      border-radius: 10px;
+      transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        opacity .15s ease;
+    }
+
+    #page-tickets button:hover {
+      transform: translateY(-1px);
+    }
+
+    #page-tickets button:active {
+      transform: translateY(0);
+    }
+
+    /* =========================================================
+       PESQUISA / FILTROS
+       ========================================================= */
+
+    #page-tickets input,
+    #page-tickets select,
+    #page-tickets textarea {
+      border-radius: 10px;
+      border: 1px solid var(--ra-border);
+      transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+    }
+
+    #page-tickets input:focus,
+    #page-tickets select:focus,
+    #page-tickets textarea:focus {
+      outline: none;
+      border-color: rgba(59,130,246,.55);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+    }
+
+    /* =========================================================
+       LISTA DE ATENDIMENTOS
+       ========================================================= */
+
+    #page-tickets [data-ticket-id] {
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        border-color .18s ease;
+    }
+
+    #page-tickets [data-ticket-id]:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--ra-shadow-hover);
+    }
+
+    /* =========================================================
+       DETALHE DO ATENDIMENTO
+       ========================================================= */
+
+    #page-tickets [data-ticket-action="send-message"] {
+      min-width: 120px;
+      font-weight: 700;
+    }
+
+    #page-tickets [data-ticket-action="refresh-messages"] {
+      border-radius: 9px;
+    }
+
+    /* =========================================================
+       CHAT
+       ========================================================= */
+
+    #page-tickets #ticket-chat-messages {
+      min-height: 300px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding: 18px;
+      border: 1px solid var(--ra-border);
+      border-radius: 16px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(148,163,184,.055),
+          rgba(148,163,184,.025)
+        );
+      scroll-behavior: smooth;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+    }
+
+    #page-tickets #ticket-chat-messages::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #page-tickets #ticket-chat-messages::-webkit-scrollbar-thumb {
+      border-radius: 20px;
+      background: rgba(100,116,139,.30);
+    }
+
+    #page-tickets #ticket-chat-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Campo da mensagem */
+    #page-tickets #ticket-chat-input {
+      min-height: 48px;
+      resize: vertical;
+      padding: 12px 14px;
+      line-height: 1.5;
+    }
+
+    /* Área de composição */
+    #page-tickets #ticket-chat-input + *,
+    #page-tickets #ticket-chat-input {
+      box-sizing: border-box;
+    }
+
+    /* Checkbox de nota interna */
+    #page-tickets #ticket-chat-internal {
+      accent-color: currentColor;
+      transform: translateY(1px);
+    }
+
+    /* =========================================================
+       BLOCOS DE MENSAGEM
+       ========================================================= */
+
+    #page-tickets #ticket-chat-messages > div {
+      margin-bottom: 12px;
+    }
+
+    #page-tickets #ticket-chat-messages > div:last-child {
+      margin-bottom: 0;
+    }
+
+    /* =========================================================
+       STATUS / BADGES
+       ========================================================= */
+
+    #page-tickets [class*="badge"],
+    #page-tickets [class*="status"],
+    #page-tickets [class*="priority"] {
+      border-radius: 999px;
+    }
+
+    /* =========================================================
+       CONTROLE
+       ========================================================= */
+
+    #page-tickets hr {
+      opacity: .45;
+    }
+
+    /* =========================================================
+       HISTÓRICO
+       ========================================================= */
+
+    #page-tickets [class*="history"],
+    #page-tickets [class*="timeline"],
+    #page-tickets [class*="audit"] {
+      border-radius: 14px;
+    }
+
+    /* =========================================================
+       RESPONSIVO
+       ========================================================= */
+
+    @media (max-width: 900px) {
+      #page-tickets #ticket-chat-messages {
+        min-height: 260px;
+        max-height: 430px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      #page-tickets #ticket-chat-messages {
+        min-height: 220px;
+        max-height: 360px;
+        padding: 12px;
+      }
+
+      #page-tickets #ticket-chat-input {
+        min-height: 90px;
+      }
+
+      #page-tickets button {
+        min-height: 42px;
+      }
+    }
+
+    /* =========================================================
+       CABEÇALHO DO CHAT
+       ========================================================= */
+
+    #page-tickets #ticket-chat-messages::before {
+      content: "";
+      display: block;
+    }
+  `;
+
+  document.head.appendChild(style);
+})();

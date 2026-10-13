@@ -1,0 +1,13 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "photolive-infinitepay",
+  "compatibility_date": "2026-09-28",
+  "main": "./src/index.js",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "photolive-pagamentos",
+      "database_id": "e6be2513-b2a3-4f05-a57c-facab293dfba"
+    }
+  ]
+}

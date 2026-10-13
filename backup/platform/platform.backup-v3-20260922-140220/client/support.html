@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suporte | Resgata+</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/dashboard.html">RESGATA+</a>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <span class="tag">SUPORTE</span>
+    <h1>Como podemos ajudar?</h1>
+    <p>Abra uma solicitação e acompanhe seu atendimento.</p>
+  </section>
+
+  <section class="auth-card">
+    <form id="supportForm">
+      <label>Assunto</label>
+      <input id="subject" required placeholder="Ex.: problema no backup">
+
+      <label>Descrição</label>
+      <textarea id="description" required rows="6"
+        placeholder="Explique o que aconteceu"></textarea>
+
+      <button type="submit">Solicitar atendimento</button>
+    </form>
+
+    <div id="message" class="message"></div>
+  </section>
+</main>
+
+<script>
+document.getElementById("supportForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const response = await fetch("/api/support/tickets", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      subject: document.getElementById("subject").value,
+      description: document.getElementById("description").value
+    })
+  });
+
+  const data = await response.json();
+
+  document.getElementById("message").textContent =
+    data.message || data.error || "Solicitação processada.";
+});
+</script>
+</body>
+</html>

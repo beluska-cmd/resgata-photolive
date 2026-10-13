@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispositivos | Resgata+</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/dashboard.html">RESGATA+</a>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <span class="tag">MEUS DISPOSITIVOS</span>
+    <h1>Seus dispositivos</h1>
+    <p>Dispositivos autorizados a utilizar os serviços Resgata+.</p>
+  </section>
+
+  <section id="devices" class="grid"></section>
+</main>
+
+<script>
+async function loadDevices() {
+  const response = await fetch("/api/devices");
+  const data = await response.json();
+
+  const container = document.getElementById("devices");
+
+  if (!data.devices.length) {
+    container.innerHTML = `
+      <article class="card">
+        <h2>Nenhum dispositivo vinculado</h2>
+        <p>
+          Quando o aplicativo Resgata+ estiver conectado à sua conta,
+          seus dispositivos aparecerão aqui.
+        </p>
+      </article>
+    `;
+    return;
+  }
+
+  container.innerHTML = data.devices.map(device => `
+    <article class="card">
+      <h2>${device.name}</h2>
+      <p>Status: ${device.status}</p>
+    </article>
+  `).join("");
+}
+
+loadDevices();
+</script>
+</body>
+</html>

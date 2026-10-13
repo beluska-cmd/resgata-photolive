@@ -1,0 +1,3016 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>PhotoLive Magic — Seus arquivos, do seu jeito</title>
+  <meta name="description" content="PhotoLive Magic: analise, organize, recupere e edite seus arquivos de forma simples, segura e prática.">
+  <meta name="theme-color" content="#07111f">
+
+  <link rel="stylesheet" href="home.css">
+
+<style id="photolive-layout-final">
+/* HERO CENTRALIZADO */
+.hero-photolive {
+  width: 100%;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px;
+  box-sizing: border-box;
+}
+
+.hero-content {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-brand {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+
+.hero-photolive h1 {
+  margin: 0;
+  font-size: clamp(42px, 6vw, 72px);
+  line-height: 1.05;
+  font-weight: 800;
+  text-align: center;
+}
+
+.hero-description {
+  max-width: 720px;
+  margin: 24px auto 0;
+  font-size: 18px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.hero-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 34px;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+/* ORGANIZAÇÃO + RECUPERAÇÃO */
+.services-highlight {
+  width: 100%;
+  padding: 30px 24px 70px;
+  box-sizing: border-box;
+}
+
+.services-highlight-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.highlight-card {
+  width: 100%;
+  min-height: 260px;
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  padding: 30px;
+  box-sizing: border-box;
+  border-radius: 20px;
+}
+
+.highlight-icon {
+  flex: 0 0 58px;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  font-size: 28px;
+}
+
+.highlight-text {
+  min-width: 0;
+}
+
+.highlight-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.highlight-card h2 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.highlight-card p {
+  margin: 14px 0 18px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.highlight-link {
+  display: inline-block;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* CELULAR */
+@media (max-width: 800px) {
+  .hero-photolive {
+    min-height: 460px;
+    padding: 60px 20px;
+  }
+
+  .hero-photolive h1 {
+    font-size: clamp(36px, 10vw, 52px);
+  }
+
+  .hero-description {
+    font-size: 16px;
+  }
+
+  .services-highlight-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .highlight-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-btn {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .highlight-card {
+    flex-direction: column;
+    padding: 24px;
+  }
+}
+</style>
+
+
+<style id="photolive-home-final">
+
+/* ===== AJUSTE FINAL DA HOME ===== */
+
+.pm-hero,
+.pm-hero .pm-container,
+.pm-hero .pm-hero-content,
+.pm-hero .pm-hero-copy {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pm-hero .pm-container {
+  display: flex;
+  justify-content: center;
+}
+
+.pm-hero .pm-hero-content {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pm-hero .pm-hero-copy {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pm-hero .pm-hero-copy h1,
+.pm-hero .pm-hero-copy p {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pm-hero .pm-hero-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  width: 100%;
+}
+
+.pm-hero .pm-hero-actions a,
+.pm-hero .pm-hero-actions button {
+  margin: 0;
+}
+
+/* ===== ORGANIZAÇÃO + RECUPERAÇÃO ===== */
+
+.pm-floating-card.pm-floating-one,
+.pm-floating-card.pm-floating-two {
+  position: relative;
+}
+
+.pm-hero-visual {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin: 35px auto 0 !important;
+  align-items: stretch !important;
+}
+
+.pm-hero-visual .pm-visual-main,
+.pm-hero-visual .pm-floating-card {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+}
+
+.pm-hero-visual .pm-floating-card {
+  min-height: 160px;
+  width: auto !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 800px) {
+  .pm-hero-visual {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pm-hero .pm-hero-actions {
+    flex-direction: column;
+  }
+
+  .pm-hero .pm-hero-actions a,
+  .pm-hero .pm-hero-actions button {
+    width: 100%;
+    max-width: 360px;
+  }
+}
+
+</style>
+
+<style id="photolive-analysis-position">
+
+/* ==========================================
+   PHOTOLIVE — ANÁLISE INTELIGENTE ABAIXO
+========================================== */
+
+.pm-hero-visual {
+  width: 100% !important;
+  max-width: 1100px !important;
+
+  margin: 55px auto 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+
+  gap: 24px !important;
+
+  align-items: stretch !important;
+
+  position: relative !important;
+}
+
+/* Entenda seus arquivos */
+.pm-hero-visual .pm-visual-main {
+  position: relative !important;
+  inset: auto !important;
+
+  width: 100% !important;
+
+  margin: 0 !important;
+
+  transform: none !important;
+
+  grid-column: 1 / -1 !important;
+}
+
+/* Organização e Recuperação */
+.pm-hero-visual .pm-floating-card {
+  position: relative !important;
+  inset: auto !important;
+
+  width: 100% !important;
+
+  margin: 0 !important;
+
+  transform: none !important;
+
+  min-height: 130px;
+
+  box-sizing: border-box;
+}
+
+/* Organização */
+.pm-hero-visual .pm-floating-one {
+  grid-column: 1;
+}
+
+/* Recuperação */
+.pm-hero-visual .pm-floating-two {
+  grid-column: 2;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 800px) {
+
+  .pm-hero-visual {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pm-hero-visual .pm-visual-main {
+    grid-column: 1 !important;
+  }
+
+  .pm-hero-visual .pm-floating-one,
+  .pm-hero-visual .pm-floating-two {
+    grid-column: 1 !important;
+  }
+
+}
+
+</style>
+
+<style id="photolive-final-center">
+
+/* ==========================================
+   PHOTOLIVE — CENTRALIZAÇÃO FINAL
+   ANÁLISE + ORGANIZAÇÃO + RECUPERAÇÃO
+========================================== */
+
+.pm-hero-visual {
+  width: 100% !important;
+  max-width: 900px !important;
+
+  margin: 45px auto 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+
+  gap: 18px !important;
+
+  justify-content: center !important;
+  align-items: stretch !important;
+
+  position: relative !important;
+}
+
+/* Análise inteligente */
+.pm-hero-visual .pm-visual-main {
+  grid-column: 1 / -1 !important;
+
+  width: 100% !important;
+  max-width: 760px !important;
+
+  margin: 0 auto !important;
+
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+
+  text-align: center;
+}
+
+/* Cards menores */
+.pm-hero-visual .pm-floating-card {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+
+  width: 100% !important;
+
+  max-width: 360px !important;
+
+  min-height: 105px !important;
+
+  margin: 0 auto !important;
+
+  padding: 18px 20px !important;
+
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  justify-content: center !important;
+  align-items: center !important;
+
+  text-align: center !important;
+
+  border-radius: 16px !important;
+}
+
+/* Organização */
+.pm-hero-visual .pm-floating-one {
+  grid-column: 1 !important;
+}
+
+/* Recuperação */
+.pm-hero-visual .pm-floating-two {
+  grid-column: 2 !important;
+}
+
+/* Texto dos cards */
+.pm-hero-visual .pm-floating-card strong {
+  font-size: 17px !important;
+  line-height: 1.2 !important;
+}
+
+.pm-hero-visual .pm-floating-card small {
+  font-size: 13px !important;
+  margin-top: 5px !important;
+}
+
+/* ==========================================
+   CENTRALIZAÇÃO DO BLOCO PRINCIPAL
+========================================== */
+
+.pm-hero .pm-container {
+  width: 100% !important;
+  max-width: 1200px !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.pm-hero .pm-hero-content {
+  width: 100% !important;
+  max-width: 1000px !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  text-align: center !important;
+}
+
+.pm-hero .pm-hero-copy {
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  text-align: center !important;
+}
+
+.pm-hero .pm-hero-copy h1,
+.pm-hero .pm-hero-copy p {
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  text-align: center !important;
+}
+
+.pm-hero .pm-hero-actions {
+  display: flex !important;
+
+  justify-content: center !important;
+  align-items: center !important;
+
+  gap: 12px !important;
+
+  flex-wrap: wrap !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* ==========================================
+   CELULAR
+========================================== */
+
+@media (max-width: 700px) {
+
+  .pm-hero-visual {
+    max-width: 520px !important;
+
+    grid-template-columns: 1fr !important;
+
+    gap: 14px !important;
+  }
+
+  .pm-hero-visual .pm-visual-main {
+    grid-column: 1 !important;
+  }
+
+  .pm-hero-visual .pm-floating-one,
+  .pm-hero-visual .pm-floating-two {
+    grid-column: 1 !important;
+  }
+
+  .pm-hero-visual .pm-floating-card {
+    max-width: 420px !important;
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .pm-hero-visual {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .pm-hero-visual .pm-floating-card {
+    min-height: 95px !important;
+
+    padding: 15px !important;
+  }
+
+}
+
+</style>
+
+<style id="photolive-move-up">
+
+/* ==========================================
+   SUBIR BLOCO DE ANÁLISE
+========================================== */
+
+.pm-hero-visual {
+  margin-top: 18px !important;
+}
+
+/* Aproxima os cards da análise */
+.pm-hero-visual .pm-floating-card {
+  min-height: 95px !important;
+  padding: 15px 18px !important;
+}
+
+/* Mantém o bloco principal compacto */
+.pm-hero {
+  padding-top: 35px !important;
+  padding-bottom: 35px !important;
+}
+
+.pm-hero .pm-hero-content {
+  margin-top: 0 !important;
+}
+
+/* Desktop */
+@media (min-width: 801px) {
+  .pm-hero-visual {
+    margin-top: 15px !important;
+  }
+}
+
+/* Celular */
+@media (max-width: 800px) {
+  .pm-hero {
+    padding-top: 25px !important;
+    padding-bottom: 30px !important;
+  }
+
+  .pm-hero-visual {
+    margin-top: 12px !important;
+  }
+}
+
+</style>
+
+<style id="photolive-diagnostic-layout">
+
+/* ==========================================
+   DIAGNÓSTICO — LAYOUT COMPACTO
+========================================== */
+
+.pm-diagnostic-section {
+  padding-top: 35px !important;
+  padding-bottom: 45px !important;
+}
+
+.pm-diagnostic-section .pm-container {
+  max-width: 1050px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Deixa o cabeçalho do diagnóstico compacto */
+.pm-diagnostic-section .pm-section-heading {
+  margin-bottom: 22px !important;
+}
+
+.pm-diagnostic-section .pm-section-heading h2 {
+  margin-bottom: 8px !important;
+}
+
+/* Área dos dois cards */
+.pm-diagnostic-section .pm-diagnostic-grid,
+.pm-diagnostic-section .diagnostic-grid,
+.pm-diagnostic-section .pm-diagnostic-content {
+  width: 100% !important;
+  max-width: 900px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+
+/* Cards */
+.pm-diagnostic-section .pm-card,
+.pm-diagnostic-section .diagnostic-card {
+  min-height: 190px !important;
+  padding: 22px !important;
+  border-radius: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* Ícones */
+.pm-diagnostic-section .pm-card-icon,
+.pm-diagnostic-section .diagnostic-icon {
+  font-size: 25px !important;
+  margin-bottom: 8px !important;
+}
+
+/* Títulos */
+.pm-diagnostic-section h3 {
+  font-size: 21px !important;
+  margin-top: 6px !important;
+  margin-bottom: 8px !important;
+}
+
+/* Textos */
+.pm-diagnostic-section p {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+/* Botão selecionar */
+.pm-diagnostic-section button,
+.pm-diagnostic-section .pm-button {
+  min-height: 42px !important;
+  padding: 9px 18px !important;
+}
+
+/* Resultado mais compacto */
+.pm-diagnostic-section .pm-result,
+.pm-diagnostic-section .diagnostic-result {
+  min-height: 190px !important;
+}
+
+/* ==========================================
+   CELULAR
+========================================== */
+
+@media (max-width: 750px) {
+
+  .pm-diagnostic-section .pm-diagnostic-grid,
+  .pm-diagnostic-section .diagnostic-grid,
+  .pm-diagnostic-section .pm-diagnostic-content {
+    grid-template-columns: 1fr !important;
+    max-width: 520px !important;
+  }
+
+  .pm-diagnostic-section .pm-card,
+  .pm-diagnostic-section .diagnostic-card {
+    min-height: auto !important;
+  }
+
+}
+
+</style>
+
+<style id="photolive-diagnostic-force-row">
+
+/* ==========================================
+   DIAGNÓSTICO — FORÇAR DOIS CARDS NA MESMA LINHA
+========================================== */
+
+.pm-diagnostic-section .pm-diagnostic-card {
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+.pm-diagnostic-section .pm-diagnostic-area {
+  display: grid !important;
+  width: 100% !important;
+  max-width: 1150px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  grid-template-rows: auto auto auto !important;
+
+  gap: 24px !important;
+  align-items: stretch !important;
+}
+
+/* SELEÇÃO — ESQUERDA */
+.pm-diagnostic-section .pm-diagnostic-area > .pm-diagnostic-dropzone {
+  display: flex !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 240px !important;
+
+  margin: 0 !important;
+  box-sizing: border-box !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* RESULTADO — DIREITA */
+.pm-diagnostic-section .pm-diagnostic-area > .diagnostico-resultado {
+  display: flex !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 240px !important;
+
+  margin: 0 !important;
+  box-sizing: border-box !important;
+
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+/* ARQUIVO */
+.pm-diagnostic-section .pm-diagnostic-area > .diagnostico-arquivo {
+  grid-column: 1 / 3 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+}
+
+/* STATUS */
+.pm-diagnostic-section .pm-diagnostic-area > .diagnostico-status {
+  grid-column: 1 / 3 !important;
+  grid-row: 3 !important;
+  width: 100% !important;
+}
+
+/* EVITA QUE O CONTEÚDO INTERNO AUMENTE O CARD */
+.pm-diagnostic-section .pm-diagnostic-dropzone *,
+.pm-diagnostic-section .diagnostico-resultado * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* MOBILE */
+@media (max-width: 750px) {
+  .pm-diagnostic-section .pm-diagnostic-card {
+    max-width: 100% !important;
+  }
+
+  .pm-diagnostic-section .pm-diagnostic-area {
+    max-width: 540px !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+  }
+
+  .pm-diagnostic-section .pm-diagnostic-area > .pm-diagnostic-dropzone,
+  .pm-diagnostic-section .pm-diagnostic-area > .diagnostico-resultado,
+  .pm-diagnostic-section .pm-diagnostic-area > .diagnostico-arquivo,
+  .pm-diagnostic-section .pm-diagnostic-area > .diagnostico-status {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+}
+
+</style>
+
+<style id="photolive-diagnostic-bottom-compact">
+
+/* ==========================================
+   DIAGNÓSTICO — BLOCO INFERIOR MAIS COMPACTO
+========================================== */
+
+.pm-diagnostic-section .diagnostico-arquivo,
+.pm-diagnostic-section .diagnostico-status {
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: 90px !important;
+
+  margin-top: 4px !important;
+  margin-bottom: 4px !important;
+  padding: 8px 14px !important;
+
+  box-sizing: border-box !important;
+}
+
+/* Se estiver vazio, não ocupa espaço desnecessário */
+.pm-diagnostic-section .diagnostico-arquivo:empty,
+.pm-diagnostic-section .diagnostico-status:empty {
+  display: none !important;
+}
+
+/* Reduz o espaço entre os dois cards e a área inferior */
+.pm-diagnostic-section .pm-diagnostic-area {
+  row-gap: 10px !important;
+}
+
+</style>
+
+<style id="photolive-como-funciona-responsivo">
+
+/* ==========================================
+   COMO FUNCIONA — COMPACTO E RESPONSIVO
+========================================== */
+
+.pm-how-section {
+  padding-top: 55px !important;
+  padding-bottom: 55px !important;
+}
+
+.pm-how-section .pm-container {
+  width: 100% !important;
+  max-width: 1120px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+.pm-how-section .pm-section-heading {
+  max-width: 760px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-bottom: 30px !important;
+}
+
+.pm-how-section .pm-section-heading h2 {
+  font-size: clamp(25px, 3vw, 34px) !important;
+  line-height: 1.15 !important;
+  margin: 8px 0 10px !important;
+}
+
+.pm-how-section .pm-section-heading p {
+  max-width: 650px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+/* Três passos */
+.pm-how-section .pm-steps {
+  width: 100% !important;
+  max-width: 1050px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+}
+
+/* Cada cartão */
+.pm-how-section .pm-step {
+  min-width: 0 !important;
+  padding: 22px 20px !important;
+  box-sizing: border-box !important;
+  border-radius: 18px !important;
+}
+
+.pm-how-section .pm-step-number {
+  font-size: 12px !important;
+  margin-bottom: 5px !important;
+}
+
+.pm-how-section .pm-step-icon {
+  font-size: 28px !important;
+  margin-bottom: 7px !important;
+}
+
+.pm-how-section .pm-step h3 {
+  font-size: 18px !important;
+  margin: 5px 0 7px !important;
+}
+
+.pm-how-section .pm-step p {
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+  margin: 0 !important;
+}
+
+/* TABLET */
+@media (max-width: 900px) {
+
+  .pm-how-section {
+    padding-top: 45px !important;
+    padding-bottom: 45px !important;
+  }
+
+  .pm-how-section .pm-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .pm-how-section .pm-step {
+    padding: 18px 14px !important;
+  }
+}
+
+/* CELULAR */
+@media (max-width: 680px) {
+
+  .pm-how-section {
+    padding-top: 38px !important;
+    padding-bottom: 38px !important;
+  }
+
+  .pm-how-section .pm-section-heading {
+    margin-bottom: 22px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .pm-how-section .pm-section-heading h2 {
+    font-size: 25px !important;
+  }
+
+  .pm-how-section .pm-section-heading p {
+    font-size: 14px !important;
+  }
+
+  .pm-how-section .pm-steps {
+    grid-template-columns: 1fr !important;
+    max-width: 480px !important;
+    gap: 12px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .pm-how-section .pm-step {
+    padding: 18px !important;
+  }
+}
+
+/* CELULARES MUITO PEQUENOS */
+@media (max-width: 380px) {
+
+  .pm-how-section .pm-section-heading h2 {
+    font-size: 22px !important;
+  }
+
+  .pm-how-section .pm-step {
+    padding: 16px !important;
+  }
+
+  .pm-how-section .pm-step-icon {
+    font-size: 25px !important;
+  }
+}
+
+</style>
+
+<style id="photolive-editor-fotos-card-profissional">
+
+.pm-service-card-featured{
+  position:relative;
+  overflow:hidden;
+}
+
+.pm-service-card-featured::before{
+  content:"";
+  position:absolute;
+  top:-80px;
+  right:-80px;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:rgba(14,165,233,.10);
+  pointer-events:none;
+}
+
+.pm-service-badge{
+  display:inline-flex;
+  width:max-content;
+  margin:8px 0 12px;
+  padding:5px 10px;
+  border-radius:999px;
+  background:#e0f2fe;
+  color:#0369a1;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.8px;
+}
+
+.pm-service-card-featured h3{
+  position:relative;
+  z-index:1;
+}
+
+.pm-service-card-featured > p{
+  position:relative;
+  z-index:1;
+}
+
+.pm-service-details{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin:18px 0;
+  text-align:left;
+}
+
+.pm-service-details > div{
+  padding:11px;
+  border-radius:12px;
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+}
+
+.pm-service-details strong{
+  display:block;
+  color:#0f172a;
+  font-size:12px;
+  margin-bottom:3px;
+}
+
+.pm-service-details span{
+  display:block;
+  color:#64748b;
+  font-size:10px;
+  line-height:1.35;
+}
+
+.pm-service-protection{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:10px 12px;
+  margin-top:5px;
+  border-radius:11px;
+  background:#f0fdf4;
+  border:1px solid #bbf7d0;
+  color:#166534;
+  font-size:11px;
+  line-height:1.4;
+}
+
+.pm-service-device{
+  margin-top:9px;
+  color:#64748b;
+  font-size:11px;
+  line-height:1.4;
+}
+
+.pm-service-main-link{
+  display:block !important;
+  margin-top:18px !important;
+  padding:12px 16px !important;
+  border-radius:12px !important;
+  text-align:center !important;
+  color:#fff !important;
+  background:linear-gradient(135deg,#0284c7,#0891b2) !important;
+  font-weight:800 !important;
+  text-decoration:none !important;
+  transition:.2s ease !important;
+}
+
+.pm-service-main-link:hover{
+  transform:translateY(-2px);
+  box-shadow:0 9px 20px rgba(8,145,178,.20);
+}
+
+@media(max-width:600px){
+  .pm-service-details{
+    grid-template-columns:1fr;
+  }
+}
+
+</style>
+
+
+<style id="pm-menu-recolhivel">
+.pm-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border: 1px solid #00E5D4;
+  border-radius: 10px;
+  color: #00E5D4;
+  background: #101820;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pm-menu-toggle:hover,
+.pm-menu-toggle:focus-visible {
+  background: rgba(0,229,212,.12);
+  outline: 2px solid #00E5D4;
+  outline-offset: 2px;
+}
+.pm-header-nav[hidden] {
+  display: none !important;
+}
+.pm-header-nav:not([hidden]) {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+@media (max-width: 760px) {
+  .pm-header-inner {
+    flex-wrap: wrap;
+  }
+  .pm-menu-toggle {
+    margin-left: auto;
+  }
+  .pm-header-nav:not([hidden]) {
+    order: 3;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 12px;
+    border: 1px solid rgba(0,229,212,.5);
+    border-radius: 12px;
+    background: #101820;
+  }
+  .pm-header-nav a {
+    padding: 10px;
+  }
+}
+</style>
+\n
+<style id="pm-workspace-sidebar-styles">
+.pm-workspace-main {
+  display: grid !important;
+  grid-template-columns: 238px minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 22px clamp(12px, 2vw, 28px) 36px 270px;
+}
+.pm-workspace-sidebar {
+  position: fixed;
+  top: 104px;
+  left: 16px;
+  width: 238px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(0,229,212,.65);
+  border-radius: 16px;
+  background: #111E27;
+  box-shadow: 0 8px 28px rgba(0,0,0,.20);
+  z-index: 5;
+}
+.pm-sidebar-toggle,
+.pm-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #E6F4F4;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.pm-sidebar-toggle {
+  justify-content: flex-start;
+  margin-bottom: 12px;
+  border-color: rgba(0,229,212,.55);
+  color: #00E5D4;
+  font-weight: 700;
+}
+.pm-sidebar-item:hover,
+.pm-sidebar-toggle:hover {
+  background: rgba(0,229,212,.10);
+}
+.pm-sidebar-item.is-active {
+  border-color: rgba(0,229,212,.55);
+  color: #FFFFFF;
+  background: #075E60;
+}
+.pm-sidebar-item:focus-visible,
+.pm-sidebar-toggle:focus-visible {
+  outline: 2px solid #00E5D4;
+  outline-offset: 2px;
+}
+.pm-sidebar-footer {
+  margin-top: 14px;
+  padding: 12px 8px 2px;
+  border-top: 1px solid rgba(0,229,212,.25);
+  color: #8FB9BB;
+  font-size: 12px;
+}
+.pm-workspace-main > .pm-workspace-sidebar ~ section {
+  display: none !important;
+  grid-column: 2;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 !important;
+}
+.pm-workspace-main > section.pm-panel-visible {
+  display: block !important;
+}
+.pm-workspace-main > .pm-privacy-section {
+  display: none !important;
+}
+.pm-workspace-main > .pm-privacy-section.pm-panel-visible {
+  display: block !important;
+}
+.pm-workspace-sidebar.is-collapsed {
+  left: 16px;
+  width: 58px;
+  padding: 8px;
+}
+.pm-workspace-sidebar.is-collapsed .pm-sidebar-toggle {
+  justify-content: center;
+  padding: 10px 6px;
+}
+.pm-workspace-sidebar.is-collapsed .pm-sidebar-toggle-label,
+.pm-workspace-sidebar.is-collapsed .pm-sidebar-label,
+.pm-workspace-sidebar.is-collapsed .pm-sidebar-footer {
+  display: none;
+}
+.pm-workspace-main:has(.pm-workspace-sidebar.is-collapsed) {
+  grid-template-columns: 74px minmax(0, 1fr);
+}
+@media (max-width: 760px) {
+  .pm-workspace-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 12px 10px 24px;
+  }
+  .pm-workspace-sidebar {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+  .pm-workspace-main {
+    padding-left: 10px;
+  }
+  .pm-sidebar-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .pm-sidebar-item {
+    min-width: 0;
+    font-size: 14px;
+  }
+  .pm-workspace-main > .pm-workspace-sidebar ~ section {
+    grid-column: 1;
+  }
+  .pm-workspace-main:has(.pm-workspace-sidebar.is-collapsed) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pm-workspace-sidebar.is-collapsed {
+    width: auto;
+  }
+  .pm-workspace-sidebar.is-collapsed .pm-sidebar-links,
+  .pm-workspace-sidebar.is-collapsed .pm-sidebar-footer {
+    display: none;
+  }
+}
+</style>
+\n</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <header class="pm-header">
+    <div class="pm-container pm-header-inner">
+
+      <a href="index.html" class="pm-logo" aria-label="PhotoLive Magic">
+        <span class="pm-logo-mark">✦</span>
+        <span>
+          <strong>PhotoLive</strong>
+          <small>MAGIC</small>
+        </span>
+      </a>
+
+
+
+      <div class="pm-header-actions">
+        <a href="acesso.html?modo=login" class="pm-link-button">
+          Entrar
+        </a>
+
+        <a href="acesso.html?modo=cadastro" class="pm-button pm-button-primary pm-button-small">
+          Criar conta
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <main class="pm-workspace-main">\n
+  <aside class="pm-workspace-sidebar" id="pmWorkspaceSidebar" aria-label="Painel de navegação">
+    <button type="button" class="pm-sidebar-toggle" id="pmSidebarToggle"
+            aria-expanded="true" aria-controls="pmSidebarLinks">
+      <span aria-hidden="true">☰</span>
+      <span class="pm-sidebar-toggle-label">Recolher painel</span>
+    </button>
+
+    <nav class="pm-sidebar-links" id="pmSidebarLinks" aria-label="Seções do PhotoLive Magic">
+      <button type="button" class="pm-sidebar-item is-active" data-panel="inicio" aria-current="page">
+        <span aria-hidden="true">⌂</span><span class="pm-sidebar-label">Início</span>
+      </button>
+      <button type="button" class="pm-sidebar-item" data-panel="diagnostico-gratuito">
+        <span aria-hidden="true">⌕</span><span class="pm-sidebar-label">Diagnóstico</span>
+      </button>
+      <button type="button" class="pm-sidebar-item" data-panel="como-funciona">
+        <span aria-hidden="true">☷</span><span class="pm-sidebar-label">Como funciona</span>
+      </button>
+      <button type="button" class="pm-sidebar-item" data-panel="servicos">
+        <span aria-hidden="true">▦</span><span class="pm-sidebar-label">Serviços</span>
+      </button>
+    </nav>
+    <div class="pm-sidebar-footer">PhotoLive Magic</div>
+  </aside>
+
+
+    <!-- =========================
+         HERO
+    ========================== -->
+    <section class="pm-hero" id="inicio">
+      <div class="pm-container pm-hero-grid">
+
+        <div class="pm-hero-content">
+
+          <div class="pm-badge">
+            <span>✦</span>
+            PhotoLive Magic
+          </div>
+
+          <h1>
+            Seus arquivos,
+            <span>do seu jeito.</span>
+          </h1>
+
+          <p class="pm-hero-text">
+            Analise, organize, recupere e edite suas fotos e arquivos
+            de forma simples, prática e segura.
+          </p>
+
+          <div class="pm-hero-actions">
+            <a href="#diagnostico-gratuito" class="pm-button pm-button-primary">
+              🔎 Fazer diagnóstico gratuito
+            </a>
+
+            <a href="#como-funciona" class="pm-button pm-button-secondary">
+              Como funciona
+            </a>
+          </div>
+
+          <div class="pm-trust">
+            <span>✓ Simples</span>
+            <span>✓ Prático</span>
+            <span>✓ Feito para você</span>
+          </div>
+
+        </div>
+
+
+        <div class="pm-hero-visual">
+
+          <div class="pm-visual-card pm-visual-main">
+            <div class="pm-visual-top">
+              <span class="pm-status-dot"></span>
+              <span>Análise inteligente</span>
+            </div>
+
+            <div class="pm-visual-icon">
+              🔎
+            </div>
+
+            <h3>Entenda seus arquivos</h3>
+
+            <p>
+              Descubra o que você tem e veja oportunidades
+              para organizar e cuidar melhor do seu conteúdo.
+            </p>
+
+            <div class="pm-visual-bars">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+
+          <div class="pm-floating-card pm-floating-one">
+            <strong>Organização</strong>
+            <small>Mais praticidade</small>
+          </div>
+
+          <div class="pm-floating-card pm-floating-two">
+            <strong>Recuperação</strong>
+            <small>Cuide do que importa</small>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- =========================
+         DIAGNÓSTICO GRATUITO
+    ========================== -->
+    <section class="pm-section pm-diagnostic-section" id="diagnostico-gratuito">
+
+      <div class="pm-container">
+
+        <div class="pm-section-heading pm-heading-center">
+
+          <div class="pm-section-label">
+            GRATUITO
+          </div>
+
+          <h2>
+            Comece pelo diagnóstico
+          </h2>
+
+          <p>
+            Selecione suas fotos e veja gratuitamente algumas informações
+            sobre seus arquivos antes de decidir o que fazer.
+          </p>
+
+        </div>
+
+
+        <div class="pm-diagnostic-card">
+
+          <div class="pm-diagnostic-intro">
+
+            <div class="pm-diagnostic-icon">
+              🔎
+            </div>
+
+            <div>
+              <h3>Diagnóstico gratuito</h3>
+
+              <p>
+                Uma primeira análise para você entender melhor seus arquivos.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="pm-diagnostic-area">
+
+            <div class="pm-diagnostic-dropzone" id="diagnosticoDropzone">
+
+              <div class="pm-drop-icon">
+                📷
+              </div>
+
+              <h3>
+                Selecione suas fotos
+              </h3>
+
+              <p>
+                Clique para escolher arquivos do seu computador ou celular.
+              </p>
+
+              <button
+                type="button"
+                id="diagnosticoSelecionarBtn"
+                class="pm-button pm-button-primary">
+                Selecionar fotos
+              </button>
+
+              <input
+                type="file"
+                id="diagnosticoArquivoInput"
+                accept="image/*"
+                multiple
+                hidden
+              >
+
+              <small>
+                Suas fotos não são enviadas para realizar esta análise inicial.
+              </small>
+
+            </div>
+
+
+            <div
+              id="diagnosticoArquivo"
+              class="diagnostico-arquivo">
+            </div>
+
+
+            <div
+              id="diagnosticoStatus"
+              class="diagnostico-status"
+              aria-live="polite">
+            </div>
+
+
+            <div
+              id="diagnosticoResultado"
+              class="diagnostico-resultado">
+
+              <div class="pm-result-header">
+                <div>
+                  <span class="pm-section-label">RESULTADO</span>
+                  <h3>Seu diagnóstico</h3>
+                </div>
+              </div>
+
+              <div id="diagnosticoScore"></div>
+
+              <div id="diagnosticoDetalhes"></div>
+
+              <div id="diagnosticoRecomendacoes"></div>
+
+              <div class="pm-result-action">
+                <a
+                  href="acesso.html?modo=login"
+                  id="diagnosticoContratarBtn"
+                  class="pm-button pm-button-primary">
+                  Continuar com o PhotoLive Magic
+                </a>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         COMO FUNCIONA
+    ========================== -->
+    <section class="pm-section pm-how-section" id="como-funciona">
+
+      <div class="pm-container">
+
+        <div class="pm-section-heading pm-heading-center">
+      <div class="pm-section-label">
+        SIMPLES
+      </div>
+
+      <h2>
+        Seus arquivos. Três passos para colocar tudo em ordem.
+      </h2>
+
+      <p>
+        O PhotoLive Magic ajuda você a entender seus arquivos e escolher
+        o melhor caminho para cada situação.
+      </p>
+      </div>
+
+        </div>
+
+
+        <div class="pm-steps">
+
+          <article class="pm-step">
+            <div class="pm-step-number">01</div>
+            <div class="pm-step-icon">📁</div>
+            <h3>Selecione</h3>
+            <p>
+              Escolha as fotos e arquivos que você quer analisar, organizar ou editar.
+            </p>
+          </article>
+
+
+          <article class="pm-step">
+            <div class="pm-step-number">02</div>
+            <div class="pm-step-icon">🔎</div>
+            <h3>Descubra</h3>
+            <p>
+              Veja o que está acontecendo com seus arquivos e encontre as melhores opções para cuidar deles.
+            </p>
+          </article>
+
+
+          <article class="pm-step">
+            <div class="pm-step-number">03</div>
+            <div class="pm-step-icon">✨</div>
+            <h3>Resolva</h3>
+            <p>
+              Organize, edite, recupere ou transforme seus arquivos do seu jeito.
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         SERVIÇOS
+    ========================== -->
+    <section class="pm-section pm-services-section" id="servicos">
+
+      <div class="pm-container">
+
+        <div class="pm-section-heading">
+
+          <div class="pm-section-label">
+            SERVIÇOS
+          </div>
+
+          <h2>
+            Ferramentas para seus arquivos
+          </h2>
+
+          <p>
+            Escolha a solução que combina com o que você precisa.
+          </p>
+
+        </div>
+
+
+        <div class="pm-services-grid">
+
+          <article class="pm-service-card pm-service-card-featured">
+
+            <div class="pm-service-icon">
+              📸
+            </div>
+
+            <div class="pm-service-badge">
+              EDITOR DE FOTOS
+            </div>
+
+            <h3>Edite suas fotos do seu jeito</h3>
+
+            <p>
+              Ajuste, transforme e melhore suas fotos diretamente no navegador,
+              sem alterar o arquivo original.
+            </p>
+
+            <div class="pm-service-details">
+
+              <div>
+                <strong>☀️ Ajustes</strong>
+                <span>Brilho, contraste e saturação.</span>
+              </div>
+
+              <div>
+                <strong>🎨 Cores</strong>
+                <span>Melhore a aparência das suas imagens.</span>
+              </div>
+
+              <div>
+                <strong>✂️ Recorte</strong>
+                <span>Ajuste o enquadramento da foto.</span>
+              </div>
+
+              <div>
+                <strong>🔄 Rotação</strong>
+                <span>Corrija a orientação da imagem.</span>
+              </div>
+
+              <div>
+                <strong>📐 Proporções</strong>
+                <span>Prepare diferentes formatos.</span>
+              </div>
+
+              <div>
+                <strong>💾 Salvar</strong>
+                <span>Baixe uma nova versão editada.</span>
+              </div>
+
+            </div>
+
+            <div class="pm-service-protection">
+              🛡️ <span>Seu arquivo original permanece preservado.</span>
+            </div>
+
+            <div class="pm-service-device">
+              ⚡ Funciona no navegador em celular e computador.
+            </div>
+
+            <a href="acesso.html?modo=login" class="pm-service-main-link">
+              Abrir Editor de Fotos →
+            </a>
+
+          </article>
+
+
+          <article class="pm-service-card">
+
+            <div class="pm-service-icon">
+              🎬
+            </div>
+
+            <h3>Editor de Vídeos</h3>
+
+            <p>
+              Trabalhe com seus vídeos usando ferramentas simples.
+            </p>
+
+            <a href="acesso.html?modo=login">
+              Conhecer →
+            </a>
+
+          </article>
+
+
+          <article class="pm-service-card">
+
+            <div class="pm-service-icon">
+              ♻️
+            </div>
+
+            <h3>Recuperar</h3>
+
+            <p>
+              Ajude a recuperar arquivos importantes que foram perdidos ou excluídos.
+            </p>
+
+            <a href="acesso.html?modo=login">
+              Conhecer →
+            </a>
+
+          </article>
+
+
+          <article class="pm-service-card">
+
+            <div class="pm-service-icon">
+              🗂️
+            </div>
+
+            <h3>Organizar</h3>
+
+            <p>
+              Organize seus arquivos sem criar cópias desnecessárias.
+            </p>
+
+            <a href="acesso.html?modo=login">
+              Conhecer →
+            </a>
+
+          </article>
+
+
+          <article class="pm-service-card pm-service-premium">
+
+            <div class="pm-service-icon">
+              ⭐
+            </div>
+
+            <h3>Premium</h3>
+
+            <p>
+              Tenha acesso a uma experiência mais completa dentro do PhotoLive Magic.
+            </p>
+
+            <a href="acesso.html?modo=login">
+              Conhecer →
+            </a>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         PRIVACIDADE
+    ========================== -->
+    <section class="pm-privacy-section">
+
+      <div class="pm-container">
+
+        <div class="pm-privacy-card">
+
+          <div class="pm-privacy-icon">
+            🔐
+          </div>
+
+          <div>
+            <span class="pm-section-label">
+              PRIVACIDADE
+            </span>
+
+            <h2>
+              Seus arquivos são seus.
+            </h2>
+
+            <p>
+              O PhotoLive Magic foi pensado para trabalhar com seus arquivos
+              de forma prática, evitando armazenamento desnecessário.
+              Você mantém o controle do que deseja editar, baixar e guardar.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer class="pm-footer">
+
+    <div class="pm-container pm-footer-inner">
+
+      <div class="pm-footer-brand">
+
+        <a href="index.html" class="pm-logo">
+          <span class="pm-logo-mark">✦</span>
+          <span>
+            <strong>PhotoLive</strong>
+            <small>MAGIC</small>
+          </span>
+        </a>
+
+        <p>
+          Seus arquivos, do seu jeito.
+        </p>
+
+      </div>
+
+
+      <div class="pm-footer-links">
+
+        <a href="#inicio">Início</a>
+        <a href="#diagnostico-gratuito">Diagnóstico</a>
+        <a href="#servicos">Serviços</a>
+        <a href="acesso.html?modo=login">Entrar</a>
+
+      </div>
+
+
+      <div class="pm-footer-copy">
+        © 2026 PhotoLive Magic
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================
+       SCRIPTS EXISTENTES
+       NÃO REMOVER
+  ========================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./acesso/auth-config.js"></script>
+  <script src="./acesso/auth.js"></script>
+  <script src="./diagnostico-gratuito.js"></script>
+  <script src="./script.js"></script>
+
+
+<style id="photolive-home-fundo-profissional-turquesa">
+/* PhotoLive Magic — fundo profissional com laterais turquesa */
+html {
+  background: #101820 !important;
+  min-height: 100%;
+}
+
+body {
+  position: relative !important;
+  min-height: 100vh;
+  overflow-x: clip !important;
+  background: #101820 !important;
+  background-image: none !important;
+}
+
+/* Remover ondas, água, auroras e efeitos coloridos do fundo */
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 auto 0 0 !important;
+  width: 10px !important;
+  height: 100vh !important;
+  background: #00E5D4 !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 12px #00E5D4 !important;
+  filter: none !important;
+  animation: none !important;
+  transform: none !important;
+  border-radius: 0 !important;
+  pointer-events: none !important;
+  z-index: 9999 !important;
+}
+
+body::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 0 0 auto !important;
+  width: 10px !important;
+  height: 100vh !important;
+  background: #00E5D4 !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 12px #00E5D4 !important;
+  filter: none !important;
+  animation: none !important;
+  transform: none !important;
+  border-radius: 0 !important;
+  pointer-events: none !important;
+  z-index: 9999 !important;
+}
+
+@media (max-width: 600px) {
+  body::before,
+  body::after {
+    width: 6px !important;
+  }
+}
+</style>
+
+
+
+\n
+<script id="pm-workspace-sidebar-script">
+(() => {
+  const main = document.querySelector("main.pm-workspace-main");
+  const sidebar = document.getElementById("pmWorkspaceSidebar");
+  const toggle = document.getElementById("pmSidebarToggle");
+  const links = document.getElementById("pmSidebarLinks");
+  if (!main || !sidebar || !toggle || !links || main.dataset.sidebarReady === "true") return;
+  main.dataset.sidebarReady = "true";
+
+  const panels = ["inicio", "diagnostico-gratuito", "como-funciona", "servicos"];
+  const privacy = main.querySelector(".pm-privacy-section");
+
+  function showPanel(id) {
+    panels.forEach(panelId => {
+      const panel = document.getElementById(panelId);
+      if (panel) panel.classList.toggle("pm-panel-visible", panelId === id);
+    });
+
+    // A seção de privacidade acompanha Serviços para não desaparecer do site.
+    if (privacy) privacy.classList.toggle("pm-panel-visible", id === "servicos");
+
+    links.querySelectorAll("[data-panel]").forEach(button => {
+      const active = button.dataset.panel === id;
+      button.classList.toggle("is-active", active);
+      if (active) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
+  }
+
+  links.querySelectorAll("[data-panel]").forEach(button => {
+    button.addEventListener("click", () => showPanel(button.dataset.panel));
+  });
+
+  toggle.addEventListener("click", () => {
+    const collapsed = sidebar.classList.toggle("is-collapsed");
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    const label = toggle.querySelector(".pm-sidebar-toggle-label");
+    if (label) label.textContent = collapsed ? "Expandir painel" : "Recolher painel";
+    toggle.setAttribute("aria-label", collapsed ? "Expandir painel lateral" : "Recolher painel lateral");
+  });
+
+  showPanel("inicio");
+})();
+</script>
+\n</body>
+</html>
+
+<style id="photolive-home-agua-raios-rasgos">
+
+/* =========================================================
+   PHOTOLIVE MAGIC — HOME VISUAL
+   TURQUESA + ÁGUA + RAIOS + FOTOS RASGADAS
+   ========================================================= */
+
+:root{
+  --plm-tq:#087f94;
+  --plm-tq2:#0da6b8;
+  --plm-dark:#043b52;
+  --plm-dark2:#062d43;
+  --plm-ice:#f3fbfd;
+}
+
+/* =========================================================
+   FUNDO GERAL
+   ========================================================= */
+
+html{
+  background:#043b52 !important;
+}
+
+body{
+  position:relative !important;
+  overflow-x:hidden !important;
+
+  background:
+    radial-gradient(
+      circle at 15% 12%,
+      rgba(87,231,232,.34),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 86% 25%,
+      rgba(30,190,205,.28),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 50% 90%,
+      rgba(9,111,137,.42),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      #042f48 0%,
+      #087f94 38%,
+      #0b9aac 58%,
+      #06435c 100%
+    ) !important;
+}
+
+/* =========================================================
+   EFEITO DE ÁGUA
+   ========================================================= */
+
+body::before{
+  content:"";
+  position:fixed;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  opacity:.38;
+
+  background:
+    radial-gradient(
+      ellipse at 20% 45%,
+      transparent 0 20%,
+      rgba(255,255,255,.10) 21%,
+      transparent 23%
+    ),
+    radial-gradient(
+      ellipse at 75% 60%,
+      transparent 0 18%,
+      rgba(255,255,255,.08) 19%,
+      transparent 21%
+    );
+
+  background-size:520px 240px,620px 280px;
+  animation:plm-water 12s ease-in-out infinite alternate;
+}
+
+@keyframes plm-water{
+  from{
+    transform:translateX(-25px) translateY(0) scale(1);
+  }
+  to{
+    transform:translateX(25px) translateY(12px) scale(1.04);
+  }
+}
+
+/* =========================================================
+   ONDAS DE ÁGUA
+   ========================================================= */
+
+body::after{
+  content:"";
+  position:fixed;
+  z-index:0;
+  left:-10%;
+  right:-10%;
+  bottom:-80px;
+  height:260px;
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 100%,
+      rgba(255,255,255,.18),
+      transparent 62%
+    );
+
+  border-radius:50% 50% 0 0 / 30% 30% 0 0;
+  transform:rotate(-2deg);
+}
+
+/* =========================================================
+   CONTEÚDO ACIMA DOS EFEITOS
+   ========================================================= */
+
+body > *,
+main,
+header,
+footer,
+section{
+  position:relative;
+  z-index:2;
+}
+
+/* =========================================================
+   EFEITO DE RAIOS
+   ========================================================= */
+
+.photolive-lightning{
+  position:absolute;
+  width:2px;
+  height:150px;
+  background:linear-gradient(
+    to bottom,
+    transparent,
+    rgba(184,252,255,.95),
+    transparent
+  );
+  opacity:.55;
+  transform:rotate(28deg);
+  filter:drop-shadow(0 0 8px rgba(116,239,255,.85));
+  pointer-events:none;
+  z-index:1;
+}
+
+.photolive-lightning:nth-child(1){
+  top:8%;
+  left:8%;
+}
+
+.photolive-lightning:nth-child(2){
+  top:24%;
+  right:9%;
+  height:110px;
+  transform:rotate(-30deg);
+}
+
+.photolive-lightning:nth-child(3){
+  bottom:20%;
+  left:4%;
+  height:95px;
+  transform:rotate(34deg);
+}
+
+/* =========================================================
+   BLOCOS PRINCIPAIS DA HOME
+   ========================================================= */
+
+#inicio,
+#diagnostico-gratuito,
+#como-funciona,
+#servicos{
+  position:relative;
+  z-index:3;
+}
+
+/* =========================================================
+   EFEITO PAPEL / FOTO RASGADA
+   ========================================================= */
+
+.photolive-torn-paper{
+  position:relative !important;
+  background:
+    linear-gradient(
+      145deg,
+      #f6fdff 0%,
+      #e2f6fa 100%
+    ) !important;
+  border-radius:26px !important;
+  box-shadow:
+    0 18px 45px rgba(2,43,58,.22),
+    inset 0 1px 0 rgba(255,255,255,.95) !important;
+  isolation:isolate;
+}
+
+.photolive-torn-paper::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-7px;
+
+  background:#0ba0b2;
+
+  clip-path:polygon(
+    0 5%, 7% 1%, 15% 4%, 23% 0,
+    32% 3%, 41% 1%, 50% 4%, 60% 0,
+    69% 3%, 79% 1%, 89% 4%, 100% 1%,
+
+    98% 14%,100% 25%,97% 36%,100% 48%,
+    97% 60%,100% 72%,97% 84%,100% 95%,
+
+    91% 98%,81% 100%,72% 97%,62% 100%,
+    52% 97%,42% 100%,32% 97%,22% 100%,
+    12% 97%,3% 100%,
+
+    1% 88%,0 76%,3% 65%,0 53%,
+    3% 41%,0 30%,3% 19%,0 9%
+  );
+
+  pointer-events:none;
+}
+
+/* =========================================================
+   CARDS DA HOME
+   ========================================================= */
+
+#diagnostico-gratuito .plm-card,
+#servicos .plm-card,
+.service-card,
+.feature-card,
+.diagnostic-card{
+  background:
+    linear-gradient(
+      145deg,
+      rgba(246,253,255,.97),
+      rgba(225,247,250,.97)
+    ) !important;
+
+  border-color:rgba(255,255,255,.75) !important;
+
+  box-shadow:
+    0 14px 32px rgba(2,43,58,.18),
+    inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero,
+.home-hero,
+#inicio{
+  position:relative !important;
+  overflow:visible !important;
+}
+
+/* brilho atrás do hero */
+.hero::before,
+.home-hero::before,
+#inicio::before{
+  content:"";
+  position:absolute;
+  width:420px;
+  height:420px;
+  left:-170px;
+  top:-120px;
+  border-radius:50%;
+  background:rgba(95,235,239,.16);
+  filter:blur(8px);
+  pointer-events:none;
+}
+
+/* =========================================================
+   FOTO RASGADA DECORATIVA
+   ========================================================= */
+
+.photolive-photo-rip{
+  position:absolute;
+  width:145px;
+  height:105px;
+  background:
+    linear-gradient(
+      135deg,
+      #e8faff,
+      #b8eaf1
+    );
+  border:7px solid #f8feff;
+  box-shadow:
+    0 14px 28px rgba(1,38,55,.25);
+  transform:rotate(-8deg);
+
+  clip-path:polygon(
+    0 5%,10% 0,20% 4%,30% 1%,40% 5%,
+    50% 0,60% 4%,70% 1%,80% 5%,90% 1%,100% 5%,
+    97% 20%,100% 35%,96% 50%,100% 65%,97% 80%,100% 95%,
+    88% 98%,76% 95%,64% 100%,52% 96%,40% 100%,
+    28% 96%,16% 100%,3% 95%,5% 80%,1% 65%,4% 50%,
+    0 35%,4% 20%
+  );
+
+  opacity:.8;
+  pointer-events:none;
+  z-index:1;
+}
+
+.photolive-photo-rip.one{
+  top:14%;
+  right:4%;
+}
+
+.photolive-photo-rip.two{
+  bottom:16%;
+  left:2%;
+  width:120px;
+  height:90px;
+  transform:rotate(9deg);
+}
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media(max-width:900px){
+
+  body::before{
+    opacity:.25;
+  }
+
+  .photolive-photo-rip{
+    opacity:.45;
+    transform:scale(.75) rotate(-6deg);
+  }
+
+  .photolive-photo-rip.two{
+    transform:scale(.7) rotate(7deg);
+  }
+
+  .photolive-lightning{
+    opacity:.35;
+  }
+}
+
+@media(max-width:600px){
+
+  body{
+    background:
+      radial-gradient(
+        circle at 50% 10%,
+        rgba(78,222,228,.25),
+        transparent 30%
+      ),
+      linear-gradient(
+        160deg,
+        #063b52,
+        #087f94 52%,
+        #06445b
+      ) !important;
+  }
+
+  .photolive-photo-rip{
+    width:85px;
+    height:65px;
+    opacity:.28;
+  }
+
+  .photolive-photo-rip.one{
+    right:-5px;
+  }
+
+  .photolive-photo-rip.two{
+    left:-5px;
+  }
+
+  .photolive-lightning{
+    display:none;
+  }
+
+  .photolive-torn-paper{
+    border-radius:19px !important;
+  }
+
+  .photolive-torn-paper::before{
+    inset:-5px;
+  }
+}
+
+@media(max-width:360px){
+
+  .photolive-photo-rip{
+    width:65px;
+    height:50px;
+  }
+
+  .photolive-torn-paper::before{
+    inset:-4px;
+  }
+}
+
+/* =========================================================
+   REDUÇÃO DE MOVIMENTO
+   ========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+  body::before{
+    animation:none;
+  }
+}
+
+</style>
+
+<script>
+(function(){
+
+  function addDecoration(){
+
+    const main = document.querySelector('main');
+
+    if(!main) return;
+
+    if(!document.querySelector('.photolive-lightning')){
+      for(let i=0;i<3;i++){
+        const ray=document.createElement('span');
+        ray.className='photolive-lightning';
+        ray.setAttribute('aria-hidden','true');
+        main.appendChild(ray);
+      }
+    }
+
+    if(!document.querySelector('.photolive-photo-rip')){
+      const photo1=document.createElement('span');
+      photo1.className='photolive-photo-rip one';
+      photo1.setAttribute('aria-hidden','true');
+
+      const photo2=document.createElement('span');
+      photo2.className='photolive-photo-rip two';
+      photo2.setAttribute('aria-hidden','true');
+
+      main.appendChild(photo1);
+      main.appendChild(photo2);
+    }
+
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded',addDecoration);
+  }else{
+    addDecoration();
+  }
+
+})();
+</script>
+
+
+<style id="photolive-home-palestra-colorida-final">
+
+/* =========================================================
+   PHOTOLIVE MAGIC — HOME COLORIDA
+   AMARELO + VERDE + AZUL + TURQUESA + ROXO + VERMELHO
+   Compatível com água, raios e fotos rasgadas
+   ========================================================= */
+
+:root{
+  --pl-yellow:#ffd84d;
+  --pl-green:#42d66f;
+  --pl-blue:#2879ff;
+  --pl-turquoise:#08c6c8;
+  --pl-dark:#082b55;
+  --pl-purple:#8b5cf6;
+  --pl-red:#ff5263;
+  --pl-ice:#f6fcff;
+}
+
+/* =========================================================
+   FUNDO MULTICOLORIDO
+   ========================================================= */
+
+html{
+  background:#082b55 !important;
+}
+
+body{
+
+  background:
+
+    /* amarelo */
+    radial-gradient(
+      circle at 8% 8%,
+      rgba(255,216,77,.42),
+      transparent 20%
+    ),
+
+    /* verde */
+    radial-gradient(
+      circle at 88% 12%,
+      rgba(66,214,111,.34),
+      transparent 22%
+    ),
+
+    /* azul */
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(40,121,255,.42),
+      transparent 30%
+    ),
+
+    /* turquesa */
+    radial-gradient(
+      circle at 15% 58%,
+      rgba(8,198,200,.40),
+      transparent 27%
+    ),
+
+    /* roxo */
+    radial-gradient(
+      circle at 88% 58%,
+      rgba(139,92,246,.38),
+      transparent 27%
+    ),
+
+    /* vermelho */
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(255,82,99,.30),
+      transparent 30%
+    ),
+
+    linear-gradient(
+      135deg,
+      #071f43 0%,
+      #084b82 24%,
+      #087f94 43%,
+      #1459a6 58%,
+      #51318f 77%,
+      #5d173f 100%
+    ) !important;
+
+  min-height:100vh;
+}
+
+/* =========================================================
+   AURORA COLORIDA
+   ========================================================= */
+
+body::before{
+
+  content:"";
+  position:fixed;
+  inset:-20%;
+  z-index:0;
+  pointer-events:none;
+
+  background:
+
+    radial-gradient(
+      ellipse at 20% 30%,
+      rgba(255,216,77,.18),
+      transparent 25%
+    ),
+
+    radial-gradient(
+      ellipse at 70% 25%,
+      rgba(66,214,111,.16),
+      transparent 26%
+    ),
+
+    radial-gradient(
+      ellipse at 45% 55%,
+      rgba(8,198,200,.18),
+      transparent 30%
+    ),
+
+    radial-gradient(
+      ellipse at 80% 65%,
+      rgba(139,92,246,.17),
+      transparent 25%
+    ),
+
+    radial-gradient(
+      ellipse at 30% 80%,
+      rgba(255,82,99,.14),
+      transparent 25%
+    );
+
+  filter:blur(35px);
+
+  animation:
+    photoliveAurora 16s ease-in-out infinite alternate;
+}
+
+@keyframes photoliveAurora{
+
+  0%{
+    transform:
+      translate3d(-2%,0,0)
+      scale(1);
+  }
+
+  50%{
+    transform:
+      translate3d(3%,2%,0)
+      scale(1.04);
+  }
+
+  100%{
+    transform:
+      translate3d(-1%,4%,0)
+      scale(1.08);
+  }
+
+}
+
+/* =========================================================
+   ONDAS DE ÁGUA COLORIDAS
+   ========================================================= */
+
+body::after{
+
+  content:"";
+  position:fixed;
+  z-index:1;
+  left:-15%;
+  right:-15%;
+  bottom:-110px;
+  height:300px;
+
+  pointer-events:none;
+
+  background:
+
+    radial-gradient(
+      ellipse at 20% 70%,
+      rgba(8,198,200,.35),
+      transparent 30%
+    ),
+
+    radial-gradient(
+      ellipse at 50% 80%,
+      rgba(40,121,255,.30),
+      transparent 32%
+    ),
+
+    radial-gradient(
+      ellipse at 80% 65%,
+      rgba(139,92,246,.28),
+      transparent 30%
+    );
+
+  border-radius:
+    50% 50% 0 0 /
+    45% 45% 0 0;
+
+  filter:blur(3px);
+
+  transform:rotate(-2deg);
+}
+
+/* =========================================================
+   CONTEÚDO ACIMA DOS EFEITOS
+   ========================================================= */
+
+body > *,
+main,
+header,
+footer,
+section{
+  position:relative;
+  z-index:3;
+}
+
+/* =========================================================
+   BLOCOS CLAROS PARA LEITURA
+   ========================================================= */
+
+.photolive-paper,
+.home-card,
+.feature-card,
+.service-card,
+.diagnostic-card{
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(248,253,255,.98),
+      rgba(229,247,251,.97)
+    ) !important;
+
+  color:#082b55 !important;
+
+  box-shadow:
+    0 18px 45px rgba(4,25,60,.24),
+    inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+
+/* =========================================================
+   BORDAS RASGADAS COLORIDAS
+   ========================================================= */
+
+.photolive-paper::before,
+.home-card::before,
+.feature-card::before,
+.service-card::before,
+.diagnostic-card::before{
+
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-6px;
+
+  background:
+
+    linear-gradient(
+      120deg,
+      var(--pl-yellow),
+      var(--pl-green) 18%,
+      var(--pl-turquoise) 38%,
+      var(--pl-blue) 55%,
+      var(--pl-purple) 75%,
+      var(--pl-red)
+    );
+
+  clip-path:polygon(
+
+    0 5%,
+    8% 1%,
+    17% 4%,
+    27% 0,
+    36% 3%,
+    46% 1%,
+    56% 4%,
+    66% 0,
+    76% 3%,
+    88% 1%,
+    100% 5%,
+
+    97% 18%,
+    100% 32%,
+    97% 47%,
+    100% 62%,
+    97% 78%,
+    100% 94%,
+
+    88% 97%,
+    77% 100%,
+    66% 97%,
+    55% 100%,
+    44% 97%,
+    33% 100%,
+    22% 97%,
+    10% 100%,
+    2% 95%,
+
+    4% 80%,
+    0 66%,
+    3% 52%,
+    0 38%,
+    3% 23%
+  );
+
+  pointer-events:none;
+}
+
+/* =========================================================
+   TÍTULOS
+   ========================================================= */
+
+h1,
+h2{
+  color:#082b55;
+}
+
+/* detalhes coloridos */
+.photolive-color-accent{
+  background:
+    linear-gradient(
+      90deg,
+      var(--pl-yellow),
+      var(--pl-green),
+      var(--pl-turquoise),
+      var(--pl-blue),
+      var(--pl-purple),
+      var(--pl-red)
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+/* =========================================================
+   BOTÕES
+   ========================================================= */
+
+a,
+button{
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    filter .2s ease;
+}
+
+a:hover,
+button:hover{
+
+  filter:saturate(1.15);
+}
+
+/* =========================================================
+   RAIOS COLORIDOS
+   ========================================================= */
+
+.photolive-lightning{
+
+  filter:
+    drop-shadow(0 0 7px rgba(255,255,255,.85))
+    drop-shadow(0 0 14px rgba(8,198,200,.65));
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(255,255,255,.95),
+      rgba(8,198,200,.75),
+      transparent
+    );
+}
+
+/* =========================================================
+   FOTOS RASGADAS
+   ========================================================= */
+
+.photolive-photo-rip{
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,216,77,.45),
+      rgba(8,198,200,.38),
+      rgba(139,92,246,.40)
+    ) !important;
+
+  border-color:#f8fdff !important;
+
+  box-shadow:
+    0 15px 32px rgba(4,25,60,.30),
+    0 0 22px rgba(8,198,200,.18) !important;
+}
+
+/* =========================================================
+   BADGES / ETIQUETAS
+   ========================================================= */
+
+.badge,
+.label,
+.eyebrow{
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--pl-turquoise),
+      var(--pl-blue)
+    ) !important;
+
+  color:#ffffff !important;
+}
+
+/* =========================================================
+   LINKS / BOTÕES DE DESTAQUE
+   ========================================================= */
+
+.primary,
+.btn-primary,
+.plm-btn.primary{
+
+  background:
+    linear-gradient(
+      135deg,
+      #087f94,
+      #2879ff
+    ) !important;
+
+  color:#fff !important;
+
+  box-shadow:
+    0 10px 24px rgba(8,79,145,.28) !important;
+}
+
+.primary:hover,
+.btn-primary:hover,
+.plm-btn.primary:hover{
+
+  background:
+    linear-gradient(
+      135deg,
+      #07566b,
+      #6d3fd1
+    ) !important;
+
+  transform:translateY(-2px);
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:700px){
+
+  body{
+
+    background:
+      radial-gradient(
+        circle at 50% 5%,
+        rgba(255,216,77,.24),
+        transparent 25%
+      ),
+
+      radial-gradient(
+        circle at 10% 45%,
+        rgba(8,198,200,.28),
+        transparent 25%
+      ),
+
+      radial-gradient(
+        circle at 90% 70%,
+        rgba(139,92,246,.25),
+        transparent 25%
+      ),
+
+      linear-gradient(
+        160deg,
+        #062d4b,
+        #087f94 50%,
+        #3b2372 100%
+      ) !important;
+  }
+
+  body::before{
+    opacity:.65;
+    filter:blur(28px);
+  }
+
+  .photolive-photo-rip{
+    opacity:.30;
+    transform:scale(.72) rotate(-6deg);
+  }
+
+  .photolive-lightning{
+    opacity:.30;
+  }
+
+  .photolive-paper::before,
+  .home-card::before,
+  .feature-card::before,
+  .service-card::before,
+  .diagnostic-card::before{
+    inset:-4px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+
+  body::before{
+    animation:none;
+  }
+
+  a,
+  button{
+    transition:none;
+  }
+}
+
+</style>
+

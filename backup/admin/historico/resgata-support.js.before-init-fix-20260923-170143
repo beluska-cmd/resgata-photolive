@@ -1,0 +1,451 @@
+/*
+ * RESGATA+ ADMIN
+ * Emergência + Sugestões + Conteúdo
+ */
+
+(function () {
+  "use strict";
+
+  function html(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function money(value) {
+    return Number(value || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  }
+
+  function date(value) {
+    if (!value) return "—";
+
+    try {
+      return new Date(value).toLocaleString("pt-BR");
+    } catch {
+      return String(value);
+    }
+  }
+
+  async function request(url, options = {}) {
+    if (typeof window.api === "function") {
+      return window.api(url, options);
+    }
+
+    const token = localStorage.getItem("adminToken");
+
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token
+          ? { Authorization: `Bearer ${token}` }
+          : {}),
+        ...(options.headers || {})
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+
+  /*
+   * ==========================================================
+   * EMERGÊNCIA
+   * ==========================================================
+   */
+
+  async function loadEmergency() {
+    const container =
+      document.getElementById("resgataEmergencyPanel");
+
+    if (!container) return;
+
+    try {
+      /*
+       * A área de emergência é preparada para receber
+       * posteriormente eventos/SOS reais do usuário.
+       *
+       * Não criamos registros falsos.
+       */
+
+      const security =
+        await request(
+          "/api/admin/emergency?limit=50"
+        );
+
+      const events =
+        security?.events ||
+        security?.data ||
+        [];
+
+      const emergencyEvents =
+        Array.isArray(events)
+          ? events.filter(event => {
+              const type =
+                String(
+                  event.type ||
+                  event.category ||
+                  ""
+                ).toLowerCase();
+
+              return (
+                type.includes("emergency") ||
+                type.includes("sos") ||
+                type.includes("betting") ||
+                type.includes("relapse")
+              );
+            })
+          : [];
+
+      if (!emergencyEvents.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <strong>Nenhuma emergência registrada.</strong>
+            <p>
+              O painel está pronto para receber eventos
+              SOS e tentativas de recaída.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML =
+        emergencyEvents.map(event => `
+          <div class="admin-list-item">
+
+            <div>
+              <strong>
+                ${html(
+                  event.title ||
+                  event.type ||
+                  "Evento de proteção"
+                )}
+              </strong>
+
+              <small>
+                ${html(
+                  event.description ||
+                  "Sem descrição"
+                )}
+              </small>
+
+              <small>
+                ${html(date(event.created_at))}
+              </small>
+            </div>
+
+            <span>
+              ${html(event.severity || "info")}
+            </span>
+
+          </div>
+        `).join("");
+
+    } catch (error) {
+
+      console.error(
+        "RESGATA EMERGENCIA:",
+        error
+      );
+
+      container.innerHTML = `
+        <div class="empty-state error">
+          Não foi possível carregar as ocorrências.
+        </div>
+      `;
+    }
+  }
+
+
+  /*
+   * ==========================================================
+   * SUGESTÕES
+   * ==========================================================
+   */
+
+  async function loadSuggestions() {
+    const container =
+      document.getElementById(
+        "resgataSuggestionsPanel"
+      );
+
+    if (!container) return;
+
+    try {
+
+      /*
+       * A tabela sugestoes_resgata já existe no banco.
+       *
+       * Caso a API administrativa ainda não tenha rota,
+       * mostramos o estado real sem inventar dados.
+       */
+
+      let result;
+
+      try {
+        result = await request(
+          "/api/admin/suggestions"
+        );
+      } catch {
+        result = null;
+      }
+
+      const suggestions =
+        result?.suggestions ||
+        result?.data?.suggestions ||
+        result?.data ||
+        [];
+
+      if (!Array.isArray(suggestions) ||
+          !suggestions.length) {
+
+        container.innerHTML = `
+          <div class="empty-state">
+
+            <strong>
+              Nenhuma sugestão disponível.
+            </strong>
+
+            <p>
+              As sugestões dos usuários aparecerão
+              aqui quando a API estiver conectada.
+            </p>
+
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        suggestions.map(item => {
+
+          const status =
+            item.status ||
+            "recebida";
+
+          const category =
+            item.categoria ||
+            item.category ||
+            "outros";
+
+          const votes =
+            item.votos ??
+            item.votes ??
+            0;
+
+          return `
+            <div class="admin-list-item">
+
+              <div>
+
+                <strong>
+                  ${html(
+                    item.texto ||
+                    item.text ||
+                    "Sugestão"
+                  )}
+                </strong>
+
+                <small>
+                  Categoria:
+                  ${html(category)}
+                </small>
+
+                <small>
+                  ${html(date(
+                    item.criado_em ||
+                    item.created_at
+                  ))}
+                </small>
+
+              </div>
+
+              <div>
+
+                <span>
+                  ${html(status)}
+                </span>
+
+                <small>
+                  ${html(String(votes))} votos
+                </small>
+
+              </div>
+
+            </div>
+          `;
+        }).join("");
+
+    } catch (error) {
+
+      console.error(
+        "RESGATA SUGESTOES:",
+        error
+      );
+
+      container.innerHTML = `
+        <div class="empty-state error">
+          Não foi possível carregar as sugestões.
+        </div>
+      `;
+    }
+  }
+
+
+  /*
+   * ==========================================================
+   * CONTEÚDO
+   * ==========================================================
+   */
+
+  async function loadContent() {
+    const container =
+      document.getElementById(
+        "resgataContentPanel"
+      );
+
+    if (!container) return;
+
+    try {
+
+      /*
+       * Procuramos primeiro uma futura API de conteúdo.
+       * Não exibimos conteúdo fictício como se viesse do banco.
+       */
+
+      let result;
+
+      try {
+        result = await request(
+          "/api/admin/content"
+        );
+      } catch {
+        result = null;
+      }
+
+      const content =
+        result?.content ||
+        result?.data?.content ||
+        result?.data ||
+        [];
+
+      if (!Array.isArray(content) ||
+          !content.length) {
+
+        container.innerHTML = `
+          <div class="empty-state">
+
+            <strong>
+              Central de conteúdo pronta.
+            </strong>
+
+            <p>
+              Ainda não existem conteúdos cadastrados.
+              O módulo poderá receber:
+              Momento Resgata+, educação,
+              atividades, livros, filmes,
+              música e alternativas sem aposta.
+            </p>
+
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML =
+        content.map(item => {
+
+          return `
+            <div class="admin-list-item">
+
+              <div>
+
+                <strong>
+                  ${html(
+                    item.title ||
+                    item.titulo ||
+                    "Conteúdo"
+                  )}
+                </strong>
+
+                <small>
+                  ${html(
+                    item.category ||
+                    item.categoria ||
+                    "Geral"
+                  )}
+                </small>
+
+                <small>
+                  ${html(
+                    item.status ||
+                    "ativo"
+                  )}
+                </small>
+
+              </div>
+
+            </div>
+          `;
+        }).join("");
+
+    } catch (error) {
+
+      console.error(
+        "RESGATA CONTEUDO:",
+        error
+      );
+
+      container.innerHTML = `
+        <div class="empty-state error">
+          Não foi possível carregar o conteúdo.
+        </div>
+      `;
+    }
+  }
+
+
+  /*
+   * ==========================================================
+   * CARREGAMENTO COMPLETO
+   * ==========================================================
+   */
+
+  async function loadSupportModules() {
+
+    await Promise.all([
+      loadEmergency(),
+      loadSuggestions(),
+      loadContent()
+    ]);
+
+  }
+
+
+  /*
+   * ==========================================================
+   * API PÚBLICA
+   * ==========================================================
+   */
+
+  window.ResgataSupport = {
+    loadEmergency,
+    loadSuggestions,
+    loadContent,
+    loadSupportModules
+  };
+
+})();

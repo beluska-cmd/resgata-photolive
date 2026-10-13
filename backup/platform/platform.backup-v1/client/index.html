@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resgata+ | Central</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <strong>RESGATA+</strong>
+    <span>Recuperar. Organizar. Proteger. Resolver.</span>
+  </div>
+
+  <a href="/admin/" class="admin-link">Admin</a>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <div>
+      <span class="tag">CENTRAL RESGATA+</span>
+      <h1>Tudo o que você precisa para cuidar do que importa.</h1>
+      <p>
+        Acesse seus serviços, dispositivos, diagnósticos, suporte
+        e recursos do Resgata+ em um só lugar.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <div>
+        <h2>Serviços</h2>
+        <p>Recursos disponíveis na sua Central.</p>
+      </div>
+    </div>
+
+    <div id="services" class="grid"></div>
+  </section>
+
+  <section class="quick-grid">
+
+    <article class="panel">
+      <span>📱</span>
+      <h3>Meus dispositivos</h3>
+      <p>Gerencie os dispositivos vinculados à sua conta.</p>
+      <button onclick="loadDevices()">Ver dispositivos</button>
+    </article>
+
+    <article class="panel">
+      <span>🆘</span>
+      <h3>Suporte</h3>
+      <p>Precisa de ajuda? Acesse a Central de atendimento.</p>
+      <button onclick="loadSupport()">Ver suporte</button>
+    </article>
+
+    <article class="panel">
+      <span>👤</span>
+      <h3>Minha conta</h3>
+      <p>Consulte seu perfil e seu plano Resgata+.</p>
+      <button onclick="loadAccount()">Minha conta</button>
+    </article>
+
+  </section>
+
+  <div id="result" class="result"></div>
+
+</main>
+
+<footer>
+  <strong>RESGATA+</strong>
+  <span>Seus dados são seus. O Resgata+ acessa somente aquilo que você autorizar.</span>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

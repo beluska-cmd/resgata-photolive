@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Meu Espaço — PhotoLive Magic</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(255,255,255,.18),transparent 28%),
+    radial-gradient(circle at 90% 10%,rgba(34,211,238,.22),transparent 30%),
+    linear-gradient(135deg,#075985 0%,#0891b2 55%,#0e7490 100%);
+  color:#0f172a;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+button{
+  font:inherit;
+}
+
+.topbar{
+  width:100%;
+  min-height:76px;
+  padding:14px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  background:rgba(255,255,255,.97);
+  border-bottom:1px solid rgba(255,255,255,.5);
+  box-shadow:0 8px 30px rgba(15,23,42,.12);
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:max-content;
+}
+
+.brand-mark{
+  width:44px;
+  height:44px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#06b6d4,#2563eb);
+  color:white;
+  font-size:21px;
+}
+
+.brand strong{
+  display:block;
+  color:#0f172a;
+  font-size:18px;
+}
+
+.brand span{
+  display:block;
+  margin-top:3px;
+  color:#64748b;
+  font-size:12px;
+}
+
+.topbar-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.top-nav{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.top-nav a{
+  color:#334155;
+  font-size:12px;
+  font-weight:700;
+  padding:9px 10px;
+  border-radius:9px;
+  transition:.18s ease;
+  white-space:nowrap;
+}
+
+.top-nav a:hover,
+.top-nav a.active{
+  color:#0369a1;
+  background:#e0f2fe;
+}
+
+.menu-toggle{
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:12px;
+  background:#e0f2fe;
+  color:#075985;
+  font-size:21px;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+}
+
+.layout{
+  width:min(1500px,calc(100% - 40px));
+  margin:22px auto 40px;
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+}
+
+.sidebar{
+  width:270px;
+  flex:0 0 270px;
+  background:rgba(255,255,255,.97);
+  border-radius:18px;
+  box-shadow:0 16px 45px rgba(15,23,42,.18);
+  overflow:hidden;
+  transition:
+    width .22s ease,
+    flex-basis .22s ease,
+    opacity .22s ease,
+    transform .22s ease;
+  position:sticky;
+  top:98px;
+  max-height:calc(100vh - 120px);
+  overflow-y:auto;
+}
+
+.sidebar.closed{
+  width:0;
+  flex-basis:0;
+  opacity:0;
+  overflow:hidden;
+}
+
+.sidebar-inner{
+  width:270px;
+  padding:14px;
+}
+
+.sidebar-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:5px 3px 14px;
+}
+
+.sidebar-title{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.11em;
+  color:#64748b;
+}
+
+.menu-label{
+  padding:13px 9px 7px;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  color:#94a3b8;
+}
+
+.menu-item{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  border:0;
+  background:transparent;
+  padding:11px 12px;
+  border-radius:11px;
+  margin-bottom:3px;
+  cursor:pointer;
+  text-align:left;
+  color:#475569;
+  transition:.18s ease;
+}
+
+.menu-item:hover{
+  background:#f0f9ff;
+  color:#0369a1;
+}
+
+.menu-item.active{
+  background:linear-gradient(135deg,#e0f2fe,#ecfeff);
+  color:#0369a1;
+  box-shadow:inset 3px 0 #0891b2;
+}
+
+.menu-icon{
+  width:26px;
+  text-align:center;
+  font-size:17px;
+  flex:none;
+}
+
+.menu-text{
+  min-width:0;
+  flex:1;
+}
+
+.menu-text strong{
+  display:block;
+  font-size:13px;
+}
+
+.menu-text small{
+  display:block;
+  margin-top:2px;
+  color:#94a3b8;
+  font-size:10px;
+}
+
+.menu-divider{
+  height:1px;
+  background:#e2e8f0;
+  margin:12px 5px;
+}
+
+.main{
+  min-width:0;
+  flex:1;
+}
+
+.main-heading{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.main-heading h1{
+  margin:0;
+  color:white;
+  font-size:clamp(25px,4vw,36px);
+  letter-spacing:-.025em;
+}
+
+.main-heading p{
+  margin:4px 0 0;
+  color:rgba(255,255,255,.78);
+  font-size:13px;
+}
+
+.hero{
+  padding:30px;
+  border-radius:20px;
+  background:rgba(255,255,255,.97);
+  box-shadow:0 16px 45px rgba(15,23,42,.17);
+  margin-bottom:20px;
+}
+
+.badge{
+  display:inline-flex;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#e0f2fe;
+  color:#0369a1;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.10em;
+}
+
+.hero h2{
+  margin:13px 0 8px;
+  font-size:clamp(23px,3vw,31px);
+  color:#0f172a;
+}
+
+.hero p{
+  max-width:800px;
+  margin:0;
+  color:#64748b;
+  line-height:1.65;
+  font-size:14px;
+}
+
+.account{
+  display:inline-flex;
+  margin-top:18px;
+  padding:10px 13px;
+  border-radius:10px;
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  color:#64748b;
+  font-size:12px;
+}
+
+.account strong{
+  margin-left:4px;
+  color:#0f172a;
+}
+
+.section{
+  margin-bottom:22px;
+}
+
+.section-title{
+  margin:0 0 12px;
+  color:white;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:20px;
+}
+
+.section-title p{
+  margin:4px 0 0;
+  color:rgba(255,255,255,.74);
+  font-size:12px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+
+.card{
+  padding:20px;
+  background:rgba(255,255,255,.97);
+  border-radius:17px;
+  box-shadow:0 12px 35px rgba(15,23,42,.14);
+  border:1px solid rgba(255,255,255,.6);
+  transition:.18s ease;
+}
+
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 17px 42px rgba(15,23,42,.20);
+}
+
+.card-icon{
+  width:46px;
+  height:46px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#e0f2fe,#cffafe);
+  font-size:22px;
+  margin-bottom:14px;
+}
+
+.card h3{
+  margin:0 0 7px;
+  font-size:17px;
+  color:#0f172a;
+}
+
+.card p{
+  margin:0;
+  min-height:43px;
+  color:#64748b;
+  line-height:1.55;
+  font-size:13px;
+}
+
+.card-button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:42px;
+  margin-top:16px;
+  border:0;
+  border-radius:10px;
+  background:linear-gradient(135deg,#0891b2,#2563eb);
+  color:white;
+  font-weight:800;
+  cursor:pointer;
+  transition:.18s ease;
+}
+
+.card-button:hover{
+  filter:brightness(1.07);
+  transform:translateY(-1px);
+}
+
+.package-card{
+  position:relative;
+  overflow:hidden;
+}
+
+.package-label{
+  display:inline-flex;
+  margin-bottom:10px;
+  padding:5px 8px;
+  border-radius:7px;
+  background:#f0f9ff;
+  color:#0369a1;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.development{
+  display:inline-flex;
+  margin-top:10px;
+  padding:4px 7px;
+  border-radius:6px;
+  background:#fff7ed;
+  color:#c2410c;
+  font-size:9px;
+  font-weight:800;
+}
+
+.mobile-open{
+  display:none;
+}
+
+@media(max-width:1200px){
+
+  .top-nav{
+    display:none;
+  }
+
+  .mobile-open{
+    display:grid;
+  }
+
+}
+
+@media(max-width:850px){
+
+  .layout{
+    width:min(100% - 20px,1500px);
+    margin-top:12px;
+  }
+
+  .sidebar{
+    position:fixed;
+    left:10px;
+    top:88px;
+    bottom:10px;
+    z-index:1500;
+    max-height:none;
+    box-shadow:0 25px 70px rgba(15,23,42,.35);
+  }
+
+  .sidebar.closed{
+    transform:translateX(-110%);
+    width:270px;
+    flex-basis:270px;
+    opacity:1;
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+}
+
+@media(max-width:620px){
+
+  .topbar{
+    padding:12px 15px;
+  }
+
+  .brand strong{
+    font-size:16px;
+  }
+
+  .brand span{
+    display:none;
+  }
+
+  .layout{
+    display:block;
+  }
+
+  .main-heading h1{
+    font-size:26px;
+  }
+
+  .hero{
+    padding:21px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <a href="../index.html" class="brand">
+    <span class="brand-mark">✨</span>
+
+    <div>
+      <strong>PhotoLive Magic</strong>
+      <span>Seu espaço de arquivos</span>
+    </div>
+  </a>
+
+  <div class="topbar-right">
+
+    <nav class="top-nav">
+
+      <a href="minha-conta-usuario.html">
+        👤 Minha Conta
+      </a>
+
+      <a href="meu-espaco-painel.html" class="active">
+        🏠 Meu Espaço
+      </a>
+
+      <a href="../servicos/editor-fotos/index.html">
+        📸 Editor de Fotos
+      </a>
+
+      <a href="#transformar">
+        ✨ Editor Pro
+      </a>
+
+      <a href="../servicos/editor-videos/index.html">
+        🎬 Editor de Vídeos
+      </a>
+
+      <a href="#recuperar">
+        🛟 Recuperar
+      </a>
+
+      <a href="#diagnostico">
+        🔎 Diagnóstico
+      </a>
+
+      <a href="#pacotes">
+        📦 Pacotes
+      </a>
+
+      <a href="#organizar">
+        📱 Organizar
+      </a>
+
+    </nav>
+
+    <button
+      class="menu-toggle mobile-open"
+      id="openSidebar"
+      type="button"
+      aria-label="Abrir menu">
+      ☰
+    </button>
+
+  </div>
+
+</header>
+
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-inner">
+
+      <div class="sidebar-header">
+
+        <button
+          class="menu-toggle"
+          id="closeSidebar"
+          type="button"
+          aria-label="Fechar menu">
+          ☰
+        </button>
+
+        <span class="sidebar-title">
+          ÁREA DO CLIENTE
+        </span>
+
+      </div>
+
+
+      <div class="menu-label">
+        PRINCIPAL
+      </div>
+
+      <button class="menu-item active" data-target="inicio">
+        <span class="menu-icon">🏠</span>
+        <span class="menu-text">
+          <strong>Meu Espaço</strong>
+          <small>Visão geral</small>
+        </span>
+      </button>
+
+      <button class="menu-item" data-link="../servicos/editor-fotos/index.html">
+        <span class="menu-icon">📸</span>
+        <span class="menu-text">
+          <strong>Editor de Fotos</strong>
+          <small>Edição manual</small>
+        </span>
+      </button>
+
+      <button class="menu-item" data-link="transformar/index.html">
+        <span class="menu-icon">✨</span>
+        <span class="menu-text">
+          <strong>Editor Pro</strong>
+          <small>Transformar</small>
+        </span>
+      </button>
+
+      <button class="menu-item" data-link="../servicos/editor-videos/index.html">
+        <span class="menu-icon">🎬</span>
+        <span class="menu-text">
+          <strong>Editor de Vídeos</strong>
+          <small>Edição de vídeos</small>
+        </span>
+      </button>
+
+      <button class="menu-item" data-target="recuperar">
+        <span class="menu-icon">🛟</span>
+        <span class="menu-text">
+          <strong>Recuperar</strong>
+          <small>Arquivos e fotos</small>
+        </span>
+      </button>
+
+      <button class="menu-item" data-target="diagnostico">
+        <span class="menu-icon">🔎</span>
+        <span class="menu-text">
+          <strong>Diagnóstico</strong>
+          <small>Análise dos arquivos</small>
+        </span>
+      </button>
+
+
+      <div class="menu-divider"></div>
+
+      <div class="menu-label">
+        PACOTES
+      </div>
+
+      <button class="menu-item" data-target="essencial">
+        <span class="menu-icon">✨</span>
+        <span class="menu-text">
+          <strong>Pacote Essencial</strong>
+          <small>Recursos essenciais</small>
+        </span>
+      </button>
+
+      <button class="menu-item" data-target="completo">
+        <span class="menu-icon">🚀</span>
+        <span class="menu-text">
+          <strong>Pacote Completo</strong>
+          <small>Mais recursos</small>
+        </span>
+      </button>
+
+      <button class="menu-item" data-target="premium">
+        <span class="menu-icon">💎</span>
+        <span class="menu-text">
+          <strong>Premium</strong>
+          <small>Experiência completa</small>
+        </span>
+      </button>
+
+
+      <div class="menu-divider"></div>
+
+      <button class="menu-item" data-target="organizar">
+        <span class="menu-icon">📱</span>
+        <span class="menu-text">
+          <strong>Organizar no Android</strong>
+          <small>Em desenvolvimento</small>
+        </span>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <main class="main">
+
+    <div class="main-heading">
+
+      <button
+        class="menu-toggle"
+        id="mainOpenSidebar"
+        type="button"
+        aria-label="Abrir menu">
+        ☰
+      </button>
+
+      <div>
+        <h1 id="pageTitle">Meu Espaço</h1>
+
+        <p id="pageSubtitle">
+          Seu espaço reúne os principais recursos do PhotoLive Magic.
+        </p>
+      </div>
+
+    </div>
+
+
+    <section class="hero" id="inicio">
+
+      <span class="badge">
+        CENTRAL DO CLIENTE
+      </span>
+
+      <h2>
+        Seus arquivos, do seu jeito.
+      </h2>
+
+      <p>
+        Acesse suas ferramentas, edite suas fotos,
+        transforme seus arquivos, recupere conteúdos
+        e escolha os recursos que você precisa.
+      </p>
+
+      <div class="account">
+        Conta:
+        <strong id="accountEmail">
+          Cliente PhotoLive Magic
+        </strong>
+      </div>
+
+    </section>
+
+
+    <section class="section">
+
+      <div class="section-title">
+        <h2>Ferramentas principais</h2>
+        <p>
+          Tudo organizado em um único espaço.
+        </p>
+      </div>
+
+
+      <div class="grid">
+
+        <article class="card">
+
+          <div class="card-icon">📸</div>
+
+          <h3>Editor de Fotos</h3>
+
+          <p>
+            Edite, ajuste, melhore e salve novas versões
+            das suas fotos.
+          </p>
+
+          <a
+            class="card-button"
+            href="../servicos/editor-fotos/index.html">
+            Abrir Editor
+          </a>
+
+        </article>
+
+
+        <article class="card" id="transformar">
+
+          <div class="card-icon">✨</div>
+
+          <h3>Editor Pro</h3>
+
+          <p>
+            Transforme suas fotos criando novas versões
+            sem substituir o arquivo original.
+          </p>
+
+          <a
+            class="card-button"
+            href="transformar/index.html">
+            Abrir Editor Pro
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="card-icon">🎬</div>
+
+          <h3>Editor de Vídeos</h3>
+
+          <p>
+            Trabalhe com seus vídeos usando as ferramentas
+            disponíveis.
+          </p>
+
+          <a
+            class="card-button"
+            href="../servicos/editor-videos/index.html">
+            Abrir Editor
+          </a>
+
+        </article>
+
+
+        <article class="card" id="recuperar">
+
+          <div class="card-icon">🛟</div>
+
+          <h3>Recuperar</h3>
+
+          <p>
+            Recursos voltados para recuperação de arquivos
+            e fotos.
+          </p>
+
+          <a
+            class="card-button"
+            href="../servicos.html">
+            Conhecer serviço
+          </a>
+
+        </article>
+
+
+        <article class="card" id="diagnostico">
+
+          <div class="card-icon">🔎</div>
+
+          <h3>Diagnóstico</h3>
+
+          <p>
+            Analise seus arquivos e descubra o que pode
+            ser melhorado, organizado ou recuperado.
+          </p>
+
+          <a
+            class="card-button"
+            href="../index.html#diagnostico-gratuito">
+            Fazer diagnóstico
+          </a>
+
+        </article>
+
+
+        <article class="card" id="organizar">
+
+          <div class="card-icon">📂</div>
+
+          <h3>Organizar</h3>
+
+          <p>
+            Organize seus arquivos de forma inteligente,
+            evitando cópias desnecessárias.
+          </p>
+
+          <span class="development">
+            EM DESENVOLVIMENTO
+          </span>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="section" id="pacotes">
+
+      <div class="section-title">
+        <h2>Planos e Pacotes</h2>
+        <p>
+          Escolha a experiência que combina com você.
+        </p>
+      </div>
+
+
+      <div class="grid">
+
+        <article class="card package-card">
+
+          <span class="package-label">
+            ✨ ESSENCIAL
+          </span>
+
+          <h3>Pacote Essencial</h3>
+
+          <p>
+            Uma combinação prática dos principais recursos
+            do PhotoLive Magic.
+          </p>
+
+          <a
+            class="card-button"
+            href="../servicos.html">
+            Conhecer pacote
+          </a>
+
+        </article>
+
+
+        <article class="card package-card">
+
+          <span class="package-label">
+            🚀 COMPLETO
+          </span>
+
+          <h3>Pacote Completo</h3>
+
+          <p>
+            Mais ferramentas reunidas em uma experiência
+            única.
+          </p>
+
+          <a
+            class="card-button"
+            href="../servicos.html">
+            Conhecer pacote
+          </a>
+
+        </article>
+
+
+        <article class="card package-card">
+
+          <span class="package-label">
+            💎 PREMIUM
+          </span>
+
+          <h3>Premium</h3>
+
+          <p>
+            A experiência mais completa para aproveitar
+            o PhotoLive Magic.
+          </p>
+
+          <a
+            class="card-button"
+            href="../servicos.html">
+            Conhecer Premium
+          </a>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="section">
+
+      <div class="section-title">
+        <h2>Acesso rápido</h2>
+        <p>
+          Outras áreas da sua conta.
+        </p>
+      </div>
+
+      <div class="grid">
+
+        <article class="card">
+
+          <div class="card-icon">👤</div>
+
+          <h3>Minha Conta</h3>
+
+          <p>
+            Consulte seus dados, serviços e informações
+            da sua conta.
+          </p>
+
+          <a
+            class="card-button"
+            href="minha-conta-usuario.html">
+            Abrir Minha Conta
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="card-icon">📦</div>
+
+          <h3>Meus Pedidos</h3>
+
+          <p>
+            Consulte informações relacionadas aos seus
+            pedidos e serviços.
+          </p>
+
+          <a
+            class="card-button"
+            href="meus-pedidos.html">
+            Ver pedidos
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="card-icon">💳</div>
+
+          <h3>Meu Plano</h3>
+
+          <p>
+            Consulte seu plano e os recursos disponíveis.
+          </p>
+
+          <a
+            class="card-button"
+            href="meu-plano.html">
+            Ver plano
+          </a>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script>
+(function(){
+
+  const sidebar = document.getElementById("sidebar");
+
+  const openButtons = [
+    document.getElementById("openSidebar"),
+    document.getElementById("mainOpenSidebar")
+  ];
+
+  const closeButton = document.getElementById("closeSidebar");
+
+  const menuItems = document.querySelectorAll(".menu-item");
+
+  const title = document.getElementById("pageTitle");
+  const subtitle = document.getElementById("pageSubtitle");
+
+  const descriptions = {
+
+    inicio:[
+      "Meu Espaço",
+      "Seu espaço reúne os principais recursos do PhotoLive Magic."
+    ],
+
+    recuperar:[
+      "Recuperar",
+      "Recursos voltados para recuperação de arquivos."
+    ],
+
+    diagnostico:[
+      "Diagnóstico",
+      "Analise seus arquivos antes de escolher uma ferramenta."
+    ],
+
+    essencial:[
+      "Pacote Essencial",
+      "Os principais recursos reunidos em um pacote."
+    ],
+
+    completo:[
+      "Pacote Completo",
+      "Mais recursos em uma única experiência."
+    ],
+
+    premium:[
+      "Premium",
+      "A experiência mais completa do PhotoLive Magic."
+    ],
+
+    organizar:[
+      "Organizar",
+      "Organização inteligente dos seus arquivos."
+    ]
+
+  };
+
+
+  function openMenu(){
+
+    sidebar.classList.remove("closed");
+
+  }
+
+
+  function closeMenu(){
+
+    sidebar.classList.add("closed");
+
+  }
+
+
+  openButtons.forEach(function(button){
+
+    if(button){
+
+      button.addEventListener("click",openMenu);
+
+    }
+
+  });
+
+
+  if(closeButton){
+
+    closeButton.addEventListener("click",closeMenu);
+
+  }
+
+
+  menuItems.forEach(function(item){
+
+    item.addEventListener("click",function(){
+
+      const link = item.dataset.link;
+      const target = item.dataset.target;
+
+      if(link){
+
+        window.location.href = link;
+        return;
+
+      }
+
+
+      menuItems.forEach(function(other){
+
+        other.classList.remove("active");
+
+      });
+
+      item.classList.add("active");
+
+
+      if(descriptions[target]){
+
+        title.textContent = descriptions[target][0];
+        subtitle.textContent = descriptions[target][1];
+
+      }
+
+
+      const element = document.getElementById(target);
+
+      if(element){
+
+        element.scrollIntoView({
+          behavior:"smooth",
+          block:"start"
+        });
+
+      }
+
+
+      if(window.innerWidth <= 850){
+
+        closeMenu();
+
+      }
+
+    });
+
+  });
+
+
+})();
+</script>
+
+</body>
+</html>

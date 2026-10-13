@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Atendimento — Resgata+</title>
+
+  <link rel="stylesheet" href="/admin/style.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    .atendimento-page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    .atendimento-container {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .atendimento-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .atendimento-title-area {
+      min-width: 0;
+    }
+
+    .atendimento-brand {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      opacity: .65;
+    }
+
+    .atendimento-title {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 38px);
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .atendimento-description {
+      margin: 10px 0 0;
+      max-width: 700px;
+      font-size: 16px;
+      line-height: 1.6;
+      opacity: .72;
+    }
+
+    .atendimento-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-shrink: 0;
+      min-height: 44px;
+      padding: 0 16px;
+      border: 1px solid rgba(23, 32, 51, .12);
+      border-radius: 10px;
+      background: #fff;
+      color: inherit;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+      transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        background .15s ease;
+    }
+
+    .atendimento-back:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+      background: #fafbff;
+    }
+
+    .atendimento-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .atendimento-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 190px;
+      padding: 24px;
+      border: 1px solid rgba(23, 32, 51, .09);
+      border-radius: 16px;
+      background: #fff;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 18px rgba(23, 32, 51, .05);
+      transition:
+        transform .16s ease,
+        box-shadow .16s ease,
+        border-color .16s ease;
+    }
+
+    .atendimento-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(23, 32, 51, .16);
+      box-shadow: 0 10px 28px rgba(23, 32, 51, .10);
+    }
+
+    .atendimento-card-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 18px;
+      border-radius: 14px;
+      background: #f0f3f8;
+      font-size: 25px;
+    }
+
+    .atendimento-card-title {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .atendimento-card-description {
+      margin: 8px 0 0;
+      font-size: 14px;
+      line-height: 1.55;
+      opacity: .68;
+    }
+
+    .atendimento-card-action {
+      margin-top: auto;
+      padding-top: 20px;
+      font-size: 14px;
+      font-weight: 800;
+      opacity: .8;
+    }
+
+    .atendimento-footer {
+      margin-top: 26px;
+      padding: 16px 18px;
+      border: 1px solid rgba(23, 32, 51, .07);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .72);
+      font-size: 13px;
+      line-height: 1.5;
+      opacity: .68;
+    }
+
+    @media (max-width: 760px) {
+      .atendimento-page {
+        padding: 20px 16px;
+      }
+
+      .atendimento-header {
+        flex-direction: column;
+        margin-bottom: 22px;
+      }
+
+      .atendimento-back {
+        width: 100%;
+      }
+
+      .atendimento-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .atendimento-card {
+        min-height: 170px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .atendimento-page {
+        padding: 16px 12px;
+      }
+
+      .atendimento-title {
+        font-size: 28px;
+      }
+
+      .atendimento-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="atendimento-page">
+    <div class="atendimento-container">
+
+      <header class="atendimento-header">
+
+        <div class="atendimento-title-area">
+          <div class="atendimento-brand">RESGATA+</div>
+
+          <h1 class="atendimento-title">
+            🎧 Atendimento
+          </h1>
+
+          <p class="atendimento-description">
+            Central de atendimento, suporte e acompanhamento dos clientes.
+          </p>
+        </div>
+
+        <a
+          class="atendimento-back"
+          href="/admin/"
+        >
+          ← Voltar ao Admin
+        </a>
+
+      </header>
+
+
+      <section
+        class="atendimento-grid"
+        aria-label="Áreas de atendimento"
+      >
+
+        <a
+          class="atendimento-card"
+          href="/admin/atendimento/solicitacoes"
+        >
+          <div class="atendimento-card-icon">📨</div>
+
+          <h2 class="atendimento-card-title">
+            Solicitações
+          </h2>
+
+          <p class="atendimento-card-description">
+            Consulte e acompanhe os pedidos de atendimento recebidos.
+          </p>
+
+          <div class="atendimento-card-action">
+            Acessar →
+          </div>
+        </a>
+
+
+        <a
+          class="atendimento-card"
+          href="/admin/atendimento/chat"
+        >
+          <div class="atendimento-card-icon">💬</div>
+
+          <h2 class="atendimento-card-title">
+            Chat
+          </h2>
+
+          <p class="atendimento-card-description">
+            Converse diretamente com clientes em atendimentos ativos.
+          </p>
+
+          <div class="atendimento-card-action">
+            Acessar →
+          </div>
+        </a>
+
+
+        <a
+          class="atendimento-card"
+          href="/admin/atendimento/tickets"
+        >
+          <div class="atendimento-card-icon">🎫</div>
+
+          <h2 class="atendimento-card-title">
+            Tickets
+          </h2>
+
+          <p class="atendimento-card-description">
+            Gerencie tickets, status, prioridades e atendimentos.
+          </p>
+
+          <div class="atendimento-card-action">
+            Acessar →
+          </div>
+        </a>
+
+
+        <a
+          class="atendimento-card"
+          href="/admin/atendimento/especialistas"
+        >
+          <div class="atendimento-card-icon">👥</div>
+
+          <h2 class="atendimento-card-title">
+            Especialistas
+          </h2>
+
+          <p class="atendimento-card-description">
+            Gerencie a equipe responsável pelos atendimentos.
+          </p>
+
+          <div class="atendimento-card-action">
+            Acessar →
+          </div>
+        </a>
+
+
+        <a
+          class="atendimento-card"
+          href="/admin/atendimento/fila"
+        >
+          <div class="atendimento-card-icon">📋</div>
+
+          <h2 class="atendimento-card-title">
+            Fila de atendimento
+          </h2>
+
+          <p class="atendimento-card-description">
+            Veja quem está aguardando, em atendimento ou pendente.
+          </p>
+
+          <div class="atendimento-card-action">
+            Acessar →
+          </div>
+        </a>
+
+
+        <a
+          class="atendimento-card"
+          href="/admin/atendimento/historico"
+        >
+          <div class="atendimento-card-icon">🕘</div>
+
+          <h2 class="atendimento-card-title">
+            Histórico
+          </h2>
+
+          <p class="atendimento-card-description">
+            Consulte atendimentos, mensagens e ações realizadas.
+          </p>
+
+          <div class="atendimento-card-action">
+            Acessar →
+          </div>
+        </a>
+
+
+        <a
+          class="atendimento-card"
+          href="/admin/atendimento/anexos"
+        >
+          <div class="atendimento-card-icon">📎</div>
+
+          <h2 class="atendimento-card-title">
+            Anexos
+          </h2>
+
+          <p class="atendimento-card-description">
+            Área preparada para arquivos relacionados aos atendimentos.
+          </p>
+
+          <div class="atendimento-card-action">
+            Acessar →
+          </div>
+        </a>
+
+
+        <a
+          class="atendimento-card"
+          href="/admin/atendimento/relatorios"
+        >
+          <div class="atendimento-card-icon">📊</div>
+
+          <h2 class="atendimento-card-title">
+            Relatórios
+          </h2>
+
+          <p class="atendimento-card-description">
+            Indicadores e acompanhamento dos atendimentos.
+          </p>
+
+          <div class="atendimento-card-action">
+            Acessar →
+          </div>
+        </a>
+
+      </section>
+
+
+      <div class="atendimento-footer">
+        Central operacional do Resgata+. As áreas internas serão conectadas
+        aos dados reais do sistema conforme cada módulo for validado.
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

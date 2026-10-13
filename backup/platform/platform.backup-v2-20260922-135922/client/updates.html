@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atualizações | Resgata+</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/dashboard.html">RESGATA+</a>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <span class="tag">ATUALIZAÇÕES</span>
+    <h1>Atualizações do Resgata+</h1>
+    <p>Veja as versões e novidades disponibilizadas.</p>
+  </section>
+
+  <section id="updates" class="grid"></section>
+</main>
+
+<script>
+async function loadUpdates() {
+  const response = await fetch("/api/updates");
+  const data = await response.json();
+
+  document.getElementById("updates").innerHTML =
+    data.updates.map(update => `
+      <article class="card">
+        <span class="category">${update.type}</span>
+        <h2>${update.version}</h2>
+        <p>${update.description}</p>
+        <small>${update.status}</small>
+      </article>
+    `).join("");
+}
+
+loadUpdates();
+</script>
+</body>
+</html>

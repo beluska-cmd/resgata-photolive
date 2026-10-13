@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Central de Atendimento — PhotoLive Magic</title>
+
+<style>
+:root{
+  --blue:#1769ff;
+  --blue2:#315cff;
+  --cyan:#08c6c8;
+  --green:#25c77a;
+  --purple:#8b5cf6;
+  --yellow:#ffd84d;
+  --red:#ff5263;
+  --dark:#082b55;
+  --text:#183a55;
+  --muted:#678096;
+  --bg:#f4f8fc;
+  --white:#ffffff;
+  --border:#dce7ef;
+  --shadow:0 16px 45px rgba(8,43,85,.10);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Inter,Arial,Helvetica,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 0% 0%,rgba(8,198,200,.13),transparent 26%),
+    radial-gradient(circle at 100% 0%,rgba(139,92,246,.11),transparent 25%),
+    linear-gradient(180deg,#f9fcff 0%,#f0f6fa 100%);
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+button,
+input,
+select,
+textarea{
+  font:inherit;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:12px 5%;
+  background:rgba(255,255,255,.94);
+  border-bottom:1px solid rgba(8,43,85,.08);
+  backdrop-filter:blur(18px);
+}
+
+.brand{
+  font-size:20px;
+  font-weight:950;
+  color:var(--dark);
+  white-space:nowrap;
+}
+
+.topnav{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.topnav a{
+  padding:10px 13px;
+  border-radius:12px;
+  color:var(--dark);
+  font-size:13px;
+  font-weight:850;
+}
+
+.topnav a:hover{
+  background:#edf5ff;
+}
+
+.topnav .central{
+  color:white;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  box-shadow:0 8px 20px rgba(23,105,255,.18);
+}
+
+.container{
+  width:min(1180px,92%);
+  margin:0 auto;
+  padding:30px 0 70px;
+}
+
+/* HERO */
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  padding:38px;
+  color:#fff;
+  background:
+    radial-gradient(circle at 88% 15%,rgba(255,216,77,.42),transparent 18%),
+    radial-gradient(circle at 8% 90%,rgba(8,198,200,.32),transparent 25%),
+    linear-gradient(135deg,#073b75 0%,#1769ff 50%,#08aebc 100%);
+  box-shadow:var(--shadow);
+}
+
+.hero:before{
+  content:"";
+  position:absolute;
+  width:280px;
+  height:280px;
+  right:-90px;
+  bottom:-130px;
+  border-radius:50%;
+  border:35px solid rgba(255,255,255,.09);
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  max-width:720px;
+}
+
+.eyebrow{
+  margin:0 0 10px;
+  font-size:12px;
+  font-weight:950;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  opacity:.82;
+}
+
+.hero h1{
+  margin:0;
+  font-size:clamp(32px,5vw,54px);
+  line-height:1.04;
+  letter-spacing:-1px;
+}
+
+.hero p{
+  max-width:690px;
+  margin:17px 0 0;
+  font-size:16px;
+  line-height:1.65;
+  opacity:.94;
+}
+
+.hero-status{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:22px;
+  padding:9px 13px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:999px;
+  background:rgba(255,255,255,.13);
+  font-size:12px;
+  font-weight:850;
+}
+
+.status-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#4af08c;
+  box-shadow:0 0 12px rgba(74,240,140,.9);
+}
+
+/* QUICK BAR */
+
+.quickbar{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:18px;
+}
+
+.quick{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:18px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:0 8px 22px rgba(8,43,85,.05);
+}
+
+.quick-icon{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  flex:none;
+  border-radius:13px;
+  background:#edf5ff;
+  font-size:20px;
+}
+
+.quick strong{
+  display:block;
+  color:var(--dark);
+  font-size:14px;
+}
+
+.quick span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* MAIN GRID */
+
+.main-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(290px,.65fr);
+  gap:22px;
+  margin-top:28px;
+  align-items:start;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:24px;
+  box-shadow:0 12px 32px rgba(8,43,85,.07);
+}
+
+.card-header{
+  padding:26px 28px 20px;
+  border-bottom:1px solid #edf2f6;
+}
+
+.card-header h2{
+  margin:0;
+  color:var(--dark);
+  font-size:23px;
+}
+
+.card-header p{
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.55;
+}
+
+.form{
+  padding:26px 28px 30px;
+}
+
+.field-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:17px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.field.full{
+  grid-column:1 / -1;
+}
+
+.field label{
+  color:var(--dark);
+  font-size:13px;
+  font-weight:900;
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  min-width:0;
+  border:1px solid #cfdde6;
+  border-radius:13px;
+  padding:13px 14px;
+  color:var(--text);
+  background:#fbfdff;
+  outline:none;
+  transition:.15s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 4px rgba(23,105,255,.09);
+  background:#fff;
+}
+
+.field textarea{
+  min-height:150px;
+  resize:vertical;
+}
+
+.priority{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.priority input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.priority label{
+  padding:11px 8px;
+  text-align:center;
+  border:1px solid #d5e1e8;
+  border-radius:11px;
+  cursor:pointer;
+  color:var(--muted);
+  background:#fbfdff;
+  font-size:12px;
+  font-weight:850;
+}
+
+.priority input:checked + label{
+  border-color:var(--blue);
+  color:var(--blue);
+  background:#edf5ff;
+}
+
+.form-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-top:22px;
+}
+
+.security-note{
+  max-width:430px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.submit{
+  flex:none;
+  border:0;
+  border-radius:13px;
+  padding:14px 21px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  font-weight:950;
+  cursor:pointer;
+  box-shadow:0 10px 24px rgba(23,105,255,.20);
+}
+
+.submit:hover{
+  filter:brightness(1.04);
+}
+
+#formStatus{
+  display:none;
+  margin-top:16px;
+  padding:13px;
+  border-radius:12px;
+  background:#edfff5;
+  color:#087543;
+  font-size:13px;
+  font-weight:750;
+}
+
+/* SIDE */
+
+.side{
+  display:grid;
+  gap:17px;
+}
+
+.side-card{
+  padding:23px;
+}
+
+.side-card h3{
+  margin:0;
+  color:var(--dark);
+  font-size:17px;
+}
+
+.side-card p{
+  margin:9px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+
+.email{
+  display:block;
+  margin-top:15px;
+  padding:13px;
+  border-radius:12px;
+  color:var(--blue);
+  background:#edf6ff;
+  font-weight:900;
+  font-size:13px;
+  overflow-wrap:anywhere;
+}
+
+.hours{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:16px;
+  padding:12px;
+  border-radius:12px;
+  background:#f1fbf6;
+  color:#087543;
+  font-size:12px;
+  font-weight:850;
+}
+
+/* TOPICS */
+
+.section-title{
+  margin:42px 0 18px;
+}
+
+.section-title h2{
+  margin:0;
+  color:var(--dark);
+  font-size:25px;
+}
+
+.section-title p{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.topic-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px;
+}
+
+.topic{
+  display:flex;
+  flex-direction:column;
+  min-height:145px;
+  padding:20px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:0 7px 20px rgba(8,43,85,.045);
+  transition:.18s ease;
+}
+
+.topic:hover{
+  transform:translateY(-3px);
+  box-shadow:0 13px 27px rgba(8,43,85,.10);
+  border-color:#bfd4e4;
+}
+
+.topic-icon{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:#edf5ff;
+  font-size:19px;
+  margin-bottom:13px;
+}
+
+.topic h3{
+  margin:0;
+  color:var(--dark);
+  font-size:15px;
+}
+
+.topic p{
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+/* HOW IT WORKS */
+
+.process{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.process-card{
+  padding:21px;
+}
+
+.number{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:var(--dark);
+  color:#fff;
+  font-weight:950;
+}
+
+.process-card h3{
+  margin:14px 0 6px;
+  color:var(--dark);
+  font-size:15px;
+}
+
+.process-card p{
+  margin:0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+
+/* FAQ */
+
+.faq{
+  display:grid;
+  gap:10px;
+}
+
+.faq details{
+  padding:17px 19px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:15px;
+}
+
+.faq summary{
+  cursor:pointer;
+  color:var(--dark);
+  font-size:14px;
+  font-weight:900;
+}
+
+.faq p{
+  margin:11px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+
+/* PRIVACY */
+
+.privacy{
+  margin-top:26px;
+  padding:19px 21px;
+  border-radius:17px;
+  border:1px solid #dce8f1;
+  background:linear-gradient(135deg,#eef9ff,#f5f1ff);
+}
+
+.privacy strong{
+  color:var(--dark);
+  font-size:13px;
+}
+
+.privacy p{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+
+/* FOOTER */
+
+.footer-links{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:35px;
+}
+
+.footer-links a{
+  padding:11px 15px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--dark);
+  font-size:12px;
+  font-weight:850;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+  .main-grid{
+    grid-template-columns:1fr;
+  }
+
+  .topic-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:720px){
+
+  .topbar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .topnav{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .container{
+    width:94%;
+    padding-top:22px;
+  }
+
+  .hero{
+    padding:30px 23px;
+    border-radius:23px;
+  }
+
+  .quickbar{
+    grid-template-columns:1fr;
+  }
+
+  .field-grid{
+    grid-template-columns:1fr;
+  }
+
+  .field.full{
+    grid-column:auto;
+  }
+
+  .form-bottom{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .submit{
+    width:100%;
+  }
+
+  .topic-grid{
+    grid-template-columns:1fr;
+  }
+
+  .process{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:430px){
+
+  .brand{
+    font-size:18px;
+  }
+
+  .topnav a{
+    padding:9px 9px;
+    font-size:12px;
+  }
+
+  .hero h1{
+    font-size:32px;
+  }
+
+  .hero p{
+    font-size:14px;
+  }
+
+  .card-header,
+  .form{
+    padding-left:19px;
+    padding-right:19px;
+  }
+
+  .priority{
+    grid-template-columns:1fr;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <a class="brand" href="../index.html">
+    ✨ PhotoLive Magic
+  </a>
+
+  <nav class="topnav">
+
+    <a href="../index.html">🏠 Início</a>
+
+    <a href="minha-conta-usuario.html">
+      👤 Minha Conta
+    </a>
+
+    <a class="central" href="minha-conta.html">
+      ☰ Central PhotoLive
+    </a>
+
+  </nav>
+
+</header>
+
+
+<main class="container">
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <p class="eyebrow">
+        Atendimento PhotoLive Magic
+      </p>
+
+      <h1>
+        Como podemos ajudar?
+      </h1>
+
+      <p>
+        Encontre respostas rápidas ou abra uma solicitação de atendimento.
+        Nossa central reúne suporte para sua conta, pagamentos, planos,
+        serviços, problemas técnicos e sugestões.
+      </p>
+
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        Central de atendimento disponível
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ATALHOS -->
+
+  <section class="quickbar">
+
+    <a class="quick" href="#abrir-chamado">
+      <span class="quick-icon">🎫</span>
+      <span>
+        <strong>Abrir atendimento</strong>
+        <span>Envie uma nova solicitação</span>
+      </span>
+    </a>
+
+    <a class="quick" href="#assuntos">
+      <span class="quick-icon">🧭</span>
+      <span>
+        <strong>Escolher assunto</strong>
+        <span>Encontre o suporte certo</span>
+      </span>
+    </a>
+
+    <a class="quick" href="#faq">
+      <span class="quick-icon">❓</span>
+      <span>
+        <strong>Perguntas frequentes</strong>
+        <span>Veja respostas rápidas</span>
+      </span>
+    </a>
+
+  </section>
+
+
+  <!-- CHAMADO -->
+
+  <section id="abrir-chamado" class="main-grid">
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <h2>🎫 Abrir uma solicitação</h2>
+
+        <p>
+          Informe os detalhes abaixo. Ao enviar, seu aplicativo de e-mail
+          será preparado automaticamente com todas as informações.
+        </p>
+
+      </div>
+
+      <form class="form" id="supportForm" autocomplete="on">
+
+        <div class="field-grid">
+
+          <div class="field">
+
+            <label for="name">
+              Nome
+            </label>
+
+            <input
+              id="name"
+              type="text"
+              autocomplete="name"
+              placeholder="Seu nome"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="email">
+              E-mail
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              autocomplete="email"
+              placeholder="seu@email.com"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="subject">
+              Assunto
+            </label>
+
+            <select id="subject" required>
+
+              <option value="">
+                Selecione
+              </option>
+
+              <option>Minha conta</option>
+              <option>Pagamento</option>
+              <option>Meu plano</option>
+              <option>Editor de Fotos</option>
+              <option>Editor de Vídeos</option>
+              <option>Recuperar arquivos</option>
+              <option>Diagnóstico</option>
+              <option>Problema técnico</option>
+              <option>Enviar sugestão</option>
+              <option>Outro assunto</option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Prioridade
+            </label>
+
+            <div class="priority">
+
+              <div>
+                <input
+                  type="radio"
+                  name="priority"
+                  id="low"
+                  value="Normal"
+                  checked
+                >
+                <label for="low">Normal</label>
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="priority"
+                  id="medium"
+                  value="Importante"
+                >
+                <label for="medium">Importante</label>
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="priority"
+                  id="high"
+                  value="Urgente"
+                >
+                <label for="high">Urgente</label>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="field full">
+
+            <label for="message">
+              Descreva o que aconteceu
+            </label>
+
+            <textarea
+              id="message"
+              placeholder="Explique sua dúvida, problema ou sugestão com o máximo de detalhes possível."
+              required
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-bottom">
+
+          <p class="security-note">
+            🔒 Não envie senhas, códigos de acesso ou números completos
+            de cartão. O suporte não precisa dessas informações.
+          </p>
+
+          <button class="submit" type="submit">
+            📩 Enviar solicitação
+          </button>
+
+        </div>
+
+        <div id="formStatus"></div>
+
+      </form>
+
+    </div>
+
+
+    <!-- CONTATO -->
+
+    <aside class="side">
+
+      <div class="card side-card">
+
+        <h3>
+          📬 Canal oficial
+        </h3>
+
+        <p>
+          Para atendimento, dúvidas, sugestões ou problemas,
+          utilize o e-mail oficial do PhotoLive Magic.
+        </p>
+
+        <a
+          class="email"
+          href="mailto:suporte@photolivemagic.com"
+        >
+          suporte@photolivemagic.com
+        </a>
+
+        <div class="hours">
+          🟢 Atendimento disponível
+        </div>
+
+      </div>
+
+
+      <div class="card side-card">
+
+        <h3>
+          🛡️ Atendimento seguro
+        </h3>
+
+        <p>
+          Nunca solicitaremos sua senha ou os dados completos do seu cartão
+          para realizar um atendimento.
+        </p>
+
+      </div>
+
+    </aside>
+
+  </section>
+
+
+  <!-- ASSUNTOS -->
+
+  <section id="assuntos">
+
+    <div class="section-title">
+
+      <h2>
+        Encontre o atendimento certo
+      </h2>
+
+      <p>
+        Escolha uma categoria para abrir uma solicitação específica.
+      </p>
+
+    </div>
+
+
+    <div class="topic-grid">
+
+      <a
+        class="topic"
+        href="atendimento.html?assunto=Minha%20Conta#solicitacao"
+      >
+
+        <div class="topic-icon">👤</div>
+
+        <h3>
+          Minha conta
+        </h3>
+
+        <p>
+          Acesso, cadastro, dados e segurança.
+        </p>
+
+      </a>
+
+
+      <a
+        class="topic"
+        href="atendimento.html?assunto=Pagamento#solicitacao"
+      >
+
+        <div class="topic-icon">💳</div>
+
+        <h3>
+          Pagamento
+        </h3>
+
+        <p>
+          Cobranças, pagamentos e compras.
+        </p>
+
+      </a>
+
+
+      <a
+        class="topic"
+        href="atendimento.html?assunto=Meu%20Plano#solicitacao"
+      >
+
+        <div class="topic-icon">👑</div>
+
+        <h3>
+          Meu plano
+        </h3>
+
+        <p>
+          Planos, recursos e serviços.
+        </p>
+
+      </a>
+
+
+      <a
+        class="topic"
+        href="atendimento.html?assunto=Editor%20de%20Fotos#solicitacao"
+      >
+
+        <div class="topic-icon">📸</div>
+
+        <h3>
+          Editor de Fotos
+        </h3>
+
+        <p>
+          Edição, ferramentas e problemas.
+        </p>
+
+      </a>
+
+
+      <a
+        class="topic"
+        href="atendimento.html?assunto=Editor%20de%20Videos#solicitacao"
+      >
+
+        <div class="topic-icon">🎬</div>
+
+        <h3>
+          Editor de Vídeos
+        </h3>
+
+        <p>
+          Ferramentas e suporte para vídeos.
+        </p>
+
+      </a>
+
+
+      <a
+        class="topic"
+        href="atendimento.html?assunto=Recuperar%20Arquivos#solicitacao"
+      >
+
+        <div class="topic-icon">🛟</div>
+
+        <h3>
+          Recuperar arquivos
+        </h3>
+
+        <p>
+          Recuperação e organização de arquivos.
+        </p>
+
+      </a>
+
+
+      <a
+        class="topic"
+        href="atendimento.html?assunto=Problema%20Tecnico#solicitacao"
+      >
+
+        <div class="topic-icon">⚠️</div>
+
+        <h3>
+          Problema técnico
+        </h3>
+
+        <p>
+          Erros, falhas ou comportamento inesperado.
+        </p>
+
+      </a>
+
+
+      <a
+        class="topic"
+        href="atendimento.html?assunto=Sugestao#solicitacao"
+      >
+
+        <div class="topic-icon">💡</div>
+
+        <h3>
+          Enviar sugestão
+        </h3>
+
+        <p>
+          Ideias para melhorar o PhotoLive Magic.
+        </p>
+
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- PROCESSO -->
+
+  
+
+<section class="photolive-motivation" aria-label="Mensagem PhotoLive Magic">
+  <div class="motivation-glow"></div>
+
+  <div class="motivation-content">
+    <span class="motivation-kicker">✨ PHOTO LIVE MAGIC</span>
+
+    <h2>
+      Cuidar dos seus arquivos é também
+      <strong>cuidar das suas memórias.</strong>
+    </h2>
+
+    <p>
+      Organize, recupere, edite e continue aproveitando
+      o que realmente importa.
+    </p>
+  </div>
+
+  <div class="motivation-symbols" aria-hidden="true">
+    <span>📸</span>
+    <span>✨</span>
+    <span>💙</span>
+  </div>
+</section>
+
+<section>
+
+    <div class="section-title">
+
+      <h2>
+        Como funciona o atendimento?
+      </h2>
+
+      <p>
+        Um processo simples para facilitar sua solicitação.
+      </p>
+
+    </div>
+
+
+    <div class="process">
+
+      <div class="card process-card">
+
+        <div class="number">
+          1
+        </div>
+
+        <h3>
+          Você envia
+        </h3>
+
+        <p>
+          Explique sua dúvida, problema ou sugestão.
+        </p>
+
+      </div>
+
+
+      <div class="card process-card">
+
+        <div class="number">
+          2
+        </div>
+
+        <h3>
+          Nós analisamos
+        </h3>
+
+        <p>
+          As informações enviadas ajudam a identificar a melhor orientação.
+        </p>
+
+      </div>
+
+
+      <div class="card process-card">
+
+        <div class="number">
+          3
+        </div>
+
+        <h3>
+          Você recebe orientação
+        </h3>
+
+        <p>
+          O retorno será realizado através do canal de atendimento.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- FAQ -->
+
+  <section id="faq">
+
+    <div class="section-title">
+
+      <h2>
+        Perguntas frequentes
+      </h2>
+
+      <p>
+        Talvez sua dúvida já tenha uma resposta.
+      </p>
+
+    </div>
+
+
+    <div class="faq">
+
+      <details>
+        <summary>
+          Como acesso minha conta?
+        </summary>
+
+        <p>
+          Entre pela área de acesso do PhotoLive Magic. Depois do login,
+          você poderá utilizar o Meu Espaço e acessar os recursos disponíveis.
+        </p>
+      </details>
+
+
+      <details>
+        <summary>
+          Onde vejo meus pedidos?
+        </summary>
+
+        <p>
+          Na área Minha Conta, abra “Meus pedidos” para consultar
+          o histórico disponível da sua conta.
+        </p>
+      </details>
+
+
+      <details>
+        <summary>
+          Onde vejo meus pagamentos?
+        </summary>
+
+        <p>
+          A área “Pagamentos” apresenta as informações financeiras
+          disponíveis para sua conta.
+        </p>
+      </details>
+
+
+      <details>
+        <summary>
+          Posso enviar uma sugestão?
+        </summary>
+
+        <p>
+          Sim. Você pode utilizar o formulário de atendimento ou
+          selecionar a categoria “Enviar sugestão”.
+        </p>
+      </details>
+
+
+      <details>
+        <summary>
+          Encontrei um problema no site. O que faço?
+        </summary>
+
+        <p>
+          Abra uma solicitação informando a página, serviço utilizado,
+          o que aconteceu e, se possível, o que você esperava que acontecesse.
+        </p>
+      </details>
+
+    </div>
+
+  </section>
+
+
+  <!-- SEGURANÇA -->
+
+  <section class="privacy">
+
+    <strong>
+      🔒 Privacidade e segurança
+    </strong>
+
+    <p>
+      O PhotoLive Magic não precisa da sua senha, código de acesso
+      ou número completo de cartão para prestar suporte. Compartilhe
+      somente as informações necessárias para resolver sua solicitação.
+    </p>
+
+  </section>
+
+</main>
+
+
+<script>
+
+(function(){
+
+
+  /* ==========================================
+     ASSUNTO PRÉ-SELECIONADO PELO SERVIÇO
+     ========================================== */
+  (function(){
+    const params = new URLSearchParams(window.location.search);
+    const assunto = params.get("assunto");
+    const select = document.getElementById("subject");
+
+    if(!assunto || !select) return;
+
+    const normalized = assunto
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    const option = Array.from(select.options).find(opt => {
+      const value = opt.value || opt.textContent;
+      return value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") === normalized;
+    });
+
+    if(option){
+      select.value = option.value;
+      select.dispatchEvent(new Event("change", { bubbles:true }));
+    }
+
+    const target = document.getElementById("solicitacao");
+    if(target){
+      setTimeout(() => {
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }, 150);
+    }
+  })();
+
+  const form = document.getElementById("supportForm");
+
+  const status = document.getElementById("formStatus");
+
+  if(!form) return;
+
+
+  form.addEventListener("submit", function(event){
+
+    event.preventDefault();
+
+
+    const name =
+      document.getElementById("name").value.trim();
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const subject =
+      document.getElementById("subject").value.trim();
+
+    const message =
+      document.getElementById("message").value.trim();
+
+    const priority =
+      document.querySelector(
+        'input[name="priority"]:checked'
+      )?.value || "Normal";
+
+
+    if(!name || !email || !subject || !message){
+
+      status.style.display = "block";
+
+      status.style.background = "#fff2f3";
+
+      status.style.color = "#a52235";
+
+      status.textContent =
+        "Preencha todos os campos antes de enviar.";
+
+      return;
+
+    }
+
+
+    const emailSubject =
+      "[PhotoLive Magic] " +
+      subject +
+      " — Prioridade: " +
+      priority;
+
+
+    const emailBody =
+      "SOLICITAÇÃO DE ATENDIMENTO\\n\\n" +
+      "Nome: " + name + "\\n" +
+      "E-mail: " + email + "\\n" +
+      "Assunto: " + subject + "\\n" +
+      "Prioridade: " + priority + "\\n\\n" +
+      "DESCRIÇÃO\\n" +
+      message + "\\n\\n" +
+      "Enviado pela Central de Atendimento PhotoLive Magic.";
+
+
+    const mailto =
+      "mailto:suporte@photolivemagic.com" +
+      "?subject=" +
+      encodeURIComponent(emailSubject) +
+      "&body=" +
+      encodeURIComponent(emailBody);
+
+
+    status.style.display = "block";
+
+    status.style.background = "#edfff5";
+
+    status.style.color = "#087543";
+
+    status.textContent =
+      "Solicitação preparada. Abrindo seu aplicativo de e-mail...";
+
+
+    window.location.href = mailto;
+
+  });
+
+})();
+
+</script>
+
+
+<style id="photolive-bloco-motivacional">
+
+/* =========================================================
+   BLOCO MOTIVACIONAL — PHOTOLIVE MAGIC
+   ========================================================= */
+
+.photolive-motivation{
+  position:relative;
+  z-index:30;
+  width:min(920px,calc(100% - 40px));
+  margin:10px auto 55px;
+  min-height:190px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:28px;
+  padding:38px 46px;
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at 15% 20%,rgba(8,198,200,.38),transparent 30%),
+    radial-gradient(circle at 85% 80%,rgba(23,105,255,.40),transparent 34%),
+    linear-gradient(135deg,#082b55 0%,#07566b 48%,#08aeb8 100%);
+
+  border:1px solid rgba(255,255,255,.35);
+  border-radius:26px;
+
+  box-shadow:
+    0 22px 48px rgba(8,43,85,.22),
+    0 0 35px rgba(8,198,200,.12);
+}
+
+/* brilho decorativo */
+.motivation-glow{
+  position:absolute;
+  width:190px;
+  height:190px;
+  right:12%;
+  top:-90px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+  filter:blur(5px);
+  pointer-events:none;
+}
+
+/* efeito de papel rasgado na parte inferior */
+.photolive-motivation::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-1px;
+  height:18px;
+  background:#f8fcff;
+  clip-path:polygon(
+    0 45%,4% 68%,8% 40%,12% 72%,16% 45%,
+    20% 65%,24% 38%,28% 70%,32% 43%,36% 64%,
+    40% 37%,44% 69%,48% 44%,52% 63%,56% 39%,
+    60% 70%,64% 43%,68% 64%,72% 38%,76% 69%,
+    80% 44%,84% 63%,88% 39%,92% 70%,96% 43%,
+    100% 58%,100% 100%,0 100%
+  );
+}
+
+/* conteúdo */
+.motivation-content{
+  position:relative;
+  z-index:2;
+  max-width:700px;
+}
+
+.motivation-kicker{
+  display:inline-block;
+  margin-bottom:10px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:#9ffcff;
+}
+
+.motivation-content h2{
+  margin:0;
+  color:#ffffff;
+  font-size:clamp(25px,3vw,36px);
+  line-height:1.16;
+  letter-spacing:-.5px;
+}
+
+.motivation-content h2 strong{
+  color:#8ffcff;
+}
+
+.motivation-content p{
+  margin:14px 0 0;
+  color:rgba(255,255,255,.88);
+  font-size:clamp(16px,1.5vw,19px);
+  line-height:1.6;
+}
+
+/* símbolos */
+.motivation-symbols{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+}
+
+.motivation-symbols span{
+  width:54px;
+  height:54px;
+  display:grid;
+  place-items:center;
+  border-radius:18px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.22);
+  font-size:25px;
+  box-shadow:0 8px 22px rgba(0,0,0,.10);
+}
+
+/* mobile */
+@media(max-width:700px){
+
+  .photolive-motivation{
+    width:calc(100% - 28px);
+    margin:5px auto 45px;
+    padding:30px 25px 38px;
+    min-height:auto;
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .motivation-content h2{
+    font-size:26px;
+  }
+
+  .motivation-content p{
+    font-size:16px;
+  }
+
+  .motivation-symbols{
+    align-self:flex-end;
+  }
+}
+
+@media(max-width:380px){
+
+  .photolive-motivation{
+    width:calc(100% - 20px);
+    padding:26px 20px 34px;
+  }
+
+  .motivation-content h2{
+    font-size:23px;
+  }
+
+  .motivation-symbols span{
+    width:46px;
+    height:46px;
+    font-size:21px;
+  }
+}
+
+</style>
+</body>
+</html>
+
+<style id="photolive-atendimento-visual-final">
+
+/* =========================================================
+   PHOTOLIVE MAGIC — CENTRAL DE ATENDIMENTO
+   VISUAL AZUL + TURQUESA + PAPEL RASGADO
+   ========================================================= */
+
+:root{
+  --plm-blue:#1769ff;
+  --plm-blue-dark:#082b55;
+  --plm-turquoise:#08c6c8;
+  --plm-turquoise-dark:#087f92;
+  --plm-green:#25c77a;
+  --plm-purple:#8b5cf6;
+  --plm-yellow:#ffd84d;
+  --plm-red:#ff5263;
+  --plm-ice:#eefbfd;
+}
+
+/* FUNDO GERAL */
+body{
+  background:
+    radial-gradient(circle at 8% 12%, rgba(8,198,200,.20), transparent 26%),
+    radial-gradient(circle at 92% 18%, rgba(23,105,255,.18), transparent 27%),
+    radial-gradient(circle at 15% 82%, rgba(139,92,246,.12), transparent 25%),
+    linear-gradient(135deg,#e9faff 0%,#f8fcff 48%,#eaf9fb 100%);
+  color:#183a55;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* LATERAIS AZUL/TURQUESA */
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  top:0;
+  bottom:0;
+  width:12px;
+  z-index:20;
+  pointer-events:none;
+}
+
+body::before{
+  left:0;
+  background:
+    linear-gradient(
+      180deg,
+      #1769ff 0%,
+      #08c6c8 28%,
+      #1769ff 54%,
+      #08c6c8 78%,
+      #1769ff 100%
+    );
+  box-shadow:4px 0 18px rgba(8,198,200,.22);
+}
+
+body::after{
+  right:0;
+  background:
+    linear-gradient(
+      180deg,
+      #08c6c8 0%,
+      #1769ff 28%,
+      #08c6c8 55%,
+      #1769ff 80%,
+      #08c6c8 100%
+    );
+  box-shadow:-4px 0 18px rgba(23,105,255,.22);
+}
+
+/* DEIXA O CONTEÚDO RESPIRAR DAS LATERAIS */
+main,
+header,
+footer{
+  position:relative;
+  z-index:2;
+}
+
+/* TOPO */
+.topbar{
+  background:
+    linear-gradient(
+      100deg,
+      rgba(8,43,85,.98),
+      rgba(7,91,112,.97),
+      rgba(8,143,157,.96)
+    ) !important;
+  border-bottom:3px solid rgba(8,198,200,.65) !important;
+  box-shadow:0 8px 30px rgba(8,43,85,.18) !important;
+}
+
+/* HERO */
+.hero{
+  background:
+    radial-gradient(circle at 12% 20%,rgba(8,198,200,.32),transparent 30%),
+    radial-gradient(circle at 88% 15%,rgba(23,105,255,.30),transparent 32%),
+    linear-gradient(135deg,#082b55 0%,#07566b 52%,#087f92 100%) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  box-shadow:0 18px 45px rgba(8,43,85,.20) !important;
+  overflow:hidden;
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:auto -4% -28px -4%;
+  height:54px;
+  background:#eefbfd;
+  clip-path:polygon(
+    0 38%, 4% 55%, 8% 42%, 12% 68%, 16% 48%,
+    20% 72%, 24% 45%, 28% 62%, 33% 40%, 38% 67%,
+    43% 45%, 48% 70%, 53% 44%, 58% 62%, 63% 42%,
+    68% 69%, 73% 47%, 78% 63%, 83% 40%, 88% 68%,
+    93% 45%, 97% 60%, 100% 42%, 100% 100%, 0 100%
+  );
+  pointer-events:none;
+}
+
+/* BARRA DE ATALHOS */
+.quick{
+  background:linear-gradient(145deg,#ffffff,#e9fbfc) !important;
+  border:1px solid rgba(8,198,200,.30) !important;
+  box-shadow:0 10px 26px rgba(8,43,85,.10) !important;
+}
+
+.quick:hover{
+  border-color:#08c6c8 !important;
+  transform:translateY(-3px);
+  box-shadow:0 16px 32px rgba(8,198,200,.18) !important;
+}
+
+/* DIVISÕES ENTRE GRANDES BLOCOS */
+main > section{
+  position:relative;
+}
+
+/* EFEITO PAPEL RASGADO ENTRE SEÇÕES */
+main > section + section::before{
+  content:"";
+  position:absolute;
+  left:2%;
+  right:2%;
+  top:-13px;
+  height:26px;
+  background:#ffffff;
+  clip-path:polygon(
+    0 46%, 3% 30%, 6% 54%, 9% 36%, 12% 58%,
+    15% 34%, 18% 52%, 21% 30%, 24% 55%, 27% 38%,
+    30% 61%, 33% 34%, 36% 52%, 39% 32%, 42% 59%,
+    45% 37%, 48% 55%, 51% 31%, 54% 57%, 57% 36%,
+    60% 60%, 63% 34%, 66% 54%, 69% 31%, 72% 58%,
+    75% 37%, 78% 55%, 81% 32%, 84% 59%, 87% 35%,
+    90% 53%, 93% 31%, 96% 57%, 100% 39%, 100% 100%, 0 100%
+  );
+  filter:drop-shadow(0 -2px 2px rgba(8,43,85,.10));
+  z-index:4;
+  pointer-events:none;
+}
+
+/* ÁREA DO FORMULÁRIO */
+.support-layout{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.96),rgba(232,250,252,.96)) !important;
+  border:1px solid rgba(8,198,200,.28) !important;
+  border-left:6px solid #08c6c8 !important;
+  border-right:6px solid #1769ff !important;
+  box-shadow:0 18px 42px rgba(8,43,85,.12) !important;
+  position:relative;
+  overflow:hidden;
+}
+
+.support-layout::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-2px;
+  height:22px;
+  background:#f8fcff;
+  clip-path:polygon(
+    0 45%,4% 65%,8% 40%,12% 72%,16% 46%,20% 66%,
+    24% 38%,28% 70%,32% 44%,36% 62%,40% 36%,44% 69%,
+    48% 42%,52% 64%,56% 39%,60% 71%,64% 43%,68% 63%,
+    72% 37%,76% 69%,80% 44%,84% 62%,88% 39%,92% 70%,
+    96% 43%,100% 58%,100% 100%,0 100%
+  );
+  pointer-events:none;
+}
+
+/* CAMPOS */
+.field input,
+.field select,
+.field textarea{
+  background:#ffffff !important;
+  border:2px solid #d4edf1 !important;
+  box-shadow:inset 0 1px 2px rgba(8,43,85,.04) !important;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:#08c6c8 !important;
+  box-shadow:
+    0 0 0 4px rgba(8,198,200,.12),
+    0 8px 20px rgba(8,198,200,.08) !important;
+}
+
+/* BOTÃO DE ENVIO */
+#supportForm button[type="submit"],
+button[type="submit"]{
+  background:
+    linear-gradient(135deg,#1769ff,#08aeb8,#08c6c8) !important;
+  border:0 !important;
+  box-shadow:0 12px 26px rgba(23,105,255,.25) !important;
+  color:#fff !important;
+}
+
+#supportForm button[type="submit"]:hover,
+button[type="submit"]:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 32px rgba(8,198,200,.28) !important;
+}
+
+/* PAINÉIS LATERAIS */
+.support-card{
+  background:linear-gradient(145deg,#ffffff,#eefbfd) !important;
+  border:1px solid rgba(8,198,200,.25) !important;
+  border-left:5px solid #1769ff !important;
+  box-shadow:0 12px 28px rgba(8,43,85,.10) !important;
+}
+
+/* TÍTULO DOS ASSUNTOS */
+#assuntos{
+  background:
+    linear-gradient(180deg,rgba(238,251,253,.75),rgba(255,255,255,.92));
+  border-top:1px solid rgba(8,198,200,.18);
+  border-bottom:1px solid rgba(23,105,255,.14);
+  padding-top:45px !important;
+  padding-bottom:45px !important;
+}
+
+/* CARDS COLORIDOS */
+.topic{
+  color:#183a55 !important;
+  border:2px solid transparent !important;
+  box-shadow:0 12px 28px rgba(8,43,85,.11) !important;
+  position:relative;
+  overflow:hidden;
+  transition:
+    transform .22s ease,
+    box-shadow .22s ease,
+    border-color .22s ease;
+}
+
+.topic::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:5px;
+}
+
+.topic:nth-child(1){
+  background:linear-gradient(145deg,#eef5ff,#ffffff) !important;
+  border-color:#b9d1ff !important;
+}
+.topic:nth-child(1)::before{background:#1769ff;}
+
+.topic:nth-child(2){
+  background:linear-gradient(145deg,#e8ffff,#ffffff) !important;
+  border-color:#a9e9eb !important;
+}
+.topic:nth-child(2)::before{background:#08c6c8;}
+
+.topic:nth-child(3){
+  background:linear-gradient(145deg,#f1ebff,#ffffff) !important;
+  border-color:#d6c7ff !important;
+}
+.topic:nth-child(3)::before{background:#8b5cf6;}
+
+.topic:nth-child(4){
+  background:linear-gradient(145deg,#fff9dc,#ffffff) !important;
+  border-color:#f2dc83 !important;
+}
+.topic:nth-child(4)::before{background:#ffd84d;}
+
+.topic:nth-child(5){
+  background:linear-gradient(145deg,#e9fff4,#ffffff) !important;
+  border-color:#afe8c9 !important;
+}
+.topic:nth-child(5)::before{background:#25c77a;}
+
+.topic:nth-child(6){
+  background:linear-gradient(145deg,#e8fbff,#ffffff) !important;
+  border-color:#a7e1eb !important;
+}
+.topic:nth-child(6)::before{background:#08aeb8;}
+
+.topic:nth-child(7){
+  background:linear-gradient(145deg,#fff0f2,#ffffff) !important;
+  border-color:#ffc2c9 !important;
+}
+.topic:nth-child(7)::before{background:#ff5263;}
+
+.topic:nth-child(8){
+  background:linear-gradient(145deg,#f4edff,#ffffff) !important;
+  border-color:#d9c8ff !important;
+}
+.topic:nth-child(8)::before{background:#8b5cf6;}
+
+.topic:hover{
+  transform:translateY(-5px);
+  box-shadow:0 18px 34px rgba(8,43,85,.16) !important;
+}
+
+/* ÍCONES DOS CARDS */
+.topic-icon{
+  border-radius:18px !important;
+  box-shadow:0 8px 18px rgba(8,43,85,.10);
+}
+
+/* PROCESSO */
+.process-step,
+.step,
+.process-card{
+  background:linear-gradient(145deg,#ffffff,#edfafd) !important;
+  border:1px solid rgba(8,198,200,.22) !important;
+  box-shadow:0 10px 24px rgba(8,43,85,.08) !important;
+}
+
+/* FAQ */
+#faq{
+  background:
+    linear-gradient(135deg,#f7fdff,#e9f9fb) !important;
+  border-top:1px solid rgba(8,198,200,.20);
+}
+
+/* BLOCOS DE FAQ */
+.faq-item,
+.faq-card{
+  background:#ffffff !important;
+  border-left:4px solid #08c6c8 !important;
+  box-shadow:0 8px 22px rgba(8,43,85,.07) !important;
+}
+
+/* SEÇÃO DE PRIVACIDADE */
+.security,
+.privacy,
+.security-box{
+  background:
+    linear-gradient(135deg,#e9fff5,#ffffff) !important;
+  border:1px solid rgba(37,199,122,.25) !important;
+  border-left:5px solid #25c77a !important;
+}
+
+/* DEIXA OS CARDS MAIS VIVOS */
+.topic h3{
+  color:#082b55 !important;
+}
+
+.topic p{
+  color:#527084 !important;
+}
+
+/* MOBILE */
+@media(max-width:700px){
+
+  body::before,
+  body::after{
+    width:6px;
+  }
+
+  .hero{
+    margin-left:5px;
+    margin-right:5px;
+  }
+
+  .support-layout{
+    border-left-width:4px !important;
+    border-right-width:4px !important;
+  }
+
+  main > section + section::before{
+    left:0;
+    right:0;
+  }
+
+  #assuntos{
+    padding-top:35px !important;
+    padding-bottom:35px !important;
+  }
+
+  .topic{
+    min-height:150px;
+  }
+}
+
+@media(max-width:380px){
+
+  body::before,
+  body::after{
+    width:4px;
+  }
+
+  .topic{
+    min-height:auto;
+  }
+}
+
+/* ACESSIBILIDADE */
+@media(prefers-reduced-motion:reduce){
+  .topic,
+  .quick,
+  #supportForm button[type="submit"],
+  button[type="submit"]{
+    transition:none !important;
+  }
+}
+
+</style>
+
+
+<style id="photolive-ajuste-processo">
+
+/* =========================================================
+   AJUSTE — COMO FUNCIONA O ATENDIMENTO
+   ========================================================= */
+
+#processo,
+#como-funciona,
+section:has(h2:nth-child(1)){
+  position:relative;
+  z-index:5;
+}
+
+/* Afasta a seção da divisão de papel rasgado */
+#processo{
+  padding-top:72px !important;
+  padding-bottom:68px !important;
+}
+
+/* Evita que a borda decorativa cubra o conteúdo */
+#processo::before{
+  z-index:1 !important;
+  pointer-events:none;
+}
+
+#processo > *,
+#processo .process-grid,
+#processo .process-steps{
+  position:relative;
+  z-index:6;
+}
+
+/* TÍTULO MAIOR */
+#processo h2{
+  font-size:clamp(28px,3vw,38px) !important;
+  line-height:1.15 !important;
+  margin-bottom:16px !important;
+}
+
+/* TEXTO INTRODUTÓRIO */
+#processo > p{
+  font-size:clamp(17px,1.5vw,20px) !important;
+  line-height:1.7 !important;
+  max-width:760px;
+}
+
+/* TEXTOS DOS PASSOS */
+#processo h3{
+  font-size:clamp(19px,1.6vw,23px) !important;
+  line-height:1.25 !important;
+}
+
+#processo p{
+  font-size:clamp(16px,1.35vw,18px) !important;
+  line-height:1.65 !important;
+}
+
+/* NÚMERO DOS PASSOS */
+#processo .step-number,
+#processo .process-number{
+  font-size:22px !important;
+  font-weight:800 !important;
+}
+
+/* CARDS DOS PASSOS */
+#processo .process-step,
+#processo .step,
+#processo .process-card{
+  min-height:190px;
+  padding:28px !important;
+}
+
+/* MOBILE */
+@media(max-width:700px){
+
+  #processo{
+    padding-top:62px !important;
+    padding-bottom:52px !important;
+  }
+
+  #processo h2{
+    font-size:28px !important;
+  }
+
+  #processo > p{
+    font-size:17px !important;
+  }
+
+  #processo h3{
+    font-size:20px !important;
+  }
+
+  #processo p{
+    font-size:16px !important;
+  }
+
+  #processo .process-step,
+  #processo .step,
+  #processo .process-card{
+    min-height:0;
+    padding:23px !important;
+  }
+}
+
+</style>
+
+<style id="photolive-ajuste-divisao-assuntos">
+
+/* =========================================================
+   CORREÇÃO DA DIVISÃO ENTRE ASSUNTOS E COMO FUNCIONA
+   ========================================================= */
+
+/* Mantém a área de assuntos acima da decoração */
+#assuntos{
+  position:relative;
+  z-index:10 !important;
+  overflow:visible !important;
+  padding-bottom:90px !important;
+}
+
+/* Os cards ficam sempre acima do efeito */
+#assuntos .topic-grid,
+#assuntos .topic{
+  position:relative;
+  z-index:12 !important;
+}
+
+/* Afasta o efeito rasgado dos últimos cards */
+#assuntos::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-18px;
+  height:36px;
+  background:#f8fcff;
+  z-index:11;
+  clip-path:polygon(
+    0 45%, 3% 65%, 6% 40%, 9% 70%, 12% 46%,
+    15% 64%, 18% 38%, 21% 68%, 24% 43%,
+    27% 62%, 30% 36%, 33% 69%, 36% 44%,
+    39% 63%, 42% 38%, 45% 68%, 48% 43%,
+    51% 62%, 54% 36%, 57% 70%, 60% 44%,
+    63% 64%, 66% 38%, 69% 69%, 72% 43%,
+    75% 63%, 78% 37%, 81% 68%, 84% 44%,
+    87% 62%, 90% 38%, 93% 69%, 96% 43%,
+    100% 60%, 100% 100%, 0 100%
+  );
+  pointer-events:none;
+}
+
+/* A seção seguinte começa mais abaixo */
+#assuntos + section{
+  position:relative;
+  z-index:15 !important;
+  margin-top:28px !important;
+  padding-top:78px !important;
+}
+
+/* Título totalmente livre da decoração */
+#assuntos + section h2{
+  position:relative;
+  z-index:20 !important;
+  margin-top:10px !important;
+}
+
+/* Texto abaixo do título */
+#assuntos + section > p{
+  position:relative;
+  z-index:20 !important;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:700px){
+
+  #assuntos{
+    padding-bottom:70px !important;
+  }
+
+  #assuntos + section{
+    margin-top:20px !important;
+    padding-top:60px !important;
+  }
+}
+
+</style>
+
+
+<style id="photolive-remover-efeito-baixo-motivacional">
+.photolive-motivation::after,
+.photolive-motivation::before{
+  display:none !important;
+  content:none !important;
+}
+
+.photolive-motivation{
+  clip-path:none !important;
+  overflow:hidden;
+  border-radius:24px !important;
+}
+</style>
+
+
+<style id="photolive-posicao-motivacional-final">
+
+/* Card motivacional: sobe sem mover a seção seguinte */
+.photolive-motivation{
+  position: relative !important;
+  top: -55px !important;
+  margin-bottom: -35px !important;
+}
+
+/* Como funciona permanece exatamente no fluxo normal */
+.photolive-motivation + section{
+  position: relative !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+}
+
+@media (max-width:700px){
+  .photolive-motivation{
+    top: -40px !important;
+    margin-bottom: -20px !important;
+  }
+
+  .photolive-motivation + section{
+    top: 0 !important;
+    margin-top: 0 !important;
+  }
+}
+
+</style>
+
+<style id="photolive-card-motivacional-azul-unico">
+
+/* CARD MOTIVACIONAL — DEIXAR UMA ÚNICA ÁREA AZUL */
+.photolive-motivation{
+  background: linear-gradient(
+    135deg,
+    #063b52 0%,
+    #07566b 48%,
+    #0b8798 100%
+  ) !important;
+
+  border: 0 !important;
+  border-radius: 24px !important;
+  box-shadow: none !important;
+}
+
+/* Remove qualquer divisão ou camada branca */
+.photolive-motivation::before,
+.photolive-motivation::after{
+  display: none !important;
+  content: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Mantém todos os textos dentro do azul */
+.photolive-motivation h2,
+.photolive-motivation p,
+.photolive-motivation span,
+.photolive-motivation strong{
+  position: relative;
+  z-index: 2;
+}
+
+/* Ícones/símbolos continuam visíveis */
+.photolive-motivation{
+  overflow: hidden !important;
+}
+
+</style>
+
+
+<style id="photolive-remover-faixa-branca-real">
+
+/* =====================================================
+   CARD MOTIVACIONAL — ÁREA ÚNICA AZUL
+   ===================================================== */
+
+section.photolive-motivation{
+  background: linear-gradient(
+    135deg,
+    #063b52 0%,
+    #07566b 50%,
+    #0b8798 100%
+  ) !important;
+
+  background-color: #07566b !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  border-radius: 24px !important;
+  overflow: hidden !important;
+}
+
+/* Remove a camada de brilho que pode estar criando a divisão */
+section.photolive-motivation .motivation-glow{
+  display: none !important;
+}
+
+/* Conteúdo fica integrado ao azul */
+section.photolive-motivation .motivation-content,
+section.photolive-motivation .motivation-symbols{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove pseudo-elementos que possam criar a faixa branca */
+section.photolive-motivation::before,
+section.photolive-motivation::after{
+  content: none !important;
+  display: none !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Não cria espaço branco entre o motivacional e a próxima seção */
+section.photolive-motivation + section{
+  background: transparent !important;
+}
+
+/* Mantém a seção "Como funciona" onde está */
+section.photolive-motivation + section{
+  position: relative !important;
+  top: 0 !important;
+}
+
+/* Responsivo */
+@media (max-width:700px){
+  section.photolive-motivation{
+    border-radius: 20px !important;
+  }
+}
+
+</style>
+
+
+<style id="photolive-texto-frente-parte-branca">
+
+/* Card motivacional */
+section.photolive-motivation{
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* Texto fica na frente das camadas do card */
+section.photolive-motivation .motivation-content{
+  position: relative !important;
+  z-index: 20 !important;
+}
+
+/* Título e texto ficam sempre acima */
+section.photolive-motivation h2,
+section.photolive-motivation p,
+section.photolive-motivation .motivation-kicker{
+  position: relative !important;
+  z-index: 21 !important;
+}
+
+/* Símbolos também ficam na frente */
+section.photolive-motivation .motivation-symbols{
+  position: relative !important;
+  z-index: 22 !important;
+}
+
+/* Mantém o fundo/camadas atrás do conteúdo */
+section.photolive-motivation .motivation-glow{
+  z-index: 1 !important;
+}
+
+</style>
+
+
+<style id="photolive-como-funciona-frente">
+
+/* Coloca "Como funciona o atendimento?" acima da camada branca */
+section.photolive-motivation + section{
+  position: relative !important;
+  z-index: 50 !important;
+}
+
+/* Título e conteúdo da seção também ficam na frente */
+section.photolive-motivation + section .section-title,
+section.photolive-motivation + section .process{
+  position: relative !important;
+  z-index: 51 !important;
+}
+
+/* Garante que o título não fique escondido */
+section.photolive-motivation + section h2,
+section.photolive-motivation + section p{
+  position: relative !important;
+  z-index: 52 !important;
+}
+
+</style>
+

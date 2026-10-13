@@ -1,0 +1,2717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Resgata+ Admin</title>
+
+  <link rel="stylesheet" href="/admin/style.css">
+</head>
+
+<body>
+
+<div class="admin-app">
+
+  <!-- ======================================================
+       SIDEBAR
+       ====================================================== -->
+
+  <aside class="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-symbol">+</div>
+
+      <div>
+        <strong>RESGATA+</strong>
+        <span>ADMIN</span>
+      </div>
+    </div>
+
+    <nav class="admin-nav">
+
+      <button class="nav-item active" data-page="dashboard">
+        <span>🏠</span>
+        Dashboard
+      </button>
+
+      <button class="nav-item" data-page="users">
+        <span>👤</span>
+        Usuários
+      </button>
+
+      <button class="nav-item" data-page="devices">
+        <span>📱</span>
+        Dispositivos
+      </button>
+
+      <button class="nav-item" data-page="services">
+        <span>🧩</span>
+        Serviços
+      </button>
+
+      <button class="nav-item" data-page="requests">
+        <span>📋</span>
+        Solicitações
+      </button>
+
+      <button class="nav-item" data-page="tickets">
+        <span>🎧</span>
+        Atendimento
+      </button>
+
+      <button class="nav-item" data-page="specialists">
+        <span>👨‍🔧</span>
+        Especialistas
+      </button>
+
+      <button class="nav-item" data-page="updates">
+        <span>🔄</span>
+        Atualizações
+      </button>
+
+      <button class="nav-item" data-page="plans">
+        <span>💳</span>
+        Planos
+      </button>
+
+      <button class="nav-item" data-page="security">
+        <span>🛡️</span>
+        Segurança
+      </button>
+
+      <button class="nav-item" data-page="protection">
+        <span>🚨</span>
+        Limpeza e Proteção
+      </button>
+
+      <button class="nav-item" data-page="reports">
+        <span>📊</span>
+        Relatórios
+      </button>
+
+      <button class="nav-item" data-page="logs">
+        <span>📝</span>
+        Logs
+      </button>
+
+      <button class="nav-item" data-page="settings">
+        <span>⚙️</span>
+        Configurações
+      </button>
+
+      <button class="nav-item" data-page="admins">
+        <span>👨‍💼</span>
+        Administradores
+      </button>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <div class="admin-mini">
+
+        <div class="admin-avatar">
+          A
+        </div>
+
+        <div>
+          <strong id="sidebarAdminName">
+            Administrador
+          </strong>
+
+          <span id="sidebarAdminRole">
+            superadmin
+          </span>
+        </div>
+
+      </div>
+
+      <button id="logoutButton" class="logout-button">
+        🚪 Sair
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ======================================================
+       MAIN
+       ====================================================== -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div>
+
+        <button id="mobileMenu" class="mobile-menu">
+          ☰
+        </button>
+
+        <div class="topbar-title">
+
+          <span id="pageEyebrow">
+            RESGATA+
+          </span>
+
+          <h1 id="pageTitle">
+            Dashboard
+          </h1>
+
+        </div>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <div class="system-status">
+          <span class="status-dot"></span>
+          Sistema operacional
+        </div>
+
+        <button
+          id="refreshButton"
+          class="icon-button"
+          title="Atualizar"
+        >
+          ↻
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <section class="content">
+
+      <!-- ==================================================
+           DASHBOARD
+           ================================================== -->
+
+      <div id="page-dashboard" class="page active">
+
+        <div class="page-header">
+
+          <div>
+
+            <span class="eyebrow">
+              VISÃO GERAL
+            </span>
+
+            <h2>
+              Central de operação
+            </h2>
+
+            <p>
+              Acompanhe o estado da plataforma Resgata+.
+            </p>
+
+          </div>
+
+          <div id="lastUpdate" class="last-update">
+            Atualizando...
+          </div>
+
+        </div>
+
+
+        <!-- MÉTRICAS -->
+
+        <div class="metrics-grid">
+
+          <article class="metric-card blue">
+
+            <div class="metric-icon">
+              👤
+            </div>
+
+            <div>
+              <span>Usuários</span>
+              <strong id="metricUsers">0</strong>
+              <small id="metricUsersActive">
+                0 ativos
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card purple">
+
+            <div class="metric-icon">
+              📱
+            </div>
+
+            <div>
+              <span>Dispositivos</span>
+              <strong id="metricDevices">0</strong>
+              <small>
+                conectados
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card orange">
+
+            <div class="metric-icon">
+              📋
+            </div>
+
+            <div>
+              <span>Solicitações</span>
+              <strong id="metricRequests">0</strong>
+              <small>
+                registradas
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card green">
+
+            <div class="metric-icon">
+              🎧
+            </div>
+
+            <div>
+              <span>Atendimentos</span>
+              <strong id="metricTickets">0</strong>
+              <small>
+                tickets
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card red">
+
+            <div class="metric-icon">
+              🛡️
+            </div>
+
+            <div>
+              <span>Alertas</span>
+              <strong id="metricSecurity">0</strong>
+              <small>
+                pendentes
+              </small>
+            </div>
+
+          </article>
+
+
+          <article class="metric-card teal">
+
+            <div class="metric-icon">
+              🚨
+            </div>
+
+            <div>
+              <span>Proteção</span>
+              <strong id="metricProtection">0</strong>
+              <small>
+                análises
+              </small>
+            </div>
+
+          </article>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             CENTRAL DE COMANDO V1
+             ================================================== -->
+
+        <div id="dashboardCommandCenter">
+
+
+<section id="dashboardAlertsPanel"
+class="panel"
+style="margin-bottom:20px">
+
+<div class="panel-header">
+
+<div>
+<span class="panel-eyebrow">
+ATENÇÃO
+</span>
+
+<h3>
+Alertas operacionais
+</h3>
+
+</div>
+
+</div>
+
+
+<div class="dashboard-alert-list">
+
+
+<div class="dashboard-alert-item">
+<span>
+🗑 Remoções
+</span>
+
+<strong>
+Verificando...
+</strong>
+
+</div>
+
+
+<div class="dashboard-alert-item">
+<span>
+🆘 Emergências
+</span>
+
+<strong>
+Verificando...
+</strong>
+
+</div>
+
+
+<div class="dashboard-alert-item">
+<span>
+🛡 Segurança
+</span>
+
+<strong>
+Verificando...
+</strong>
+
+</div>
+
+
+<div class="dashboard-alert-item">
+<span>
+📋 Solicitações
+</span>
+
+<strong>
+Verificando...
+</strong>
+
+</div>
+
+
+<div class="dashboard-alert-item">
+<span>
+🎧 Atendimento
+</span>
+
+<strong>
+Verificando...
+</strong>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+
+<section id="platformHealthPanel"
+class="panel"
+style="margin-bottom:20px">
+
+<div class="panel-header">
+
+<div>
+<span class="panel-eyebrow">
+SAÚDE DA PLATAFORMA
+</span>
+
+<h3>
+Estado operacional
+</h3>
+
+</div>
+
+</div>
+
+
+<div class="dashboard-health-grid">
+
+
+<div class="dashboard-status-card">
+<strong>🌐 API</strong>
+<div class="dashboard-status-value">
+ONLINE
+</div>
+<small>
+Respondendo normalmente
+</small>
+</div>
+
+
+<div class="dashboard-status-card">
+<strong>🗄 Banco</strong>
+<div class="dashboard-status-value">
+OK
+</div>
+<small>
+SQLite operacional
+</small>
+</div>
+
+
+<div class="dashboard-status-card">
+<strong>⚙ Serviços</strong>
+<div class="dashboard-status-value">
+ATIVOS
+</div>
+<small>
+Monitoramento preparado
+</small>
+</div>
+
+
+<div class="dashboard-status-card">
+<strong>🤖 IA</strong>
+<div class="dashboard-status-value">
+N/D
+</div>
+<small>
+Telemetria não disponível
+</small>
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<div id="dashboardRefreshControl"
+     style="margin-bottom:20px">
+
+  <button
+    onclick="loadDashboardCommandCenter()"
+    class="btn btn-primary">
+    🔄 Atualizar agora
+  </button>
+
+  <span style="margin-left:12px">
+    🟢 Atualização automática ativa (30s)
+  </span>
+
+</div>
+
+
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  CENTRAL DE COMANDO
+                </span>
+
+                <h3>
+                  Carregando indicadores operacionais...
+                </h3>
+              </div>
+
+            </div>
+
+            <div class="loading">
+              Consultando plataforma...
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- SEGUNDA LINHA -->
+
+        <div class="dashboard-grid">
+
+
+          <!-- ATIVIDADE -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  MONITORAMENTO
+                </span>
+
+                <h3>
+                  Atividade recente
+                </h3>
+              </div>
+
+              <button
+                class="small-button"
+                data-page-link="logs"
+              >
+                Ver logs
+              </button>
+
+            </div>
+
+            <div id="recentActivity" class="activity-list">
+
+              <div class="loading">
+                Carregando atividade...
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- ALERTAS -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  ATENÇÃO
+                </span>
+
+                <h3>
+                  Alertas
+                </h3>
+              </div>
+
+            </div>
+
+            <div id="alertsList" class="alerts-list">
+
+              <div class="loading">
+                Carregando alertas...
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- TERCEIRA LINHA -->
+
+        <div class="dashboard-grid">
+
+
+          <!-- SERVIÇOS -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  PLATAFORMA
+                </span>
+
+                <h3>
+                  Serviços
+                </h3>
+              </div>
+
+              <button
+                class="small-button"
+                data-page-link="services"
+              >
+                Gerenciar
+              </button>
+
+            </div>
+
+            <div
+              id="servicesOverview"
+              class="service-overview"
+            >
+
+              <div class="loading">
+                Carregando serviços...
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- ESPECIALISTAS -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <span class="panel-eyebrow">
+                  ATENDIMENTO
+                </span>
+
+                <h3>
+                  Especialistas
+                </h3>
+              </div>
+
+              <button
+                class="small-button"
+                data-page-link="specialists"
+              >
+                Gerenciar
+              </button>
+
+            </div>
+
+            <div
+              id="specialistsOverview"
+              class="specialist-overview"
+            >
+
+              <div class="loading">
+                Carregando especialistas...
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- PROTEÇÃO -->
+
+        <section class="panel protection-dashboard">
+
+          <div class="panel-header">
+
+            <div>
+
+              <span class="panel-eyebrow">
+                PROTEÇÃO
+              </span>
+
+              <h3>
+                Limpeza, Spam e Proteção
+              </h3>
+
+              <p>
+                Monitoramento administrativo do módulo de proteção.
+              </p>
+
+            </div>
+
+            <button
+              class="small-button"
+              data-page-link="protection"
+            >
+              Abrir módulo
+            </button>
+
+          </div>
+
+
+          <div class="protection-stats">
+
+            <div>
+              <span>
+                Relatórios
+              </span>
+
+              <strong id="protectionReports">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Pedidos de remoção
+              </span>
+
+              <strong id="removalRequests">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Remoções pendentes
+              </span>
+
+              <strong id="pendingRemovalRequests">
+                0
+              </strong>
+            </div>
+
+
+            <div>
+              <span>
+                Alertas segurança
+              </span>
+
+              <strong id="unresolvedSecurity">
+                0
+              </strong>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+
+      <!-- ==================================================
+           PÁGINAS DOS MÓDULOS
+           ================================================== -->
+
+      <div id="page-users" class="page">
+
+        <div class="page-header">
+
+          <div>
+
+            <span class="eyebrow">
+              ADMINISTRAÇÃO
+            </span>
+
+            <h2>
+              Usuários
+            </h2>
+
+            <p>
+              Gerencie contas, planos, status e histórico.
+            </p>
+
+          </div>
+
+          <div id="usersTotal" class="last-update">
+            0 usuários
+          </div>
+
+        </div>
+
+
+        <section class="panel">
+
+          <div class="users-toolbar">
+
+            <div class="search-box">
+
+              <span>🔎</span>
+
+              <input
+                id="usersSearch"
+                type="search"
+                placeholder="Pesquisar por nome, e-mail ou ID..."
+              >
+
+            </div>
+
+
+            <select id="usersStatus">
+
+              <option value="">
+                Todos os status
+              </option>
+
+              <option value="active">
+                Ativos
+              </option>
+
+              <option value="inactive">
+                Inativos
+              </option>
+
+              <option value="blocked">
+                Bloqueados
+              </option>
+
+              <option value="suspended">
+                Suspensos
+              </option>
+
+            </select>
+
+
+            <select id="usersPlan">
+
+              <option value="">
+                Todos os planos
+              </option>
+
+              <option value="free">
+                Gratuito
+              </option>
+
+              <option value="premium">
+                Premium
+              </option>
+
+            </select>
+
+
+            <button
+              id="usersRefresh"
+              class="small-button"
+            >
+              Atualizar
+            </button>
+
+          </div>
+
+
+          <div class="table-wrapper">
+
+            <table class="data-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>Usuário</th>
+                  <th>E-mail</th>
+                  <th>Plano</th>
+                  <th>Status</th>
+                  <th>Cadastro</th>
+                  <th></th>
+
+                </tr>
+
+              </thead>
+
+              <tbody id="usersTableBody">
+
+                <tr>
+                  <td
+                    colspan="6"
+                    class="table-loading"
+                  >
+                    Carregando usuários...
+                  </td>
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+      </div>
+
+
+      <div
+        id="userDrawer"
+        class="drawer-backdrop"
+      >
+
+        <aside class="user-drawer">
+
+          <div class="drawer-header">
+
+            <div>
+
+              <span class="eyebrow">
+                PERFIL
+              </span>
+
+              <h2 id="drawerUserName">
+                Usuário
+              </h2>
+
+            </div>
+
+            <button
+              id="closeUserDrawer"
+              class="drawer-close"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          <div id="drawerContent">
+
+            <div class="loading">
+              Carregando...
+            </div>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+
+      <div id="page-devices" class="page">
+        <div class="module-placeholder">
+          <span>📱</span>
+          <h2>Dispositivos</h2>
+          <p>
+            O módulo de dispositivos será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-services" class="page">
+        <div class="page-header services-page-header">
+          <div>
+            <span class="eyebrow">ADMINISTRAÇÃO</span>
+            <h2>Serviços</h2>
+            <p>
+              Controle os serviços disponíveis na Central Resgata+.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="primary-button"
+            id="serviceCreateButton"
+          >
+            + Novo serviço
+          </button>
+        </div>
+
+        <div class="services-toolbar">
+          <input
+            type="search"
+            id="serviceSearch"
+            class="admin-input"
+            placeholder="Buscar serviço..."
+            autocomplete="off"
+          />
+
+          <select id="serviceStatusFilter" class="admin-input">
+            <option value="all">Todos os status</option>
+            <option value="enabled">Ativos</option>
+            <option value="disabled">Inativos</option>
+          </select>
+
+          <select id="serviceVisibilityFilter" class="admin-input">
+            <option value="all">Toda visibilidade</option>
+            <option value="visible">Visíveis</option>
+            <option value="hidden">Ocultos</option>
+          </select>
+
+          <button
+            type="button"
+            class="secondary-button"
+            id="serviceRefreshButton"
+          >
+            Atualizar
+          </button>
+        </div>
+
+        <div class="services-metrics">
+          <div class="service-metric-card">
+            <span>Total</span>
+            <strong id="serviceMetricTotal">0</strong>
+          </div>
+
+          <div class="service-metric-card">
+            <span>Ativos</span>
+            <strong id="serviceMetricEnabled">0</strong>
+          </div>
+
+          <div class="service-metric-card">
+            <span>Inativos</span>
+            <strong id="serviceMetricDisabled">0</strong>
+          </div>
+
+          <div class="service-metric-card">
+            <span>Visíveis</span>
+            <strong id="serviceMetricVisible">0</strong>
+          </div>
+
+          <div class="service-metric-card">
+            <span>Ocultos</span>
+            <strong id="serviceMetricHidden">0</strong>
+          </div>
+        </div>
+
+        <div class="services-card">
+          <div class="services-card-header">
+            <div>
+              <strong>Serviços cadastrados</strong>
+              <span id="serviceResultCount">0 serviços</span>
+            </div>
+
+            <span
+              id="serviceLoading"
+              class="service-loading"
+              hidden
+            >
+              Carregando...
+            </span>
+          </div>
+
+          <div id="servicesAdminList" class="services-admin-list">
+            <div class="service-empty">
+              Carregando serviços...
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="serviceModal"
+          class="service-modal"
+          hidden
+        >
+          <div
+            class="service-modal-backdrop"
+            data-service-modal-close
+          ></div>
+
+          <div class="service-modal-panel">
+            <div class="service-modal-header">
+              <div>
+                <span class="eyebrow">SERVIÇO</span>
+                <h3 id="serviceModalTitle">Novo serviço</h3>
+              </div>
+
+              <button
+                type="button"
+                class="service-modal-close"
+                data-service-modal-close
+                aria-label="Fechar"
+              >
+                ×
+              </button>
+            </div>
+
+            <form id="serviceForm">
+              <input
+                type="hidden"
+                id="serviceId"
+              />
+
+              <label class="service-form-field">
+                <span>Nome</span>
+                <input
+                  id="serviceName"
+                  name="name"
+                  required
+                  maxlength="120"
+                  class="admin-input"
+                />
+              </label>
+
+              <label class="service-form-field">
+                <span>Descrição</span>
+                <textarea
+                  id="serviceDescription"
+                  name="description"
+                  required
+                  maxlength="500"
+                  class="admin-input"
+                  rows="4"
+                ></textarea>
+              </label>
+
+              <label class="service-form-field">
+                <span>Categoria</span>
+                <input
+                  id="serviceCategory"
+                  name="category"
+                  required
+                  maxlength="80"
+                  class="admin-input"
+                />
+              </label>
+
+              <div class="service-form-checks">
+                <label>
+                  <input
+                    type="checkbox"
+                    id="serviceEnabled"
+                    checked
+                  />
+                  Serviço ativo
+                </label>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    id="serviceVisible"
+                    checked
+                  />
+                  Visível para clientes
+                </label>
+              </div>
+
+              <div
+                id="serviceFormError"
+                class="service-form-error"
+                hidden
+              ></div>
+
+              <div class="service-modal-actions">
+                <button
+                  type="button"
+                  class="secondary-button"
+                  data-service-modal-close
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  class="primary-button"
+                  id="serviceSaveButton"
+                >
+                  Salvar serviço
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+      <div id="page-requests" class="page">
+
+        <div class="page-header requests-page-header">
+          <div>
+            <span class="eyebrow">ATENDIMENTO OPERACIONAL</span>
+            <h2>Solicitações</h2>
+            <p>
+              Acompanhe e gerencie as solicitações feitas pelos clientes.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="secondary-button"
+            id="requestRefreshButton"
+          >
+            Atualizar
+          </button>
+        </div>
+
+        <div class="requests-toolbar">
+
+          <input
+            type="search"
+            id="requestSearch"
+            class="admin-input"
+            placeholder="Buscar por usuário, serviço ou ID..."
+            autocomplete="off"
+          />
+
+          <select
+            id="requestStatusFilter"
+            class="admin-input"
+          >
+            <option value="all">Todos os status</option>
+            <option value="pending">Pendentes</option>
+            <option value="received">Recebidas</option>
+            <option value="in_progress">Em andamento</option>
+            <option value="waiting_user">Aguardando usuário</option>
+            <option value="waiting_specialist">Aguardando especialista</option>
+            <option value="resolved">Resolvidas</option>
+            <option value="cancelled">Canceladas</option>
+            <option value="rejected">Recusadas</option>
+          </select>
+
+          <select
+            id="requestServiceFilter"
+            class="admin-input"
+          >
+            <option value="all">Todos os serviços</option>
+          </select>
+
+        </div>
+
+        <div class="requests-metrics">
+
+          <div class="request-metric-card">
+            <span>Total</span>
+            <strong id="requestMetricTotal">0</strong>
+          </div>
+
+          <div class="request-metric-card">
+            <span>Pendentes</span>
+            <strong id="requestMetricPending">0</strong>
+          </div>
+
+          <div class="request-metric-card">
+            <span>Em andamento</span>
+            <strong id="requestMetricProgress">0</strong>
+          </div>
+
+          <div class="request-metric-card">
+            <span>Resolvidas</span>
+            <strong id="requestMetricResolved">0</strong>
+          </div>
+
+          <div class="request-metric-card">
+            <span>Canceladas</span>
+            <strong id="requestMetricCancelled">0</strong>
+          </div>
+
+        </div>
+
+        <div class="requests-card">
+
+          <div class="requests-card-header">
+
+            <div>
+              <strong>Solicitações cadastradas</strong>
+              <span id="requestResultCount">
+                0 solicitações
+              </span>
+            </div>
+
+            <span
+              id="requestLoading"
+              class="request-loading"
+              hidden
+            >
+              Carregando...
+            </span>
+
+          </div>
+
+          <div
+            id="requestsAdminList"
+            class="requests-admin-list"
+          >
+            <div class="request-empty">
+              Nenhuma solicitação cadastrada.
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          id="requestModal"
+          class="request-modal"
+          hidden
+        >
+
+          <div
+            class="request-modal-backdrop"
+            data-request-modal-close
+          ></div>
+
+          <div class="request-modal-panel">
+
+            <div class="request-modal-header">
+
+              <div>
+                <span class="eyebrow">SOLICITAÇÃO</span>
+                <h3 id="requestModalTitle">
+                  Detalhes da solicitação
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                class="request-modal-close"
+                data-request-modal-close
+              >
+                ×
+              </button>
+
+            </div>
+
+            <div
+              id="requestDetails"
+              class="request-details"
+            ></div>
+
+            <div class="request-status-box">
+
+              <label>
+                <span>Status</span>
+
+                <select
+                  id="requestStatusEdit"
+                  class="admin-input"
+                >
+                  <option value="pending">Pendente</option>
+                  <option value="received">Recebida</option>
+                  <option value="in_progress">Em andamento</option>
+                  <option value="waiting_user">Aguardando usuário</option>
+                  <option value="waiting_specialist">Aguardando especialista</option>
+                  <option value="resolved">Resolvida</option>
+                  <option value="cancelled">Cancelada</option>
+                  <option value="rejected">Recusada</option>
+                </select>
+              </label>
+
+              <button
+                type="button"
+                class="primary-button"
+                id="requestSaveStatus"
+              >
+                Salvar status
+              </button>
+
+            </div>
+
+            <div
+              id="requestFormError"
+              class="request-form-error"
+              hidden
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div id="page-tickets" class="page">
+        <div class="module-placeholder">
+          <span>🎧</span>
+          <h2>Atendimento</h2>
+          <p>
+            O módulo de atendimento será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-specialists" class="page">
+        <div class="module-placeholder">
+          <span>👨‍🔧</span>
+          <h2>Especialistas</h2>
+          <p>
+            O gerenciamento de especialistas será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-updates" class="page">
+        <div class="module-placeholder">
+          <span>🔄</span>
+          <h2>Atualizações</h2>
+          <p>
+            O gerenciamento de versões será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-plans" class="page">
+        <div class="module-placeholder">
+          <span>💳</span>
+          <h2>Planos</h2>
+          <p>
+            O gerenciamento de planos será carregado nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-security" class="page">
+        <div class="module-placeholder">
+          <span>🛡️</span>
+          <h2>Segurança</h2>
+          <p>
+            Eventos e controles de segurança serão carregados nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-protection" class="page">
+
+        <div class="module-header">
+          <div>
+            <span class="module-eyebrow">RESGATA+ / PROTEÇÃO</span>
+            <h2>Limpeza e Proteção</h2>
+            <p>
+              Proteção geral contra spam, golpes, links suspeitos e,
+              agora, proteção especializada contra apostas.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="secondary"
+            onclick="loadBettingProtection()"
+          >
+            ↻ Atualizar
+          </button>
+        </div>
+
+        <!-- PROTEÇÃO GERAL -->
+
+        <div class="section-title">
+          <span>🚨</span>
+          <div>
+            <h3>Proteção geral</h3>
+            <p>
+              Monitoramento de golpes, spam, links suspeitos e solicitações
+              de remoção.
+            </p>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+
+          <div class="metric-card">
+            <span>Relatórios de proteção</span>
+            <strong id="protectionReports">0</strong>
+          </div>
+
+          <div class="metric-card">
+            <span>Solicitações de remoção</span>
+            <strong id="removalRequests">0</strong>
+          </div>
+
+          <div class="metric-card">
+            <span>Remoções pendentes</span>
+            <strong id="pendingRemovalRequests">0</strong>
+          </div>
+
+          <div class="metric-card">
+            <span>Alertas de segurança</span>
+            <strong id="unresolvedSecurity">0</strong>
+          </div>
+
+        </div>
+
+
+        <!-- PROTEÇÃO CONTRA APOSTAS -->
+
+        <div class="betting-module">
+
+          <div class="betting-module-header">
+
+            <div>
+              <span class="module-eyebrow">
+                🛡️ RESGATA+ BETTING PROTECTION
+              </span>
+
+              <h3>
+                Proteção contra apostas
+              </h3>
+
+              <p>
+                Controle administrativo do Modo Sair de Vez,
+                bloqueios, tentativas, reincidências, Radar,
+                dispositivos e dinheiro protegido.
+              </p>
+            </div>
+
+            <div class="betting-status" id="bettingProtectionStatus">
+              <span class="status-dot"></span>
+              Carregando...
+            </div>
+
+          </div>
+
+
+          <!-- MÉTRICAS -->
+
+          <div class="betting-metrics">
+
+            <div class="betting-metric">
+              <span>Proteção ativa</span>
+              <strong id="bettingActiveProfiles">0</strong>
+              <small>perfis protegidos</small>
+            </div>
+
+            <div class="betting-metric">
+              <span>Tentativas</span>
+              <strong id="bettingAttempts">0</strong>
+              <small>acessos registrados</small>
+            </div>
+
+            <div class="betting-metric">
+              <span>Bloqueadas</span>
+              <strong id="bettingBlockedAttempts">0</strong>
+              <small>tentativas bloqueadas</small>
+            </div>
+
+            <div class="betting-metric">
+              <span>Reincidências</span>
+              <strong id="bettingRelapses">0</strong>
+              <small>eventos registrados</small>
+            </div>
+
+            <div class="betting-metric">
+              <span>Domínios</span>
+              <strong id="bettingDomains">0</strong>
+              <small>bloqueados</small>
+            </div>
+
+            <div class="betting-metric">
+              <span>Aplicativos</span>
+              <strong id="bettingApps">0</strong>
+              <small>bloqueados</small>
+            </div>
+
+            <div class="betting-metric">
+              <span>Links</span>
+              <strong id="bettingLinks">0</strong>
+              <small>padrões bloqueados</small>
+            </div>
+
+            <div class="betting-metric">
+              <span>Radar</span>
+              <strong id="bettingRadar">0</strong>
+              <small>itens monitorados</small>
+            </div>
+
+          </div>
+
+
+          <!-- MODO SAIR DE VEZ -->
+
+          <div class="betting-grid">
+
+            <div class="betting-card">
+
+              <div class="betting-card-header">
+                <div>
+                  <h4>🛡️ Modo Sair de Vez</h4>
+                  <p>
+                    Configuração central da proteção contra apostas.
+                  </p>
+                </div>
+
+                <span
+                  id="bettingModeBadge"
+                  class="status-badge"
+                >
+                  —
+                </span>
+              </div>
+
+              <div class="betting-card-body">
+
+                <div class="info-row">
+                  <span>Nível predominante</span>
+                  <strong id="bettingProtectionLevel">
+                    —
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Bloqueio de sites</span>
+                  <strong id="bettingBlockSites">
+                    —
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Bloqueio de aplicativos</span>
+                  <strong id="bettingBlockApps">
+                    —
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Bloqueio de links</span>
+                  <strong id="bettingBlockLinks">
+                    —
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Bloqueio de recaída</span>
+                  <strong id="bettingRelapseBlock">
+                    —
+                  </strong>
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- DINHEIRO PROTEGIDO -->
+
+            <div class="betting-card">
+
+              <div class="betting-card-header">
+                <div>
+                  <h4>💰 Dinheiro protegido</h4>
+                  <p>
+                    Valores registrados pelos usuários como
+                    gastos que deixaram de realizar.
+                  </p>
+                </div>
+              </div>
+
+              <div class="betting-card-body">
+
+                <div class="money-highlight">
+                  <span>Total registrado como protegido</span>
+                  <strong id="bettingProtectedMoney">
+                    R$ 0,00
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Registros financeiros</span>
+                  <strong id="bettingFinancialRecords">
+                    0
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Missões concluídas</span>
+                  <strong id="bettingCompletedMissions">
+                    0
+                  </strong>
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- DISPOSITIVOS -->
+
+            <div class="betting-card">
+
+              <div class="betting-card-header">
+                <div>
+                  <h4>📱 Dispositivos protegidos</h4>
+                  <p>
+                    Dispositivos vinculados à proteção contra apostas.
+                  </p>
+                </div>
+              </div>
+
+              <div class="betting-card-body">
+
+                <div class="money-highlight">
+                  <span>Dispositivos protegidos</span>
+                  <strong id="bettingProtectedDevices">
+                    0
+                  </strong>
+                </div>
+
+                <div
+                  id="bettingDevicesList"
+                  class="compact-list"
+                >
+                  Nenhum dispositivo protegido.
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- RADAR -->
+
+            <div class="betting-card">
+
+              <div class="betting-card-header">
+                <div>
+                  <h4>📡 Radar Resgata+</h4>
+                  <p>
+                    Domínios e páginas identificados para análise.
+                  </p>
+                </div>
+              </div>
+
+              <div class="betting-card-body">
+
+                <div class="info-row">
+                  <span>Itens no Radar</span>
+                  <strong id="bettingRadarTotal">
+                    0
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Pendentes</span>
+                  <strong id="bettingRadarPending">
+                    0
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Validados</span>
+                  <strong id="bettingRadarValidated">
+                    0
+                  </strong>
+                </div>
+
+                <div class="info-row">
+                  <span>Adicionados ao bloqueio</span>
+                  <strong id="bettingRadarBlocked">
+                    0
+                  </strong>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ÁREAS DE CONTROLE -->
+
+          <div class="betting-control-grid">
+
+            <button
+              type="button"
+              class="betting-control"
+              onclick="loadBettingLevels()"
+            >
+              <span>🛡️</span>
+              <strong>Níveis</strong>
+              <small>Normal, forte e máximo</small>
+            </button>
+
+            <button
+              type="button"
+              class="betting-control"
+              onclick="loadBettingDomains()"
+            >
+              <span>🌐</span>
+              <strong>Domínios</strong>
+              <small>Sites bloqueados</small>
+            </button>
+
+            <button
+              type="button"
+              class="betting-control"
+              onclick="loadBettingApps()"
+            >
+              <span>📱</span>
+              <strong>Aplicativos</strong>
+              <small>Apps protegidos</small>
+            </button>
+
+            <button
+              type="button"
+              class="betting-control"
+              onclick="loadBettingLinks()"
+            >
+              <span>🔗</span>
+              <strong>Links</strong>
+              <small>Padrões bloqueados</small>
+            </button>
+
+            <button
+              type="button"
+              class="betting-control"
+              onclick="loadBettingAttempts()"
+            >
+              <span>🚫</span>
+              <strong>Tentativas</strong>
+              <small>Acessos bloqueados</small>
+            </button>
+
+            <button
+              type="button"
+              class="betting-control"
+              onclick="loadBettingRelapses()"
+            >
+              <span>🔁</span>
+              <strong>Reincidências</strong>
+              <small>Escalonamento da proteção</small>
+            </button>
+
+            <button
+              type="button"
+              class="betting-control"
+              onclick="loadBettingRadar()"
+            >
+              <span>📡</span>
+              <strong>Radar</strong>
+              <small>Novos domínios e páginas</small>
+            </button>
+
+            <button
+              type="button"
+              class="betting-control"
+              onclick="loadBettingSettings()"
+            >
+              <span>⚙️</span>
+              <strong>Configurações</strong>
+              <small>Regras do módulo</small>
+            </button>
+
+          </div>
+
+
+          <!-- LISTAS RESUMIDAS -->
+
+          <div class="betting-lists-grid">
+
+            <div class="betting-list-card">
+              <div class="betting-list-header">
+                <h4>Últimas tentativas</h4>
+                <button
+                  type="button"
+                  class="secondary small"
+                  onclick="loadBettingAttempts()"
+                >
+                  Ver
+                </button>
+              </div>
+
+              <div
+                id="bettingAttemptsList"
+                class="compact-list"
+              >
+                Nenhuma tentativa registrada.
+              </div>
+            </div>
+
+
+            <div class="betting-list-card">
+              <div class="betting-list-header">
+                <h4>Últimas reincidências</h4>
+                <button
+                  type="button"
+                  class="secondary small"
+                  onclick="loadBettingRelapses()"
+                >
+                  Ver
+                </button>
+              </div>
+
+              <div
+                id="bettingRelapsesList"
+                class="compact-list"
+              >
+                Nenhuma reincidência registrada.
+              </div>
+            </div>
+
+
+            <div class="betting-list-card">
+              <div class="betting-list-header">
+                <h4>Radar pendente</h4>
+                <button
+                  type="button"
+                  class="secondary small"
+                  onclick="loadBettingRadar()"
+                >
+                  Ver
+                </button>
+              </div>
+
+              <div
+                id="bettingRadarList"
+                class="compact-list"
+              >
+                Nenhum item pendente.
+              </div>
+            </div>
+
+          </div>
+
+          <div
+            id="bettingProtectionMessage"
+            class="module-message"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      
+
+
+<div id="page-reports" class="page">
+  <section class="admin-section reports-page">
+
+    <div class="page-header">
+      <div>
+        <span class="eyebrow">ADMINISTRAÇÃO</span>
+        <h1>📊 Relatórios</h1>
+        <p>
+          Visão consolidada da operação, proteção, atendimento e atividade do Resgata+.
+        </p>
+      </div>
+
+      <div class="page-actions">
+        <button
+          type="button"
+          class="btn secondary"
+          id="reports-refresh"
+        >
+          ↻ Atualizar
+        </button>
+      </div>
+    </div>
+
+    <div class="reports-toolbar">
+      <div class="reports-period">
+        <span>Período</span>
+
+        <div class="reports-period-buttons">
+          <button type="button" class="reports-period-btn" data-period="today">
+            Hoje
+          </button>
+
+          <button type="button" class="reports-period-btn" data-period="7d">
+            7 dias
+          </button>
+
+          <button type="button" class="reports-period-btn active" data-period="30d">
+            30 dias
+          </button>
+
+          <button type="button" class="reports-period-btn" data-period="90d">
+            90 dias
+          </button>
+
+          <button type="button" class="reports-period-btn" data-period="all">
+            Tudo
+          </button>
+        </div>
+      </div>
+
+      <div class="reports-status" id="reports-status">
+        Aguardando dados...
+      </div>
+    </div>
+
+    <div id="reports-error" class="reports-message error hidden">
+      Não foi possível carregar os relatórios.
+    </div>
+
+    <div id="reports-loading" class="reports-message hidden">
+      Carregando relatório...
+    </div>
+
+    <div id="reports-content">
+
+      <section class="reports-group">
+        <div class="reports-group-header">
+          <div>
+            <h2>Visão geral</h2>
+            <p>Resumo da operação no período selecionado.</p>
+          </div>
+        </div>
+
+        <div class="reports-grid" id="reports-summary">
+          <article class="report-card">
+            <span class="report-card-icon">👥</span>
+            <span class="report-card-label">Usuários</span>
+            <strong data-report="users">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">📱</span>
+            <span class="report-card-label">Dispositivos</span>
+            <strong data-report="devices">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">📨</span>
+            <span class="report-card-label">Solicitações</span>
+            <strong data-report="requests">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">🎫</span>
+            <span class="report-card-label">Tickets</span>
+            <strong data-report="tickets">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">🛡️</span>
+            <span class="report-card-label">Proteção</span>
+            <strong data-report="protectionReports">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">💰</span>
+            <span class="report-card-label">Valor protegido</span>
+            <strong data-report="protectedMoney">—</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="reports-group">
+        <div class="reports-group-header">
+          <div>
+            <h2>👥 Usuários e dispositivos</h2>
+            <p>Base cadastrada e atividade dos dispositivos.</p>
+          </div>
+        </div>
+
+        <div class="reports-detail-grid">
+          <article class="report-panel">
+            <h3>Usuários</h3>
+
+            <div class="report-row">
+              <span>Total</span>
+              <strong data-report="users.total">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Ativos</span>
+              <strong data-report="users.active">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Novos no período</span>
+              <strong data-report="users.newInPeriod">—</strong>
+            </div>
+          </article>
+
+          <article class="report-panel">
+            <h3>Dispositivos</h3>
+
+            <div class="report-row">
+              <span>Total</span>
+              <strong data-report="devices.total">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Ativos</span>
+              <strong data-report="devices.active">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Adicionados no período</span>
+              <strong data-report="devices.addedInPeriod">—</strong>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="reports-group">
+        <div class="reports-group-header">
+          <div>
+            <h2>🆘 Atendimento</h2>
+            <p>Solicitações, tickets e especialistas.</p>
+          </div>
+        </div>
+
+        <div class="reports-detail-grid">
+
+          <article class="report-panel">
+            <h3>Solicitações</h3>
+
+            <div class="report-row">
+              <span>Total</span>
+              <strong data-report="serviceRequests.total">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Pendentes</span>
+              <strong data-report="serviceRequests.pending">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Concluídas</span>
+              <strong data-report="serviceRequests.completed">—</strong>
+            </div>
+          </article>
+
+          <article class="report-panel">
+            <h3>Tickets</h3>
+
+            <div class="report-row">
+              <span>Total</span>
+              <strong data-report="tickets.total">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Abertos</span>
+              <strong data-report="tickets.open">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Fechados</span>
+              <strong data-report="tickets.closed">—</strong>
+            </div>
+          </article>
+
+          <article class="report-panel">
+            <h3>Especialistas</h3>
+
+            <div class="report-row">
+              <span>Total</span>
+              <strong data-report="specialists.total">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Ativos</span>
+              <strong data-report="specialists.active">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Online</span>
+              <strong data-report="specialists.online">—</strong>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section class="reports-group">
+        <div class="reports-group-header">
+          <div>
+            <h2>🛡️ Segurança e proteção</h2>
+            <p>Eventos, alertas e ações de proteção registradas.</p>
+          </div>
+        </div>
+
+        <div class="reports-detail-grid">
+
+          <article class="report-panel">
+            <h3>Segurança</h3>
+
+            <div class="report-row">
+              <span>Eventos</span>
+              <strong data-report="security.events">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Não resolvidos</span>
+              <strong data-report="security.unresolved">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Alto risco</span>
+              <strong data-report="security.highRisk">—</strong>
+            </div>
+          </article>
+
+          <article class="report-panel">
+            <h3>Proteção</h3>
+
+            <div class="report-row">
+              <span>Relatórios</span>
+              <strong data-report="protection.reports">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Alto risco</span>
+              <strong data-report="protection.highRisk">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Confirmados</span>
+              <strong data-report="protection.confirmed">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Remoções</span>
+              <strong data-report="protection.removals">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Remoções pendentes</span>
+              <strong data-report="protection.pendingRemovals">—</strong>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section class="reports-group">
+        <div class="reports-group-header">
+          <div>
+            <h2>🚫 Proteção contra apostas</h2>
+            <p>Indicadores de tentativas, bloqueios, reincidências e radar.</p>
+          </div>
+        </div>
+
+        <div class="reports-detail-grid">
+
+          <article class="report-panel">
+            <h3>Acesso e bloqueio</h3>
+
+            <div class="report-row">
+              <span>Tentativas</span>
+              <strong data-report="betting.attempts">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Bloqueadas</span>
+              <strong data-report="betting.blocked">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Reincidências</span>
+              <strong data-report="betting.relapses">—</strong>
+            </div>
+          </article>
+
+          <article class="report-panel">
+            <h3>Radar</h3>
+
+            <div class="report-row">
+              <span>Itens identificados</span>
+              <strong data-report="betting.radarItems">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Validados</span>
+              <strong data-report="betting.radarValidated">—</strong>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section class="reports-group">
+        <div class="reports-group-header">
+          <div>
+            <h2>💰 Financeiro</h2>
+            <p>Dados registrados pelo sistema. Não representam movimentação bancária real.</p>
+          </div>
+        </div>
+
+        <div class="reports-detail-grid">
+
+          <article class="report-panel">
+            <h3>Registros de apostas</h3>
+
+            <div class="report-row">
+              <span>Registros</span>
+              <strong data-report="financial.bettingRecords">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Depósitos registrados</span>
+              <strong data-report-money="financial.deposits">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Ganhos informados</span>
+              <strong data-report-money="financial.reportedGains">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Perdas informadas</span>
+              <strong data-report-money="financial.reportedLosses">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Saques registrados</span>
+              <strong data-report-money="financial.reportedWithdrawals">—</strong>
+            </div>
+          </article>
+
+          <article class="report-panel">
+            <h3>Organização financeira</h3>
+
+            <div class="report-row">
+              <span>Contas registradas</span>
+              <strong data-report="financial.accounts">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Dinheiro protegido</span>
+              <strong data-report-money="financial.protectedMoney">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Missões diárias</span>
+              <strong data-report="financial.dailyMissions">—</strong>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section class="reports-group">
+        <div class="reports-group-header">
+          <div>
+            <h2>🎯 Missões</h2>
+            <p>Atividades registradas no período.</p>
+          </div>
+        </div>
+
+        <div class="reports-grid reports-grid-small">
+
+          <article class="report-card">
+            <span class="report-card-icon">📋</span>
+            <span class="report-card-label">Total</span>
+            <strong data-report="missions.total">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">✅</span>
+            <span class="report-card-label">Concluídas</span>
+            <strong data-report="missions.completed">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">🛡️</span>
+            <span class="report-card-label">Não apostou</span>
+            <strong data-report="missions.noBet">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">💭</span>
+            <span class="report-card-label">Teve vontade</span>
+            <strong data-report="missions.hadUrge">—</strong>
+          </article>
+
+          <article class="report-card">
+            <span class="report-card-icon">💰</span>
+            <span class="report-card-label">Valor protegido</span>
+            <strong data-report-money="missions.protectedValue">—</strong>
+          </article>
+
+        </div>
+      </section>
+
+      <section class="reports-group">
+        <div class="reports-group-header">
+          <div>
+            <h2>📝 Atividade</h2>
+            <p>Registros operacionais gerados pelo sistema.</p>
+          </div>
+        </div>
+
+        <div class="reports-detail-grid">
+
+          <article class="report-panel">
+            <div class="report-row">
+              <span>Logs de auditoria</span>
+              <strong data-report="activity.auditLogs">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Notificações</span>
+              <strong data-report="activity.notifications">—</strong>
+            </div>
+
+            <div class="report-row">
+              <span>Atualizações</span>
+              <strong data-report="activity.updates">—</strong>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <div class="reports-footer">
+        <span id="reports-generated-at">
+          Relatório ainda não carregado.
+        </span>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+
+
+
+
+      <div id="page-logs" class="page">
+  <section class="admin-section logs-page">
+
+    <div class="logs-header">
+      <div>
+        <h2>📝 Logs de Auditoria</h2>
+        <p>
+          Histórico das ações realizadas no sistema administrativo.
+        </p>
+      </div>
+
+      <div class="logs-header-actions">
+        <span id="logs-total" class="logs-total">
+          0 registros
+        </span>
+
+        <button
+          type="button"
+          id="logs-refresh-btn"
+          class="admin-btn"
+        >
+          ↻ Atualizar
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-card logs-filters-card">
+
+      <div class="card-header">
+        <div>
+          <h3>Filtros</h3>
+          <p>
+            Encontre rapidamente uma ação ou ocorrência específica.
+          </p>
+        </div>
+      </div>
+
+      <div class="logs-toolbar">
+
+        <label class="logs-field">
+          <span>Período</span>
+          <select id="logs-period">
+            <option value="today">Hoje</option>
+            <option value="7d">Últimos 7 dias</option>
+            <option value="30d" selected>Últimos 30 dias</option>
+            <option value="90d">Últimos 90 dias</option>
+            <option value="all">Tudo</option>
+          </select>
+        </label>
+
+        <label class="logs-field">
+          <span>Ação</span>
+          <select id="logs-action">
+            <option value="">Todas as ações</option>
+          </select>
+        </label>
+
+        <label class="logs-field">
+          <span>Entidade</span>
+          <select id="logs-entity">
+            <option value="">Todas as entidades</option>
+          </select>
+        </label>
+
+        <label class="logs-field logs-search-field">
+          <span>Buscar</span>
+          <input
+            type="search"
+            id="logs-search"
+            placeholder="Ação, usuário, entidade ou detalhe..."
+            autocomplete="off"
+          />
+        </label>
+
+        <button
+          type="button"
+          id="logs-clear-filters"
+          class="admin-btn"
+        >
+          Limpar
+        </button>
+
+      </div>
+    </div>
+
+    <div
+      id="logs-status"
+      class="logs-status"
+      role="status"
+      aria-live="polite"
+    >
+      Aguardando carregamento...
+    </div>
+
+    <div class="admin-card logs-table-card">
+
+      <div class="card-header">
+        <div>
+          <h3>Registros</h3>
+          <p>
+            Os registros mais recentes aparecem primeiro.
+          </p>
+        </div>
+      </div>
+
+      <div class="logs-table-wrap">
+        <table class="logs-table">
+          <thead>
+            <tr>
+              <th>Data/Hora</th>
+              <th>Ação</th>
+              <th>Entidade</th>
+              <th>ID da entidade</th>
+              <th>Usuário</th>
+              <th>Responsável</th>
+              <th>Detalhes</th>
+            </tr>
+          </thead>
+
+          <tbody id="logs-table-body">
+            <tr>
+              <td colspan="7" class="logs-empty">
+                Carregando logs...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="logs-pagination">
+
+        <button
+          type="button"
+          id="logs-prev"
+          class="admin-btn"
+          disabled
+        >
+          ← Anterior
+        </button>
+
+        <span id="logs-page-info">
+          Página 1 de 1
+        </span>
+
+        <button
+          type="button"
+          id="logs-next"
+          class="admin-btn"
+          disabled
+        >
+          Próxima →
+        </button>
+
+      </div>
+    </div>
+
+    <div
+      id="logs-detail"
+      class="admin-card logs-detail-card"
+      hidden
+    >
+      <div class="card-header">
+        <div>
+          <h3>Detalhes do registro</h3>
+          <p>
+            Informações completas do evento selecionado.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          id="logs-detail-close"
+          class="admin-btn"
+        >
+          Fechar
+        </button>
+      </div>
+
+      <pre id="logs-detail-content"></pre>
+    </div>
+
+  </section>
+</div>
+
+
+<!-- RESGATA SUPPORT MODULES -->
+
+<section id="resgata-support-modules">
+
+  <div class="admin-card">
+
+    <div class="card-header">
+      <div>
+        <h3>🆘 Emergência Resgata+</h3>
+        <p>
+          Ocorrências de emergência, SOS e reforço de proteção.
+        </p>
+      </div>
+    </div>
+
+    <div id="resgataEmergencyPanel">
+      <div class="empty-state">
+        Carregando ocorrências...
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="admin-card">
+
+    <div class="card-header">
+      <div>
+        <h3>💡 Sugestões dos usuários</h3>
+        <p>
+          Ideias e melhorias sugeridas pela comunidade.
+        </p>
+      </div>
+    </div>
+
+    <div id="resgataSuggestionsPanel">
+      <div class="empty-state">
+        Carregando sugestões...
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="admin-card">
+
+    <div class="card-header">
+      <div>
+        <h3>📚 Conteúdo Resgata+</h3>
+        <p>
+          Conteúdos de apoio, educação e alternativas
+          para momentos de vontade de apostar.
+        </p>
+      </div>
+    </div>
+
+    <div id="resgataContentPanel">
+      <div class="empty-state">
+        Carregando conteúdo...
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<div id="page-settings" class="page">
+        <div class="module-placeholder">
+          <span>⚙️</span>
+          <h2>Configurações</h2>
+          <p>
+            Configurações serão carregadas nesta área.
+          </p>
+        </div>
+      </div>
+
+
+      <div id="page-admins" class="page">
+        <div class="module-placeholder">
+          <span>👨‍💼</span>
+          <h2>Administradores</h2>
+          <p>
+            Administração de contas e permissões será carregada nesta área.
+          </p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="/admin/app.js"></script>
+<script src="/admin/resgata-support.js"></script>
+
+</body>
+</html>

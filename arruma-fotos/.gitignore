@@ -1,0 +1,36 @@
+# Wrangler
+.wrangler/
+**/.wrangler/
+
+# Cloudflare / Workers temporários
+.wrangler
+**/.dev.vars
+**/.env
+**/.env.*
+!.env.example
+
+# Android / Gradle
+**/build/
+**/.gradle/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# IDE / sistema
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
+*~
+
+# Backups locais devem permanecer no ARQUIVO, não no código ativo
+**/*.before-*

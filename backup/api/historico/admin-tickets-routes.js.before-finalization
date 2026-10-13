@@ -1,0 +1,409 @@
+import express from "express";
+import crypto from "crypto";
+import { db } from "./database.js";
+
+const router = express.Router();
+
+function parseDetails(value) {
+  if (!value) return {};
+  if (typeof value === "object") return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return { raw: value };
+  }
+}
+
+function audit(adminId, action, entityId, details = {}) {
+  db.prepare(`
+    INSERT INTO audit_logs
+      (user_id, action, entity, entity_id, details)
+    VALUES
+      (NULL, ?, 'ticket', ?, ?)
+  `).run(
+    action,
+    entityId,
+    JSON.stringify({
+      adminId,
+      ...details
+    })
+  );
+}
+
+router.get("/", (req, res) => {
+  const {
+    search = "",
+    status = "",
+    priority = "",
+    limit = "500"
+  } = req.query;
+
+  const params = [];
+  const where = [];
+
+  if (status) {
+    where.push("t.status = ?");
+    params.push(status);
+  }
+
+  if (priority) {
+    where.push("t.priority = ?");
+    params.push(priority);
+  }
+
+  if (search) {
+    where.push(`
+      (
+        t.id LIKE ?
+        OR u.name LIKE ?
+        OR u.email LIKE ?
+        OR t.subject LIKE ?
+      )
+    `);
+
+    const q = `%${search}%`;
+
+    params.push(q, q, q, q);
+  }
+
+  const sql = `
+    SELECT
+      t.*,
+      u.name AS user_name,
+      u.email AS user_email
+    FROM tickets t
+    LEFT JOIN users u ON u.id = t.user_id
+    ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
+    ORDER BY t.created_at DESC
+    LIMIT ?
+  `;
+
+  params.push(Math.min(Number(limit) || 500, 500));
+
+  const tickets = db.prepare(sql).all(...params).map(ticket => ({
+    ...ticket,
+    details: parseDetails(ticket.details)
+  }));
+
+  res.json({
+    ok: true,
+    tickets,
+    total: tickets.length
+  });
+});
+
+router.get("/summary", (req, res) => {
+  const total = db.prepare(`
+    SELECT COUNT(*) AS total
+    FROM tickets
+  `).get().total;
+
+  const byStatus = db.prepare(`
+    SELECT status, COUNT(*) AS total
+    FROM tickets
+    GROUP BY status
+    ORDER BY total DESC
+  `).all();
+
+  const byPriority = db.prepare(`
+    SELECT priority, COUNT(*) AS total
+    FROM tickets
+    GROUP BY priority
+    ORDER BY total DESC
+  `).all();
+
+  res.json({
+    ok: true,
+    summary: {
+      total,
+      byStatus,
+      byPriority
+    }
+  });
+});
+
+router.get("/:id", (req, res) => {
+  const ticket = db.prepare(`
+    SELECT
+      t.*,
+      u.name AS user_name,
+      u.email AS user_email,
+      u.plan AS user_plan,
+      u.status AS user_status
+    FROM tickets t
+    LEFT JOIN users u ON u.id = t.user_id
+    WHERE t.id = ?
+  `).get(req.params.id);
+
+  if (!ticket) {
+    return res.status(404).json({
+      ok: false,
+      error: "TICKET_NOT_FOUND"
+    });
+  }
+
+  const auditRows = db.prepare(`
+    SELECT
+      id,
+      action,
+      entity,
+      entity_id,
+      details,
+      created_at
+    FROM audit_logs
+    WHERE entity = 'ticket'
+      AND entity_id = ?
+    ORDER BY id DESC
+    LIMIT 100
+  `).all(req.params.id).map(row => ({
+    ...row,
+    details: parseDetails(row.details)
+  }));
+
+  res.json({
+    ok: true,
+    ticket: {
+      ...ticket,
+      details: parseDetails(ticket.details)
+    },
+    audit: auditRows
+  });
+});
+
+router.post("/", (req, res) => {
+  const {
+    userId,
+    subject,
+    description = "",
+    priority = "normal",
+    status = "open",
+    details = {}
+  } = req.body || {};
+
+  if (!subject) {
+    return res.status(400).json({
+      ok: false,
+      error: "SUBJECT_REQUIRED"
+    });
+  }
+
+  const id = crypto.randomUUID();
+
+  db.prepare(`
+    INSERT INTO tickets
+      (
+        id,
+        user_id,
+        subject,
+        description,
+        priority,
+        status,
+        details
+      )
+    VALUES
+      (?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    id,
+    userId || null,
+    subject,
+    description,
+    priority,
+    status,
+    JSON.stringify(details)
+  );
+
+  audit(
+    req.admin.id,
+    "admin.ticket.created",
+    id,
+    {
+      status,
+      priority
+    }
+  );
+
+  const ticket = db.prepare(`
+    SELECT *
+    FROM tickets
+    WHERE id = ?
+  `).get(id);
+
+  res.status(201).json({
+    ok: true,
+    ticket: {
+      ...ticket,
+      details: parseDetails(ticket.details)
+    }
+  });
+});
+
+router.patch("/:id/status", (req, res) => {
+  const allowed = [
+    "open",
+    "in_progress",
+    "waiting_user",
+    "waiting_specialist",
+    "resolved",
+    "closed",
+    "cancelled"
+  ];
+
+  const { status } = req.body || {};
+
+  if (!allowed.includes(status)) {
+    return res.status(400).json({
+      ok: false,
+      error: "INVALID_TICKET_STATUS",
+      allowed
+    });
+  }
+
+  const ticket = db.prepare(`
+    SELECT *
+    FROM tickets
+    WHERE id = ?
+  `).get(req.params.id);
+
+  if (!ticket) {
+    return res.status(404).json({
+      ok: false,
+      error: "TICKET_NOT_FOUND"
+    });
+  }
+
+  db.prepare(`
+    UPDATE tickets
+    SET
+      status = ?,
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(status, req.params.id);
+
+  audit(
+    req.admin.id,
+    "admin.ticket.status_updated",
+    req.params.id,
+    {
+      previousStatus: ticket.status,
+      status
+    }
+  );
+
+  res.json({
+    ok: true,
+    ticket: db.prepare(`
+      SELECT *
+      FROM tickets
+      WHERE id = ?
+    `).get(req.params.id)
+  });
+});
+
+router.patch("/:id/priority", (req, res) => {
+  const allowed = [
+    "low",
+    "normal",
+    "high",
+    "urgent"
+  ];
+
+  const { priority } = req.body || {};
+
+  if (!allowed.includes(priority)) {
+    return res.status(400).json({
+      ok: false,
+      error: "INVALID_TICKET_PRIORITY",
+      allowed
+    });
+  }
+
+  const ticket = db.prepare(`
+    SELECT *
+    FROM tickets
+    WHERE id = ?
+  `).get(req.params.id);
+
+  if (!ticket) {
+    return res.status(404).json({
+      ok: false,
+      error: "TICKET_NOT_FOUND"
+    });
+  }
+
+  db.prepare(`
+    UPDATE tickets
+    SET
+      priority = ?,
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(priority, req.params.id);
+
+  audit(
+    req.admin.id,
+    "admin.ticket.priority_updated",
+    req.params.id,
+    {
+      previousPriority: ticket.priority,
+      priority
+    }
+  );
+
+  res.json({
+    ok: true,
+    ticket: db.prepare(`
+      SELECT *
+      FROM tickets
+      WHERE id = ?
+    `).get(req.params.id)
+  });
+});
+
+router.patch("/:id/details", (req, res) => {
+  const ticket = db.prepare(`
+    SELECT *
+    FROM tickets
+    WHERE id = ?
+  `).get(req.params.id);
+
+  if (!ticket) {
+    return res.status(404).json({
+      ok: false,
+      error: "TICKET_NOT_FOUND"
+    });
+  }
+
+  const details = req.body?.details ?? {};
+
+  db.prepare(`
+    UPDATE tickets
+    SET
+      details = ?,
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(
+    JSON.stringify(details),
+    req.params.id
+  );
+
+  audit(
+    req.admin.id,
+    "admin.ticket.details_updated",
+    req.params.id,
+    {
+      previousLength: String(ticket.details || "").length,
+      newLength: JSON.stringify(details).length
+    }
+  );
+
+  res.json({
+    ok: true,
+    ticket: db.prepare(`
+      SELECT *
+      FROM tickets
+      WHERE id = ?
+    `).get(req.params.id)
+  });
+});
+
+export default router;

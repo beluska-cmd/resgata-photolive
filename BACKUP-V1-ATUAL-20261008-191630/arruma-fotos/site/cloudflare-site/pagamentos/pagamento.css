@@ -1,0 +1,96 @@
+.photolive-payment-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,.11), transparent 32%),
+    radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 30%),
+    #f8fafc;
+}
+
+.photolive-payment-page main,
+.photolive-payment-page .payment-container,
+.photolive-payment-page .pagamento-container,
+.photolive-payment-page .checkout-container,
+.photolive-payment-page section {
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.photolive-payment-page main,
+.photolive-payment-page .payment-container,
+.photolive-payment-page .pagamento-container,
+.photolive-payment-page .checkout-container {
+  padding: 42px 20px 70px;
+}
+
+.photolive-payment-page h1 {
+  margin-bottom: 8px;
+  font-size: clamp(32px,5vw,52px);
+  letter-spacing: -.04em;
+}
+
+.photolive-payment-page h2 {
+  letter-spacing: -.025em;
+}
+
+.photolive-payment-page button,
+.photolive-payment-page .btn,
+.photolive-payment-page a.button,
+.photolive-payment-page [type="submit"] {
+  min-height: 48px;
+  border-radius: 13px;
+  font-weight: 800;
+}
+
+.photolive-payment-page .plan,
+.photolive-payment-page .plan-card,
+.photolive-payment-page .payment-plan,
+.photolive-payment-page .plano,
+.photolive-payment-page .plano-card {
+  border: 1px solid #dbe3ee !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+  padding: 22px !important;
+  box-shadow: 0 10px 28px rgba(15,23,42,.05);
+}
+
+.photolive-payment-page .plans,
+.photolive-payment-page .planos,
+.photolive-payment-page .payment-plans {
+  display: grid !important;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 14px !important;
+}
+
+.photolive-payment-page .payment-summary,
+.photolive-payment-page .resumo-pagamento,
+.photolive-payment-page .order-summary,
+.photolive-payment-page .checkout-summary {
+  border: 1px solid #dbe3ee;
+  border-radius: 20px;
+  background: white;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(15,23,42,.05);
+}
+
+.photolive-payment-page #postPaymentResult {
+  border-radius: 20px;
+  padding: 22px;
+  background: white;
+  border: 1px solid #dbe3ee;
+}
+
+.photolive-payment-page #postPaymentImage {
+  max-width: 100%;
+  border-radius: 18px;
+  display: block;
+  margin: 18px auto;
+}
+
+@media (max-width: 760px) {
+  .photolive-payment-page .plans,
+  .photolive-payment-page .planos,
+  .photolive-payment-page .payment-plans {
+    grid-template-columns: 1fr !important;
+  }
+}
